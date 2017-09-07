@@ -1,5 +1,6 @@
 package framework.generators;
 
+import java.io.PrintWriter;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -76,6 +77,16 @@ public class WaveFile {
 		return sum;
 	}
 	
+	public float[] getNormalized() {
+		float max = 0;
+		float[] normal = new float[interleavedBuffer.length];
+		for (int i = 0; i < interleavedBuffer.length; i++)
+			if (interleavedBuffer[i] >= max) max = interleavedBuffer[i];
+		for (int i = 0; i < normal.length; i++)
+			normal[i] = interleavedBuffer[i] / (max + 0.1f);
+		return normal;
+	}
+	
 	public float[] get(int channels) {
 		if (channels == numberOfChannels) return interleavedBuffer;
 		else if (channels == 2) {
@@ -90,6 +101,18 @@ public class WaveFile {
 	
 	public void plot(int size) {
 		new PlotUtility(path.getFileName().toString(), getMonoSum(), size);
+	}
+	
+	public void exportText(String path, int samples) throws Exception {
+		PrintWriter out = new PrintWriter(path);
+		float[] array = getMonoSum();
+		out.print("float array[" + samples + "] = {");
+		for (int i = 0; i < samples; i++) {
+			if (i < array.length) out.print(array[i] + ", ");
+			else out.print("0.0f, ");
+		} 
+		out.print("};");
+		out.close();
 	}
 	
 	public void printInfo() {

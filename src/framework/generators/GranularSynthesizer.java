@@ -3,28 +3,40 @@ package framework.generators;
 import java.util.ArrayList;
 
 import framework.waveforms.Wavetable;
+import framework.waveforms.WavetableCosine;
 
 public class GranularSynthesizer extends PolyphonicSynthesizer {
 	
-	public int playbackPosition = 4410;
-	public int playbackDeviation = 441;
+	public int playbackPosition = 8820;
+	public int playbackDeviation = 4410;
 	public float playbackSpeed = 1;
-	public int grainLength = 4410;
-	public int interGrainTime = 44;
+	public int grainLength = 8820;
+	public int interGrainTime = 441;
 	public int grainCount = 256;
 	public int windowSize = 8192;
 	public double windowIncrement = (double) windowSize / grainLength;
-	public float[] window = new HannWindow(windowSize).get();
+	public float[] window = new WindowFunction(windowSize).get();
+	private final float[] array;
+	private final float baseFrequency;
 
 	public GranularSynthesizer(int controller, Wavetable baseWavetable) throws Exception {
 		super(controller, baseWavetable);
+		this.array = null;
+		this.baseFrequency = 1;
 		attackSamples = 22050;
 		sustainLevel = 1;
 		releaseSamples = 44100;
-		for (MidiNote note : midiNotes) {
-			GranularNote granularNote = (GranularNote) note;
-			granularNote.init();
-		}
+		for (MidiNote note : midiNotes) ((GranularNote) note).init();
+	}
+	
+	public GranularSynthesizer(int controller, float[] array, float baseFrequency) throws Exception {
+		super(controller, new WavetableCosine());
+		this.array = array;
+		this.baseFrequency = baseFrequency;
+		attackSamples = 22050;
+		sustainLevel = 1;
+		releaseSamples = 44100;
+		for (MidiNote note : midiNotes) ((GranularNote) note).init();
 	}
 	
 	@Override
@@ -34,7 +46,6 @@ public class GranularSynthesizer extends PolyphonicSynthesizer {
 	
 	class GranularNote extends PolyphonicSynthesizer.MidiNote {
 		
-		final float[] noteBuffer = new float[22050];
 		ArrayList<Grain> grainArray = new ArrayList<>();
 		int igtCounter = 0;
 		int grainArrayCounter = 0;
@@ -42,7 +53,8 @@ public class GranularSynthesizer extends PolyphonicSynthesizer {
 		class Grain {
 			
 			boolean isBusy;
-			private float index;
+			private float grainPhase;
+			private float speedCorrection;
 			private float sample;
 			private double windowIndex;
 			
@@ -52,14 +64,23 @@ public class GranularSynthesizer extends PolyphonicSynthesizer {
 			
 			void reset() {
 				isBusy = false;
-				index = playbackPosition + (((float) Math.random() * 2 - 1) * playbackDeviation);
+				grainPhase = playbackPosition + (((float) Math.random() * 2 - 1) * playbackDeviation);
+				if (grainPhase >= baseWavetable.tableSize) grainPhase -= baseWavetable.tableSize;
 				windowIndex = 0;
+				speedCorrection = frequency / baseFrequency;
 			}
 			
 			float getSample() {
-				sample = noteBuffer[(int) index] * window[(int) windowIndex] * 0.1f;
-				index += playbackSpeed;
-				if (index >= noteBuffer.length) index -= noteBuffer.length;
+				if (array != null) {
+					sample = array[(int) grainPhase] * window[(int) windowIndex];
+					grainPhase += playbackSpeed * speedCorrection;
+					if (grainPhase >= array.length) grainPhase -= array.length;
+				}
+				else {
+					sample = baseWavetable.getSample(grainPhase, phaseIncrement) * window[(int) windowIndex] * 0.1f;
+					grainPhase += phaseIncrement * playbackSpeed;
+					if (grainPhase >= baseWavetable.tableSize) grainPhase -= baseWavetable.tableSize;
+				}
 				windowIndex += windowIncrement;
 				if (windowIndex >= windowSize) reset();
 				return sample;
@@ -69,11 +90,6 @@ public class GranularSynthesizer extends PolyphonicSynthesizer {
 
 		GranularNote(int midiNoteNumber) {
 			super(midiNoteNumber);
-			for (int i = 0; i < noteBuffer.length; i++) {
-				noteBuffer[i] = baseWavetable.getSample(phase, phaseIncrement);
-				phase += phaseIncrement;
-				if (phase >= baseWavetable.tableSize) phase -= baseWavetable.tableSize;
-			}
 		}
 		
 		/*
@@ -87,19 +103,10 @@ public class GranularSynthesizer extends PolyphonicSynthesizer {
 			grainArray.get(0).isBusy = true;
 		}
 		
-		void updateGrainArray() {
-			igtCounter++;
-			if (igtCounter >= interGrainTime) {
-				igtCounter -= interGrainTime;
-				grainArray.get(grainArrayCounter).isBusy = true;
-				grainArrayCounter++;
-				if (grainArrayCounter >= grainCount) grainArrayCounter = 0;
-			}
-		}
-		
 		@Override
 		float[] get() {
 			for (int i = 0; i < vector.length; i++) {
+				vector[i] = 0;
 				for (Grain grain : grainArray) if (grain.isBusy) vector[i] += grain.getSample();
 				vector[i] *= amplitude * envelopeLevel;
 				updateGrainArray();
@@ -112,6 +119,16 @@ public class GranularSynthesizer extends PolyphonicSynthesizer {
 				}
 			}
 			return vector;
+		}
+		
+		void updateGrainArray() {
+			igtCounter++;
+			if (igtCounter >= interGrainTime) {
+				igtCounter -= interGrainTime;
+				grainArray.get(grainArrayCounter).isBusy = true;
+				grainArrayCounter++;
+				if (grainArrayCounter >= grainCount) grainArrayCounter = 0;
+			}
 		}
 		
 	}

@@ -4,10 +4,12 @@ public class AdditiveTriangle extends AdditiveWavetable {
 
 	public AdditiveTriangle() {
 		super(4096, 10);
+		fillTable();
 	}
 	
 	public AdditiveTriangle(int tableSize, int harmonicCount) {
 		super(tableSize, harmonicCount);
+		fillTable();
 	}
 
 	@Override

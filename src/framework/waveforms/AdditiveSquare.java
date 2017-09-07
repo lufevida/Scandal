@@ -4,10 +4,12 @@ public class AdditiveSquare extends AdditiveWavetable {
 
 	public AdditiveSquare() {
 		super(4096, 10);
+		fillTable();
 	}
 	
 	public AdditiveSquare(int tableSize, int harmonicCount) {
 		super(tableSize, harmonicCount);
+		fillTable();
 	}
 
 	@Override

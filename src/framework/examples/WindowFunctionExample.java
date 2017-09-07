@@ -1,11 +1,11 @@
 package framework.examples;
 
-import framework.generators.HannWindow;
+import framework.generators.WindowFunction;
 
 public class WindowFunctionExample {
 
 	public static void main(String[] args) {
-		new HannWindow(500).plot();
+		new WindowFunction(500).plot();
 	}
 
 }

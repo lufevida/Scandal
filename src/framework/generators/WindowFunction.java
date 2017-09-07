@@ -1,8 +1,10 @@
 package framework.generators;
 
-public class HannWindow extends Function {
+public class WindowFunction extends Function {
+	
+	// TODO add more windows
 
-	public HannWindow(int length) {
+	public WindowFunction(int length) {
 		super(length);
 	}
 

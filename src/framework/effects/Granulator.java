@@ -2,7 +2,7 @@ package framework.effects;
 
 import java.util.ArrayList;
 
-import framework.generators.HannWindow;
+import framework.generators.WindowFunction;
 import framework.utilities.Settings;
 
 public class Granulator {
@@ -15,7 +15,7 @@ public class Granulator {
 	private final int grainCount = 128;
 	private final int windowSize = 8192;
 	private double windowIncrement = (double) windowSize / grainLength;
-	private final float[] window = new HannWindow(windowSize).get();
+	private final float[] window = new WindowFunction(windowSize).get();
 	private final float[] captureBuffer = new float[8192];
 	private int captureBufferIndex = 0;
 	private final ArrayList<Grain> grainArray = new ArrayList<>();
@@ -96,7 +96,7 @@ public class Granulator {
 		float grainCount = (buffer.length - grainLength) / interGrainTime;
 		float bufferIndex;
 		float grainIndex;
-		float[] window = new HannWindow((int) grainLength).get();
+		float[] window = new WindowFunction((int) grainLength).get();
 		for (int i = 0; i < grainCount; i++) {
 			bufferIndex = i * interGrainTime;
 			grainIndex = position + (((float) Math.random() * 2 - 1) * deviation);

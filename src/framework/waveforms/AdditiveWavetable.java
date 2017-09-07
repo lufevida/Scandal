@@ -7,7 +7,6 @@ public abstract class AdditiveWavetable extends Wavetable {
 	AdditiveWavetable(int tableSize, int harmonicCount) {
 		super(tableSize);
 		this.harmonicCount = harmonicCount;
-		fillTable();
 	}
 
 }

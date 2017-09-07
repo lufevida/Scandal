@@ -4,10 +4,12 @@ public class AdditiveSawtooth extends AdditiveWavetable {
 
 	public AdditiveSawtooth() {
 		super(4096, 10);
+		fillTable();
 	}
 	
 	public AdditiveSawtooth(int tableSize, int harmonicCount) {
 		super(tableSize, harmonicCount);
+		fillTable();
 	}
 
 	@Override
