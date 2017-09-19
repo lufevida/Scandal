@@ -160,7 +160,9 @@ public class PolyphonicSynthesizer extends MidiKeyboardController implements Rea
 	public void handleModulationWheelChange(int value, int channel) {}
 
 	@Override
-	public void handlePitchBend(int lsb, int msb, int channel) {}
+	public void handlePitchBend(int lsb, int msb, int channel) {
+		System.out.println(scale(msb * 128 + lsb, 0, 16383, -1, 1));
+	}
 
 	@Override
 	public void handleControlChange(int controller, int value, int channel) {}

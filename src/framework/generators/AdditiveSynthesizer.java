@@ -6,19 +6,42 @@ import framework.effects.Granulator;
 import framework.waveforms.Wavetable;
 
 public class AdditiveSynthesizer extends PolyphonicSynthesizer {
+	
+	private static interface Lambda {
+		float apply(float x);
+	}
+	
+	private static float inverseSquare(float x) {
+		return 1 / (x * x);
+	}
 
-	public static enum Series { LYMAN, BALMER, PASCHEN, BRACKETT, PFUND, HUMPHREYS }
+	public static enum Series {
+		LYMAN(x -> 1 - inverseSquare(x + 1)),
+		BALMER(x -> 4 * (inverseSquare(2) - inverseSquare(x + 2))),
+		PASCHEN(x -> 9 * (inverseSquare(3) - inverseSquare(x + 3))),
+		BRACKETT(x -> 16 * (inverseSquare(4) - inverseSquare(x + 4))),
+		PFUND(x -> 25 * (inverseSquare(5) - inverseSquare(x + 5))),
+		HUMPHREYS(x -> 36 * (inverseSquare(6) - inverseSquare(x + 6))),
+		BUZZ(x -> x + 1),
+		BELL(x -> (x + 1) + (float) Math.random()),
+		RANDOM(x -> (x + 1) * (float) Math.random());
+		
+		Lambda lambda;
+		
+		Series(Lambda lambda) {
+			this.lambda = lambda;
+		}
+	}
+	
 	private Series series;
 	private int harmonicCount;
-	float n1;
-	float n2;
 	private final Granulator granulator = new Granulator();
 	public float granulatorMix = 1;
 	
 	public AdditiveSynthesizer(int controller, Wavetable baseWavetable) throws Exception {
 		super(controller, baseWavetable);
-		this.series = Series.LYMAN;
-		this.harmonicCount = 4;
+		this.series = Series.BUZZ;
+		this.harmonicCount = 16;
 		attackSamples = 882;
 		decaySamples = 2205;
 		sustainLevel = 0.5f;
@@ -33,12 +56,8 @@ public class AdditiveSynthesizer extends PolyphonicSynthesizer {
 		for (MidiNote note : midiNotes) ((AdditiveNote) note).init();
 	}
 	
-	public void setSeries(Series series) {
+	public void setSeries(Series series, int count) {
 		this.series = series;
-		for (MidiNote note : midiNotes) ((AdditiveNote) note).reset();
-	}
-	
-	public void setHarmonicCount(int count) {
 		harmonicCount = count;
 		for (MidiNote note : midiNotes) ((AdditiveNote) note).reset();
 	}
@@ -58,20 +77,16 @@ public class AdditiveSynthesizer extends PolyphonicSynthesizer {
 		}
 		
 		void init() {
-			n1 = series.ordinal() + 1.0f;
-			for (int i = 0; i < harmonicCount; i++) {
-				n2 = n1 + i + 1.0f;
-				phases.add(i, 0.0f);
-				increments.add(i, n1 * n1 * phaseIncrement * (1.0f / (n1 * n1) - 1.0f / (n2 * n2)));
+			for (int i = 1; i <= harmonicCount; i++) {
+				phases.add(i - 1, 0.0f);
+				increments.add(i - 1, phaseIncrement * series.lambda.apply(i));
 			}
 		}
 		
 		void reset() {
-			n1 = series.ordinal() + 1.0f;
-			for (int i = 0; i < harmonicCount; i++) {
-				n2 = n1 + i + 1.0f;
-				phases.set(i, 0.0f);
-				increments.set(i, n1 * n1 * phaseIncrement * (1.0f / (n1 * n1) - 1.0f / (n2 * n2)));
+			for (int i = 1; i <= harmonicCount; i++) {
+				phases.set(i - 1, 0.0f);
+				increments.set(i - 1, phaseIncrement * series.lambda.apply(i));
 			}
 		}
 		

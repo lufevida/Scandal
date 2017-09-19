@@ -1,30 +1,30 @@
 package framework.effects;
 
-import framework.utilities.Complex;
+import framework.utilities.ComplexNumber;
 
 public class BiquadCustom extends Biquad {
 
-	private Complex pole;
-	private Complex zero;
+	private ComplexNumber pole;
+	private ComplexNumber zero;
 
-	public BiquadCustom(Complex pole) {
+	public BiquadCustom(ComplexNumber pole) {
 		this.pole = pole;
-		this.zero = new Complex(1, 0).divideBy(pole);
+		this.zero = new ComplexNumber(1, 0).divideBy(pole);
 		update(Float.NaN, Float.NaN);
 	}
 
-	public BiquadCustom(Complex pole, Complex zero) {
+	public BiquadCustom(ComplexNumber pole, ComplexNumber zero) {
 		this.pole = pole;
 		this.zero = zero;
 		update(Float.NaN, Float.NaN);
 	}
 	
-	public void setPole(Complex pole) {
+	public void setPole(ComplexNumber pole) {
 		this.pole = pole;
 		update(Float.NaN, Float.NaN);
 	}
 	
-	public void setZero(Complex zero) {
+	public void setZero(ComplexNumber zero) {
 		this.zero = zero;
 		update(Float.NaN, Float.NaN);
 	}

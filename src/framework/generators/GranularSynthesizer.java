@@ -65,7 +65,8 @@ public class GranularSynthesizer extends PolyphonicSynthesizer {
 			void reset() {
 				isBusy = false;
 				grainPhase = playbackPosition + (((float) Math.random() * 2 - 1) * playbackDeviation);
-				if (grainPhase >= baseWavetable.tableSize) grainPhase -= baseWavetable.tableSize;
+				while (grainPhase >= baseWavetable.tableSize) grainPhase -= baseWavetable.tableSize;
+				if (grainPhase < 0) grainPhase += baseWavetable.tableSize;
 				windowIndex = 0;
 				speedCorrection = frequency / baseFrequency;
 			}
@@ -108,26 +109,40 @@ public class GranularSynthesizer extends PolyphonicSynthesizer {
 			for (int i = 0; i < vector.length; i++) {
 				vector[i] = 0;
 				for (Grain grain : grainArray) if (grain.isBusy) vector[i] += grain.getSample();
-				vector[i] *= amplitude * envelopeLevel;
+				vector[i] *= envelopeLevel;
 				updateGrainArray();
 				updateEnvelope();
-				if (envelopeStage == ADSR.OFF) {
-					for (Grain grain : grainArray) grain.reset();
-					grainArray.get(0).isBusy = true;
-					igtCounter = 0;
-					grainArrayCounter = 0;
-				}
+			}
+			if (envelopeStage == ADSR.OFF) {
+				for (Grain grain : grainArray) if (grain.isBusy) grain.reset();
+				grainArray.get(0).isBusy = true;
+				igtCounter = 0;
+				grainArrayCounter = 0;
 			}
 			return vector;
+		}
+		
+		@Override
+		void updateVelocity(int velocity) {
+			if (velocity != 0) {
+				amplitude = (float) velocity / 127;
+				envelopeStage = ADSR.ATTACK;
+				envelopeSamples = attackSamples;
+				envelopeSlope = (amplitude - envelopeLevel) / attackSamples;
+			} else {
+				envelopeStage = ADSR.RELEASE;
+				envelopeSamples = releaseSamples;
+				envelopeSlope = envelopeLevel / releaseSamples;
+			}
 		}
 		
 		void updateGrainArray() {
 			igtCounter++;
 			if (igtCounter >= interGrainTime) {
-				igtCounter -= interGrainTime;
-				grainArray.get(grainArrayCounter).isBusy = true;
+				igtCounter = 0;
 				grainArrayCounter++;
 				if (grainArrayCounter >= grainCount) grainArrayCounter = 0;
+				grainArray.get(grainArrayCounter).isBusy = true;
 			}
 		}
 		

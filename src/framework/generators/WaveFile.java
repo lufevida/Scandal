@@ -10,22 +10,16 @@ import framework.utilities.PlotUtility;
 public class WaveFile {
 	
 	public final Path path;
-	private final int formatChunkSize;
 	public final int numberOfChannels;
 	public final int samplingRate;
 	public final int bitDepth;
-	private final int dataStartIndex;
+	private int dataStartIndex;
 	private final int dataLength;
 	private final float[] interleavedBuffer;
 	
 	public WaveFile(String name) throws Exception {
 		this.path = FileSystems.getDefault().getPath(name);
 		byte[] byteArray = Files.readAllBytes(path);
-		this.formatChunkSize =
-				(byteArray[16] & 0xff) |
-				(byteArray[17] & 0xff) << 8 |
-				(byteArray[18] & 0xff) << 16 |
-				byteArray[19] << 24;
 		this.numberOfChannels = (byteArray[22] & 0xff) | byteArray[23] << 8;
 		if (numberOfChannels > 2) throw new Exception("Only stereo and mono files are supported.");
 		this.samplingRate =
@@ -34,8 +28,15 @@ public class WaveFile {
 				(byteArray[26] & 0xff) << 16 |
 				byteArray[27] << 24;
 		this.bitDepth = (byteArray[34] & 0xff) | byteArray[35] << 8;
-		if (bitDepth != 16) throw new Exception("Only 16-bit files are supported.");
-		this.dataStartIndex = 28 + formatChunkSize;
+		if (bitDepth != 16 && bitDepth != 24) throw new Exception("Only 16 and 24-bit files are supported.");
+		for (int i = 0; i < 100; i++) {
+			boolean d = (char) byteArray[i] == 'd';
+			boolean a1 = (char) byteArray[i + 1] == 'a';
+			boolean t = (char) byteArray[i + 2] == 't';
+			boolean a2 = (char) byteArray[i + 3] == 'a';
+			if (d && a1 && t && a2) this.dataStartIndex = i + 8;	
+		}
+		if (dataStartIndex == 0) throw new Exception("Invalid wave file.");
 		this.dataLength =
 				(byteArray[dataStartIndex - 4] & 0xff) |
 				(byteArray[dataStartIndex - 3] & 0xff) << 8 |
@@ -43,10 +44,18 @@ public class WaveFile {
 				byteArray[dataStartIndex - 1] << 24;
 		// fill interleaved buffer
 		interleavedBuffer = new float[dataLength / 2];
-		for (int i = 0, j = dataStartIndex; j < dataStartIndex + dataLength; i++, j += 2) {
-			// This is little endian.
-			interleavedBuffer[i] = (byteArray[j] & 0xff) | byteArray[j + 1] << 8;
-			interleavedBuffer[i] /= Short.MAX_VALUE;
+		if (bitDepth == 16) {
+			for (int i = 0, j = dataStartIndex; j < dataStartIndex + dataLength; i++, j += 2) {
+				// This is little endian.
+				interleavedBuffer[i] = (byteArray[j] & 0xff) | byteArray[j + 1] << 8;
+				interleavedBuffer[i] /= Short.MAX_VALUE;
+			}
+		}
+		if (bitDepth == 24) {
+			for (int i = 0, j = dataStartIndex; j < dataStartIndex + dataLength; i++, j += 3) {
+				interleavedBuffer[i] = (byteArray[j] & 0xff) | (byteArray[j + 1] & 0xff) << 8 | byteArray[j + 2] << 16;
+				interleavedBuffer[i] /= 0x7FFFFF;
+			}
 		}
 	}
 	
@@ -86,7 +95,7 @@ public class WaveFile {
 			normal[i] = interleavedBuffer[i] / (max + 0.1f);
 		return normal;
 	}
-	
+
 	public float[] get(int channels) {
 		if (channels == numberOfChannels) return interleavedBuffer;
 		else if (channels == 2) {
@@ -103,10 +112,10 @@ public class WaveFile {
 		new PlotUtility(path.getFileName().toString(), getMonoSum(), size);
 	}
 	
-	public void exportText(String path, int samples) throws Exception {
+	public void exportText(String path, String arrayName, int samples) throws Exception {
 		PrintWriter out = new PrintWriter(path);
 		float[] array = getMonoSum();
-		out.print("float array[" + samples + "] = {");
+		out.print("float " + arrayName + "[" + samples + "] = {");
 		for (int i = 0; i < samples; i++) {
 			if (i < array.length) out.print(array[i] + ", ");
 			else out.print("0.0f, ");

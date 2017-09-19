@@ -7,9 +7,11 @@ import framework.generators.WaveFile;
 public class SpeedExample {
 
 	public static void main(String[] args) throws Exception {
-		float[] lisa = new WaveFile("doc/monoLisa.wav").getMonoSum();
-		float[] speed = new Speed().process(lisa, 1.2f);
-		new AudioTask().playMono(speed);
+		WaveFile lisa = new WaveFile("/Users/luisfelipe/Desktop/Audio Units/Samples/StringsPlucked/Harp/HarpC4.wav");
+		lisa.printInfo();
+		float[] speed = new Speed().process(lisa.getMonoSum(), 1.2);
+		AudioTask task = new AudioTask();
+		task.playMono(speed);
 	}
 
 }
