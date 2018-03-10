@@ -35,12 +35,11 @@ public class AdditiveSynthesizer extends PolyphonicSynthesizer {
 	
 	private Series series;
 	private int harmonicCount;
-	private final Granulator granulator = new Granulator();
-	public float granulatorMix = 1;
+	public final Granulator granulator = new Granulator();
 	
 	public AdditiveSynthesizer(int controller, Wavetable baseWavetable) throws Exception {
 		super(controller, baseWavetable);
-		this.series = Series.BUZZ;
+		this.series = Series.BELL;
 		this.harmonicCount = 16;
 		attackSamples = 882;
 		decaySamples = 2205;
@@ -115,12 +114,12 @@ public class AdditiveSynthesizer extends PolyphonicSynthesizer {
 	
 	@Override
 	public void processMasterEffects() {
-		mixVector = granulator.processVector(mixVector, granulatorMix);
+		mixVector = granulator.processVector(mixVector);
 	}
 	
 	@Override
 	public void handleModulationWheelChange(int value, int channel) {
-		granulatorMix = (float) value / 127.0f;
+		granulator.mix = (float) value / 127.0f;
 	}
 
 }

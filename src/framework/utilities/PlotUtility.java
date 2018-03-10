@@ -1,37 +1,49 @@
 package framework.utilities;
 
-import javax.swing.JFrame;
+import javafx.application.Platform;
+import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.stage.Stage;
 
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.xy.XYSeries;
-import org.jfree.data.xy.XYSeriesCollection;
-
-public final class PlotUtility extends JFrame {
-
-	private static final long serialVersionUID = 1L;
+public class PlotUtility {
+	
+	private final String title;
+	private final float[] array;
 
 	public PlotUtility(String title, float[] array) {
-		plot(title, array);
+		this.title = title;
+		this.array = array;
+		getScene();
 	}
 
 	public PlotUtility(String title, float[] array, int size) {
-		float[] data = new float[size];
+		this.title = title;
+		this.array = new float[size];
 		float increment = (float) array.length / size;
-		for (int i = 0; i < size; i++) data[i] = array[(int) (i * increment)];
-		plot(title, data);
+		for (int i = 0; i < size; i++) this.array[i] = array[(int) (i * increment)];
+		getScene();
 	}
-
-	private void plot(String title, float[] array) {
-		final XYSeries series = new XYSeries(title);
-		for (int i = 0; i < array.length; i++) series.add(i, array[i]);
-		final JFreeChart chart = ChartFactory.createXYLineChart("", "", "", new XYSeriesCollection(series));
-		setContentPane(new ChartPanel(chart));
-		pack();
-		setDefaultCloseOperation(3); // exit on close
-		setLocationRelativeTo(null); // center on screen
-		setVisible(true);
+	
+	private void getScene() {
+		XYChart.Series<Number, Number> series = new XYChart.Series<Number, Number>();		
+		for (int i = 0; i < array.length; i++) series.getData().add(new XYChart.Data<Number, Number>(i, array[i]));
+		series.setName(title);
+		final NumberAxis xAxis = new NumberAxis();
+		final NumberAxis yAxis = new NumberAxis();
+		//xAxis.setLabel("x-Axis Label");
+		//yAxis.setLabel("y-Axis Label");
+		final LineChart<Number,Number> lineChart = new LineChart<Number,Number>(xAxis,yAxis);
+		lineChart.getData().add(series);
+		lineChart.setCreateSymbols(false);
+		//lineChart.setTitle(title);
+		Platform.runLater(() -> {
+			Stage stage = new Stage();
+            stage.setScene(new Scene(lineChart, 800, 600));
+            stage.setTitle(title);
+            stage.show();
+		});
 	}
 
 }

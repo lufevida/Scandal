@@ -1,10 +1,11 @@
 package framework.effects;
 
+import framework.generators.AudioTask;
+import framework.generators.WaveFile;
+
 public class Speed {
-	
-	// TODO implement variable parameters
-	
-	public float[] process(float[] buffer, double speed) {
+
+	public float[] process(float[] buffer, float speed) {
 		if (speed == 0 || speed == 1) return buffer;
 		if (speed < 0) speed = -speed;
 		int samples = (int) (buffer.length / speed);
@@ -23,6 +24,13 @@ public class Speed {
 			if (speedIndex >= buffer.length) speedIndex -= buffer.length;
 		}
 		return processedBuffer;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		WaveFile lisa = new WaveFile("doc/monoLisa.wav");
+		lisa.printInfo();
+		float[] speed = new Speed().process(lisa.getMonoSum(), 1.2f);
+		new AudioTask().playMono(speed);
 	}
 
 }

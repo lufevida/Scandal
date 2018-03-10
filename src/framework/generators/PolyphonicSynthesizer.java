@@ -21,6 +21,7 @@ public class PolyphonicSynthesizer extends MidiKeyboardController implements Rea
 	private float[] noteVector;
 	public float[] mixVector = new float[2 * Settings.vectorSize];
 	private final ByteBuffer buffer = ByteBuffer.allocate(2 * Settings.vectorSize * Settings.bitDepth / 8);
+	public final AudioFlow flow = new AudioFlow(this, Settings.stereo);
 
 	public static enum ADSR { ATTACK, DECAY, SUSTAIN, RELEASE, OFF }
 
@@ -106,35 +107,6 @@ public class PolyphonicSynthesizer extends MidiKeyboardController implements Rea
 	}
 
 	@Override
-	public AudioFlow start() {
-		AudioFlow flow = new AudioFlow(this, Settings.stereo);
-		new Thread(flow).start();
-		return flow;
-	}
-
-	@Override
-	public ByteBuffer getVector() {
-		Arrays.fill(mixVector, 0);
-		buffer.clear();
-		for (MidiNote note : midiNotes) {
-			if (note.envelopeStage != ADSR.OFF) {
-				noteVector = note.get();
-				for (int i = 0, j = 0; i < mixVector.length; i += 2, j++) {
-					mixVector[i] += masterLeft * noteVector[j];
-					mixVector[i + 1] += masterRight * noteVector[j];
-				}
-			}
-		}
-		processMasterEffects();
-		for (int i = 0; i < mixVector.length; i++) {
-			buffer.putShort((short) (masterVolume * mixVector[i] * Short.MAX_VALUE));
-		}
-		return buffer;
-	}
-
-	public void processMasterEffects() {}
-
-	@Override
 	public void handleNoteOn(int note, int velocity, int channel) {
 		midiNotes.get(note).updateVelocity(velocity);
 	}
@@ -175,5 +147,40 @@ public class PolyphonicSynthesizer extends MidiKeyboardController implements Rea
 
 	@Override
 	public void handleChannelAftertouch(int pressure, int channel) {}
+	
+	@Override
+	public void startFlow() {
+		new Thread(flow).start();
+	}
+
+	@Override
+	public void stopFlow() {
+		flow.quit();
+		close();
+		System.exit(0);
+	}
+
+	@Override
+	public ByteBuffer getVector() {
+		Arrays.fill(mixVector, 0);
+		buffer.clear();
+		for (MidiNote note : midiNotes) {
+			if (note.envelopeStage != ADSR.OFF) {
+				noteVector = note.get();
+				for (int i = 0, j = 0; i < mixVector.length; i += 2, j++) {
+					mixVector[i] += masterLeft * noteVector[j];
+					mixVector[i + 1] += masterRight * noteVector[j];
+				}
+			}
+		}
+		processMasterEffects();
+		for (int i = 0; i < mixVector.length; i++) {
+			buffer.putShort((short) (masterVolume * mixVector[i] * Short.MAX_VALUE));
+		}
+		return buffer;
+	}
+
+	@Override
+	public void processMasterEffects() {}
 
 }

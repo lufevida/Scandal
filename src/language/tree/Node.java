@@ -1,13 +1,29 @@
 package language.tree;
 
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+
+import language.compiler.SymbolTable;
 import language.compiler.Token;
 
-public abstract class Node {
+public abstract class Node implements Opcodes {
 	
-	public static enum Type { INT, FLOAT, BOOL, STRING, ARRAY, FORMAT, FILTER, WAVEFORM }
+	public static enum Types {
+		INT,
+		FLOAT,
+		BOOL,
+		STRING,
+		ARRAY,
+		FILTER,
+		WAVEFORM,
+		FLOAT_FLOAT,
+		FLOAT_ARRAY,
+		ARRAY_FLOAT,
+		ARRAY_ARRAY
+	}
 
 	public final Token firstToken;
-	public Type type;
+	public Types type;
 	public String jvmType;
 
 	public Node(Token firstToken) {
@@ -15,16 +31,31 @@ public abstract class Node {
 		this.type = getType();
 	}
 	
-	public Type getType() {
+	public boolean isLambda() {
+		return
+				type == Types.FLOAT_FLOAT ||
+				type == Types.FLOAT_ARRAY ||
+				type == Types.ARRAY_FLOAT ||
+				type == Types.ARRAY_ARRAY;
+	}
+
+	public static Types getLambdaType(Types inputType, Types returnType) {
+		if (inputType == Types.FLOAT && returnType == Types.FLOAT) return Types.FLOAT_FLOAT;
+		if (inputType == Types.FLOAT && returnType == Types.ARRAY) return Types.FLOAT_ARRAY;
+		if (inputType == Types.ARRAY && returnType == Types.FLOAT) return Types.ARRAY_FLOAT;
+		if (inputType == Types.ARRAY && returnType == Types.ARRAY) return Types.ARRAY_ARRAY;
+		return null;
+	}
+	
+	public Types getType() {
 		switch (firstToken.kind) {
-		case KW_INT: return Type.INT;
-		case KW_FLOAT: return Type.FLOAT;
-		case KW_BOOL: return Type.BOOL;
-		case KW_STRING: return Type.STRING;
-		case KW_ARRAY: return Type.ARRAY;
-		case KW_FORMAT: return Type.FORMAT;
-		case KW_FILTER: return Type.FILTER;
-		case KW_WAVEFORM: return Type.WAVEFORM;
+		case KW_INT: return Types.INT;
+		case KW_FLOAT: return Types.FLOAT;
+		case KW_BOOL: return Types.BOOL;
+		case KW_STRING: return Types.STRING;
+		case KW_ARRAY: return Types.ARRAY;
+		case KW_FILTER: return Types.FILTER;
+		case KW_WAVEFORM: return Types.WAVEFORM;
 		default: return null;
 		}
 	}
@@ -36,13 +67,14 @@ public abstract class Node {
 		case KW_BOOL: return "Z";
 		case KW_STRING: return "Ljava/lang/String;";
 		case KW_ARRAY: return "[F";
-		case KW_FORMAT: return "I";
 		case KW_FILTER: return "I";
 		case KW_WAVEFORM: return "I";
 		default: return null;
 		}
 	}
 
-	public abstract Object visit(NodeVisitor visitor, Object arg) throws Exception;
+	public abstract void decorate(SymbolTable symtab) throws Exception;
+	
+	public abstract void generate(MethodVisitor mv, SymbolTable symtab) throws Exception;
 
 }

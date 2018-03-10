@@ -2,22 +2,26 @@ package framework.effects;
 
 import java.util.ArrayList;
 
+import framework.generators.AudioTask;
+import framework.generators.WaveFile;
 import framework.generators.WindowFunction;
 import framework.utilities.Settings;
 
 public class Granulator {
 
-	public int playbackPosition = 0;
-	public int playbackDeviation = 512;
+	public float mix = 1;
+	private int playbackPosition = 0;
+	private int playbackDeviation = 512;
 	public float playbackSpeed = 1;
 	private int grainLength = 4410;
 	public int interGrainTime = 44;
 	private final int grainCount = 128;
+	public int bufferLength = Settings.samplingRate * 2;
+	private final float[] captureBuffer = new float[bufferLength];
+	private int captureBufferIndex = 0;
 	private final int windowSize = 8192;
 	private double windowIncrement = (double) windowSize / grainLength;
 	private final float[] window = new WindowFunction(windowSize).get();
-	private final float[] captureBuffer = new float[8192];
-	private int captureBufferIndex = 0;
 	private final ArrayList<Grain> grainArray = new ArrayList<>();
 	private int igtCounter = 0;
 	private int grainArrayCounter = 0;
@@ -37,14 +41,16 @@ public class Granulator {
 		
 		void reset() {
 			isBusy = false;
-			index = playbackPosition + ((float) Math.random() * playbackDeviation);
 			windowIndex = 0;
+			index = playbackPosition + ((float) Math.random() * playbackDeviation);
+			if (index >= bufferLength) index -= bufferLength;
+            if (index < 0) index += bufferLength;
 		}
 		
 		float getSample() {
 			sample = captureBuffer[(int) index] * window[(int) windowIndex] * 0.1f;
 			index += playbackSpeed;
-			if (index >= captureBuffer.length) index -= captureBuffer.length;
+			if (index >= bufferLength) index -= bufferLength;
 			windowIndex += windowIncrement;
 			if (windowIndex >= windowSize) reset();
 			return sample;
@@ -55,6 +61,16 @@ public class Granulator {
 	public Granulator() {
 		for (int i = 0; i < grainCount; i++) grainArray.add(i, new Grain());
 		grainArray.get(0).isBusy = true;
+	}
+	
+	public void setPosition(int position) {
+		this.playbackPosition = position;
+		for (Grain grain : grainArray) if (!grain.isBusy) grain.reset();
+	}
+	
+	public void setDeviation(int deviation) {
+		this.playbackDeviation = deviation;
+		for (Grain grain : grainArray) if (!grain.isBusy) grain.reset();
 	}
 	
 	public void setGrainLength(int grainLength) {
@@ -72,10 +88,10 @@ public class Granulator {
 		}
 	}
 	
-	public float[] processVector(float[] buffer, float mix) {
+	public float[] processVector(float[] buffer) {
 		for (int i = 0; i < buffer.length; i++) {
 			captureBuffer[captureBufferIndex++] = buffer[i];
-			if (captureBufferIndex >= captureBuffer.length) captureBufferIndex = 0; 
+			if (captureBufferIndex >= bufferLength) captureBufferIndex = 0; 
 			grainSample = 0;
 			for (Grain grain : grainArray) if (grain.isBusy) grainSample += grain.getSample();
 			buffer[i] = (1.0f - mix) * buffer[i] + mix * grainSample;
@@ -108,6 +124,17 @@ public class Granulator {
 			}
 		}
 		return processedBuffer;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		float[] lisa = new WaveFile("doc/monoLisa.wav").getMonoSum();
+		float position = 5000;
+		float deviation = 50;
+		float speed = 1.0f;
+		float grainLength = 500;
+		float interGrainTime = 100f;
+		float[] granulatedLisa = new Granulator().process(lisa, position, deviation, speed, grainLength, interGrainTime);
+		new AudioTask().playMono(new Gain().process(granulatedLisa, 0.2f));
 	}
 
 }

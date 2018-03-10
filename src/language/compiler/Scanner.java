@@ -21,6 +21,11 @@ public class Scanner {
 		if (tokenNum >= tokens.size()) return null;
 		return tokens.get(tokenNum++);
 	}
+	
+	public Kind peek() {
+		if (tokenNum >= tokens.size()) return null;
+		return tokens.get(tokenNum - 1).kind;
+	}
 
 	private Token matchKeyword(String substring, int startPos, int endPos, int lineNum, int lineNumPos) {
 		Token token;
@@ -66,36 +71,6 @@ public class Scanner {
 		} break;
 		case "play": {
 			token = new Token(Kind.KW_PLAY, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "mono": {
-			token = new Token(Kind.KW_MONO, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "stereo": {
-			token = new Token(Kind.KW_STEREO, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "format": {
-			token = new Token(Kind.KW_FORMAT, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "reverse": {
-			token = new Token(Kind.KW_REVERSE, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "speed": {
-			token = new Token(Kind.KW_SPEED, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "loop": {
-			token = new Token(Kind.KW_LOOP, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "splice": {
-			token = new Token(Kind.KW_SPLICE, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "delay": {
-			token = new Token(Kind.KW_DELAY, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "gain": {
-			token = new Token(Kind.KW_GAIN, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "line": {
-			token = new Token(Kind.KW_LINE, startPos, endPos, lineNum, lineNumPos);
 		} break;
 		case "filter": {
 			token = new Token(Kind.KW_FILTER, startPos, endPos, lineNum, lineNumPos);
@@ -163,8 +138,20 @@ public class Scanner {
 		case "track": {
 			token = new Token(Kind.KW_TRACK, startPos, endPos, lineNum, lineNumPos);
 		} break;
-		case "mix": {
-			token = new Token(Kind.KW_MIX, startPos, endPos, lineNum, lineNumPos);
+		case "return": {
+			token = new Token(Kind.KW_RETURN, startPos, endPos, lineNum, lineNumPos);
+		} break;
+		case "size": {
+			token = new Token(Kind.KW_SIZE, startPos, endPos, lineNum, lineNumPos);
+		} break;
+		case "new": {
+			token = new Token(Kind.KW_NEW, startPos, endPos, lineNum, lineNumPos);
+		} break;
+		case "import": {
+			token = new Token(Kind.KW_IMPORT, startPos, endPos, lineNum, lineNumPos);
+		} break;
+		case "floor": {
+			token = new Token(Kind.KW_FLOOR, startPos, endPos, lineNum, lineNumPos);
 		} break;
 		default: {
 			token = new Token(Kind.IDENT, substring, startPos, endPos, lineNum, lineNumPos);
@@ -295,6 +282,12 @@ public class Scanner {
 				} break;
 				case ']': {
 					Token token = new Token(Kind.RBRACKET, startPos, 1, lineNum, lineNumPos);
+					tokens.add(token);
+					pos++;
+					lineNumPos++;
+				} break;
+				case ':': {
+					Token token = new Token(Kind.COLON, startPos, 1, lineNum, lineNumPos);
 					tokens.add(token);
 					pos++;
 					lineNumPos++;

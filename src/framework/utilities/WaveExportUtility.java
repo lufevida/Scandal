@@ -2,13 +2,16 @@ package framework.utilities;
 
 import java.io.File;
 
+import framework.effects.Loop;
 import framework.effects.Speed;
+import framework.effects.Splice;
 import framework.generators.AudioTask;
 import framework.generators.WaveFile;
 
 public class WaveExportUtility {
 	
-	private static final String folderPath = "/Users/luisfelipe/Desktop/Audio Units/Samples/Percussion/Piano";
+	private static final String folderPath = "/Users/luisfelipe/Downloads";
+	private static final String exportPath = "/Users/luisfelipe/Downloads/bounce/";
 	private static final File folder = new File(folderPath);
 	private static File[] fileList = folder.listFiles();
 	private static WaveFile file;
@@ -17,11 +20,28 @@ public class WaveExportUtility {
 
 	public static void main(String[] args) throws Exception {
 		//generateAdjacentNotes(-2);
-		generateAdjacentNotes(-1);
-		generateAdjacentNotes(1);
+		//generateAdjacentNotes(-1);
+		//generateAdjacentNotes(1);
 		//generateAdjacentNotes(2);
-		fileList = folder.listFiles();
-		exportAsText();
+		//rename();
+		normalizeAndExport();
+	}
+	
+	static void normalizeAndExport() throws Exception {
+		AudioTask task = new AudioTask();
+		for (int i = 0; i < fileList.length; i++) {
+			if (fileList[i].isFile() && fileList[i].getName().endsWith("wav")) {
+				filePath = folderPath + "/" + fileList[i].getName();
+				file = new WaveFile(filePath);
+				float[] samples = file.getMonoSum();
+				samples = new Loop().process(samples, 0 * 44100, 4 * 44100, 1);
+				Splice s = new Splice();
+				//samples = Functions.normalize(samples);
+				samples = s.fadeIn(samples, 2205);
+				samples = s.fadeOut(samples, 2205);
+				task.export(samples, exportPath + fileList[i].getName(), 1);
+			}
+		}
 	}
 	
 	static void exportAsText() throws Exception {
@@ -45,10 +65,20 @@ public class WaveExportUtility {
 		for (int i = 0; i < fileList.length; i++) {
 			if (fileList[i].isFile() && fileList[i].getName().endsWith("wav")) {
 				file = new WaveFile(folderPath + "/" + fileList[i].getName());
-				speed = new Speed().process(file.getMonoSum(), Math.pow(2, (double) correction / 12));
+				speed = new Speed().process(file.getMonoSum(), (float) Math.pow(2, correction / 12.0));
 				fileName = fileList[i].getName().substring(0, fileList[i].getName().lastIndexOf('.'));
 				fileName = nameToNumber(fileName, correction) + ".wav";
 				task.export(speed, folderPath + "/" + fileName, 1);
+			}
+		}
+	}
+	
+	static void rename() {
+		for (int i = 0; i < fileList.length; i++) {
+			if (fileList[i].isFile() && fileList[i].getName().endsWith("wav")) {
+				fileName = fileList[i].getName().substring(0, fileList[i].getName().lastIndexOf('.'));
+				fileName = nameToNumber(fileName, 0) + ".wav";
+				fileList[i].renameTo(new File(folderPath + fileName));
 			}
 		}
 	}

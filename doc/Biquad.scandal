@@ -1,5 +1,5 @@
 format channels = mono
-array lisa = read("monoLisa.wav", channels)
+array lisa = read("doc/monoLisa.wav", channels)
 int cutoff = 1000
 float resonance = 1.0
 /* allpass, bandpass, bandstop, lowpass, hipass, lowshelf, hishelf, peaking */

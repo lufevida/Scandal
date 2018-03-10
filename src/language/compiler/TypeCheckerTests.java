@@ -1,14 +1,33 @@
 package language.compiler;
 
-import static language.tree.Node.Type.*;
+import static language.tree.Node.Types.BOOL;
+import static language.tree.Node.Types.FLOAT;
+import static language.tree.Node.Types.FLOAT_FLOAT;
+import static language.tree.Node.Types.INT;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import language.tree.Expression;
+import language.tree.AssignmentDeclaration;
 import language.tree.Program;
+import language.tree.expression.Expression;
+import language.tree.expression.FuncLitExpression;
 
 public class TypeCheckerTests {
+	
+	@Test
+	public void testCurrying() throws Exception {
+		String input = "float:float adder = float x -> float y -> x + y";
+		Scanner scanner = new Scanner(input);
+		scanner.scan();
+		AssignmentDeclaration dec = (AssignmentDeclaration) new Parser(scanner).declaration();
+		FuncLitExpression expr = (FuncLitExpression) dec.expression;
+		expr.decorate(null);
+		dec.decorate(null);
+		assertEquals(FLOAT_FLOAT, dec.type);
+		assertEquals(FLOAT_FLOAT, expr.type);
+		assertEquals(FLOAT, expr.returnExpression.type);
+	}
 	
 	@Test
 	public void testBinaryExpression1() throws Exception {
@@ -17,8 +36,7 @@ public class TypeCheckerTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Expression expression = parser.expression();
-		TypeChecker checker = new TypeChecker();
-		expression.visit(checker, null);
+		expression.decorate(null);
 		assertEquals(INT, expression.type);
 	}
 	
@@ -29,8 +47,7 @@ public class TypeCheckerTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Expression expression = parser.expression();
-		TypeChecker checker = new TypeChecker();
-		expression.visit(checker, null);
+		expression.decorate(null);
 		assertEquals(FLOAT, expression.type);
 	}
 	
@@ -41,8 +58,7 @@ public class TypeCheckerTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Expression expression = parser.expression();
-		TypeChecker checker = new TypeChecker();
-		expression.visit(checker, null);
+		expression.decorate(null);
 		assertEquals(FLOAT, expression.type);
 	}
 	
@@ -53,8 +69,7 @@ public class TypeCheckerTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Expression expression = parser.expression();
-		TypeChecker checker = new TypeChecker();
-		expression.visit(checker, null);
+		expression.decorate(null);
 		assertEquals(FLOAT, expression.type);
 	}
 	
@@ -65,20 +80,18 @@ public class TypeCheckerTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Expression expression = parser.expression();
-		TypeChecker checker = new TypeChecker();
-		expression.visit(checker, null);
+		expression.decorate(null);
 		assertEquals(BOOL, expression.type);
 	}
 	
 	@Test
 	public void testWaveFileExpression() throws Exception {
-		String input = "array name = wave(\"name.wav\")";
+		String input = "array name = read(\"name.wav\", mono)";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		TypeChecker checker = new TypeChecker();
-		program.visit(checker, null);
+		program.decorate(null);
 	}
 	
 	@Test
@@ -88,8 +101,7 @@ public class TypeCheckerTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		TypeChecker checker = new TypeChecker();
-		program.visit(checker, null);
+		program.decorate(null);
 	}
 	
 	@Test
@@ -99,8 +111,7 @@ public class TypeCheckerTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		TypeChecker checker = new TypeChecker();
-		program.visit(checker, null);
+		program.decorate(null);
 	}
 	
 	@Test
@@ -111,8 +122,7 @@ public class TypeCheckerTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		TypeChecker checker = new TypeChecker();
-		program.visit(checker, null);
+		program.decorate(null);
 	}
 
 }

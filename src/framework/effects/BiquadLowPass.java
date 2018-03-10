@@ -1,5 +1,8 @@
 package framework.effects;
 
+import framework.generators.AudioTask;
+import framework.generators.WaveFile;
+
 public class BiquadLowPass extends Biquad {
 
 	@Override
@@ -24,6 +27,12 @@ public class BiquadLowPass extends Biquad {
 		} else {
 			setCoefficients(0, 0, 0, 1, 0, 0); // When cutoff is zero, the z-transform is 0.
 		}
+	}
+	
+	public static void main(String[] args) throws Exception {
+		float[] lisa = new WaveFile("doc/stereoLisa.wav").getMonoSum();
+		float[] filter = new BiquadLowPass().process(lisa, 1000, 1);
+		new AudioTask().playMono(filter);
 	}
 
 }

@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/lufevida/Scandal.svg?branch=master)](https://travis-ci.org/lufevida/Scandal)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Scandal is both a Java framework and a domain-specific language designed to manipulate sounds. Examples of how to use the language, as well as a complete description of its [syntax](https://github.com/lufevida/Scandal/blob/master/doc/Syntax.md) can be found in the [doc](https://github.com/lufevida/Scandal/blob/master/doc) folder. Examples of how to use the framework can be found in the [examples](https://github.com/lufevida/Scandal/blob/master/src/framework/examples) package.
+Scandal is both a Java framework and a domain-specific language designed to manipulate sounds. Examples of how to use the language, as well as a complete description of its [syntax](https://github.com/lufevida/Scandal/blob/master/src/language/sublime/Syntax.md) can be found in the [sublime](https://github.com/lufevida/Scandal/blob/master/src/language/sublime) package. Examples of how to use the framework can be found in the [examples](https://github.com/lufevida/Scandal/blob/master/src/framework/examples) package.
 
 ![Screenshot](https://raw.githubusercontent.com/lufevida/Scandal/master/doc/Screenshot.jpg)
 
@@ -17,4 +17,4 @@ Drop the decompressed `Scandal` folder in there. To build your programs, use `co
 
 ## Acknowledgments
 
-Scandal is being developed by [Luis F. Vieira Damiani](http://vieira-damiani.com) under the orientation of [Dr. Beverly Sanders](https://www.cise.ufl.edu/people/faculty/sanders). Plots are made possible by the [JFreeChart](http://www.jfree.org/jfreechart) and the [JCommon](http://www.jfree.org/jcommon) libraries. Scandal utilizes the [ASM](http://asm.ow2.org) framework for compiling its domain-specific language.
+Scandal is being developed by [Luis F. Vieira Damiani](http://vieira-damiani.com) under the orientation of [Dr. Beverly Sanders](https://www.cise.ufl.edu/people/faculty/sanders). Scandal utilizes the [ASM](http://asm.ow2.org) framework for compiling its domain-specific language.

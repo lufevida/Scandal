@@ -1,2 +1,2 @@
-string devices = info
-print(devices)
+/*string devices = info*/
+print(info)

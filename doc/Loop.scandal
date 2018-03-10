@@ -1,4 +1,0 @@
-array lisa = read("monoLisa.wav", mono)
-/* Parameters: array, start sample, end sample, count */
-lisa = loop(lisa, 0, 4410, 9)
-play(lisa, mono)

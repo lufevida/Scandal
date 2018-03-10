@@ -2,26 +2,31 @@ package framework.effects;
 
 import framework.generators.AudioTask;
 import framework.generators.WaveFile;
+import framework.utilities.Functions;
 
 public class Compressor {
 	
-	public float[] process(float[] buffer, float threshold, float ratio) {
-		for (int i = 0; i < buffer.length; i++)
-			if (buffer[i] * dBFSToRaw(-Math.abs(ratio)) > dBFSToRaw(-Math.abs(threshold))) buffer[i] *= dBFSToRaw(-1);
-		return buffer;
-	}
-	
-	static float rawTodBFS(float amplitude) {
-		return 20 * (float) Math.log10(amplitude);
-	}
-	
-	static float dBFSToRaw(float amplitude) {
-		return (float) Math.pow(10, amplitude * 0.05);
-	}
+	// TODO: add attack, release, Q, and make it real-time
 	
 	public static void main(String[] args) throws Exception {
 		float[] lisa = new WaveFile("doc/monoLisa.wav").getMonoSum();
-		new AudioTask().playMono(new Compressor().process(lisa, 3, 2));
+		new AudioTask().playMono(new Compressor().process(lisa, -12, 4));
+	}
+	
+	public float[] process(float[] buffer, float threshold, float ratio) {
+		int count = 0;
+		float[] result = new float[buffer.length];
+		for (int i = 0; i < buffer.length; i++) {
+			float db = Functions.rawTodBFS(buffer[i]);
+			if (db > threshold) {
+				count++;
+				float diff = Functions.distance(db, threshold);
+				result[i] = Functions.dBFSToRaw(threshold + diff / ratio, buffer[i] < 0);
+			}
+			else result[i] = buffer[i];
+		}
+		System.out.println(count + " samples compressed.");
+		return result;
 	}
 
 }

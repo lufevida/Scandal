@@ -1,5 +1,8 @@
 package framework.effects;
 
+import framework.generators.AudioTask;
+import framework.generators.WaveFile;
+
 public class Loop {
 
 	public float[] process(float[] buffer, int start, int end) {
@@ -14,6 +17,12 @@ public class Loop {
 			processedBuffer[i] = buffer[j % end + start];
 		}
 		return processedBuffer;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		float[] lisa = new WaveFile("doc/monoLisa.wav").getMonoSum();
+		float[] loop = new Loop().process(lisa, 0, 10000, 8);
+		new AudioTask().playMono(loop);
 	}
 
 }

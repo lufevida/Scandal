@@ -1,7 +1,7 @@
 format channels = mono
-array lisa = read("monoLisa.wav", channels)
-float depth = 0.9
+array lisa = read("doc/monoLisa.wav", channels)
+float depth = 0.5
 int frequency = 12
-waveform shape = cosine
+waveform shape = square
 lisa = tremolo(lisa, depth, frequency, shape)
 play(lisa, channels)

@@ -1,5 +1,7 @@
 package framework.effects;
 
+import framework.generators.AudioTask;
+import framework.generators.WaveFile;
 import framework.utilities.Settings;
 
 public class Delay {
@@ -102,6 +104,11 @@ public class Delay {
 			if (writeIndex >= circularBuffer.length) writeIndex -= circularBuffer.length;
 		}
 		return processedBuffer;
+	}
+	
+	public static void main(String[] args) throws Exception {
+		float[] lisa = new WaveFile("doc/stereoLisa.wav").getMonoSum();
+		new AudioTask().playMono(new Delay().process(lisa, 30, 0.9f, 1.0f));
 	}
 
 }

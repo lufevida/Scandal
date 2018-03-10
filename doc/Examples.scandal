@@ -1,0 +1,10 @@
+import("doc/Prelude.scandal")
+
+array lisa = read("doc/monoLisa.wav", mono)
+float samples = 88200.0
+array:array aLine = array x -> line(x, samples)
+array:array aFadeIn = array x -> fadeIn(x, aLine([0, 1]))
+array:array aFadeOut = array x -> fadeOut(x, aLine([1, 0]))
+array:array aCrossFade = array x -> crossFade(x, lisa, aFadeIn, aFadeOut, samples)
+array crossedLisa = aCrossFade(lisa)
+play(crossedLisa, mono)

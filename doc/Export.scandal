@@ -1,0 +1,10 @@
+
+string name = "mower.wav"
+
+array samples = read(name, mono)
+
+samples = loop(samples, 4 * 44100, 5 * 44100, 1)
+
+write(samples, "mower_short.wav", mono)
+
+play(read("mower_short.wav", mono), mono)

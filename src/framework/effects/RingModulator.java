@@ -1,7 +1,10 @@
 package framework.effects;
 
+import framework.generators.AudioTask;
+import framework.generators.WaveFile;
 import framework.utilities.Settings;
 import framework.waveforms.Wavetable;
+import framework.waveforms.WavetableCosine;
 
 public class RingModulator {
 	
@@ -104,6 +107,12 @@ public class RingModulator {
 			if (phase >= table.tableSize) phase -= table.tableSize;
 		}
 		return processedBuffer;		
+	}
+	
+	public static void main(String[] args) throws Exception {
+		float[] lisa = new WaveFile("doc/stereoLisa.wav").getMonoSum();
+		RingModulator tremolo = new RingModulator(new WavetableCosine());
+		new AudioTask().playMono(tremolo.process(lisa, 0.8f, 10));
 	}
 
 }

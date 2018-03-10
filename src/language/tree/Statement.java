@@ -1,6 +1,7 @@
 package language.tree;
 
 import language.compiler.Token;
+import language.tree.expression.Expression;
 
 public abstract class Statement extends Node {
 	

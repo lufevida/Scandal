@@ -1,0 +1,28 @@
+
+float eleven = 11.0
+float:float decrement = float x -> x - 1
+float:float negate = float x -> -x
+float:float add5 = float x -> x + 5
+float:float times9 = float x -> x * 9
+float:float composite = float x -> decrement.negate.add5.times9(x)
+float twenty = decrement.add5.add5(eleven)
+float:float adder = float x -> float y -> x + y
+float:float add4 = float x -> adder(x, 4.0)
+float:float add6 = float x -> adder(x, 6.0)
+float twentyOne = add6.add4(eleven)
+float:float addOutlier = float x -> x + eleven
+float twelve = addOutlier(1.0)
+
+float:float returnBlock = float x -> {
+	print("I am a side-effect :-(")
+	return x
+}
+
+float:float idtest = float x -> x
+float:float idtest2 = float x -> idtest(x)
+
+/*
+float:float threeArgs = float x -> float y -> float z -> x + y + z
+float:float twoArgs = float x -> float y -> threeArgs(x, y, 11.1)
+float:float oneArg = float x -> twoArgs(x, 22.2)
+*/

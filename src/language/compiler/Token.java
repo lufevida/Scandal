@@ -30,6 +30,7 @@ public class Token {
 		RBRACE("}"),
 		LBRACKET("["), 
 		RBRACKET("]"),
+		COLON(":"),
 		// Single-character that precedes multiple-character
 		ASSIGN("="),
 		LT("<"),
@@ -56,9 +57,6 @@ public class Token {
 		KW_READ("read"),
 		KW_PLOT("plot"),
 		KW_PLAY("play"),
-		KW_FORMAT("format"),
-		KW_MONO("mono"),
-		KW_STEREO("stereo"),
 		KW_FILTER("filter"),
 		KW_BIQUAD("biquad"),
 		KW_ALLPASS("allpass"),
@@ -69,13 +67,6 @@ public class Token {
 		KW_LOWSHELF("lowshelf"),
 		KW_HISHELF("hishelf"),
 		KW_PEAKING("peaking"),
-		KW_REVERSE("reverse"),
-		KW_SPEED("speed"),
-		KW_LOOP("loop"),
-		KW_SPLICE("splice"),
-		KW_DELAY("delay"),
-		KW_GAIN("gain"),
-		KW_LINE("line"),
 		KW_WAVEFORM("waveform"),
 		KW_COSINE("cosine"),
 		KW_SAWTOOTH("sawtooth"),
@@ -88,8 +79,12 @@ public class Token {
 		KW_RECORD("record"),
 		KW_WRITE("write"),
 		KW_TRACK("track"),
-		KW_MIX("mix"),
-		KW_INFO("info");
+		KW_INFO("info"),
+		KW_RETURN("return"),
+		KW_SIZE("size"),
+		KW_NEW("new"),
+		KW_IMPORT("import"),
+		KW_FLOOR("floor");
 
 		final String text;
 

@@ -1,8 +1,13 @@
 package language.tree;
 
-import language.compiler.Token;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
 
-public class PlotStatement extends Statement {
+import language.compiler.SymbolTable;
+import language.compiler.Token;
+import language.tree.expression.Expression;
+
+public class PlotStatement extends Statement implements Opcodes {
 	
 	public final Expression array;
 	public final Expression points;
@@ -12,10 +17,25 @@ public class PlotStatement extends Statement {
 		this.array = array;
 		this.points = points;
 	}
+	
+	@Override
+	public void decorate(SymbolTable symtab) throws Exception {
+		expression.decorate(symtab);
+		if (expression.type != Types.STRING) throw new Exception();
+		array.decorate(symtab);
+		if (array.type != Types.ARRAY) throw new Exception();
+		points.decorate(symtab);
+		if (points.type != Types.INT && points.type != Types.FLOAT) throw new Exception();
+	}
 
 	@Override
-	public Object visit(NodeVisitor visitor, Object argument) throws Exception {
-		return visitor.visitPlotStatement(this, argument);
+	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
+		mv.visitTypeInsn(NEW, "framework/utilities/PlotUtility");
+		expression.generate(mv, symtab);
+		array.generate(mv, symtab);
+		points.generate(mv, symtab);
+		if (points.type == Types.FLOAT) mv.visitInsn(F2I);
+		mv.visitMethodInsn(INVOKESPECIAL, "framework/utilities/PlotUtility", "<init>", "(Ljava/lang/String;[FI)V", false);
 	}
 
 }

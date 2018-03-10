@@ -1,8 +1,16 @@
 package language.tree;
 
-import language.compiler.Token;
+import static language.tree.Node.Types.BOOL;
 
-public class IfStatement extends Statement {
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+
+import language.compiler.SymbolTable;
+import language.compiler.Token;
+import language.tree.expression.Expression;
+
+public class IfStatement extends Statement implements Opcodes {
 
 	public final Block block;
 
@@ -10,10 +18,22 @@ public class IfStatement extends Statement {
 		super(firstToken, expression);
 		this.block = block;
 	}
+	
+	@Override
+	public void decorate(SymbolTable symtab) throws Exception {
+		expression.decorate(symtab);
+		if (expression.type != BOOL) throw new Exception();
+		block.decorate(symtab);
+	}
 
 	@Override
-	public Object visit(NodeVisitor visitor, Object argument) throws Exception {
-		return visitor.visitIfStatement(this, argument);
+	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
+		Label label = new Label();
+		expression.generate(mv, symtab);
+		mv.visitInsn(ICONST_1);
+		mv.visitJumpInsn(IF_ICMPNE, label);
+		block.generate(mv, symtab);
+		mv.visitLabel(label);
 	}
 
 }
