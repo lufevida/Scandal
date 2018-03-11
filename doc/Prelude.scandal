@@ -92,12 +92,12 @@ array:array speed = array x -> float s -> {
 	float y1 = 0.0
 	float length = size(x) + 0.0
 	while i < samples {
-		x0 = floor(j) + 0.0 /* adding zero casts to float */
+		x0 = floor(j) + 0.0
 		x1 = x0 + 1
 		y0 = x[floor(x0)]
 		y1 = x[0]
 		if x1 < length { y1 = x[floor(x1)] }
-		buffer[i] = y0 + (j - x0) * (y1 - y0) /* simple linear interpolation */
+		buffer[i] = y0 + (j - x0) * (y1 - y0)
 		i = i + 1
 		j = j + s
 		if j >= length { j = j - length }

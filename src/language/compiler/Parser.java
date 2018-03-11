@@ -70,7 +70,9 @@ import language.tree.expression.FloatLitExpression;
 import language.tree.expression.FloorExpression;
 import language.tree.expression.FuncAppExpression;
 import language.tree.expression.FuncCompExpression;
+import language.tree.expression.FuncLitApp;
 import language.tree.expression.FuncLitBlock;
+import language.tree.expression.FuncLitComp;
 import language.tree.expression.FuncLitExpression;
 import language.tree.expression.IdentExpression;
 import language.tree.expression.InfoExpression;
@@ -620,7 +622,11 @@ public class Parser {
 			}
 			else {
 				Expression returnExpression = expression();
-				expression = new FuncLitExpression(firstToken, decs, returnExpression);
+				if (returnExpression.getClass() == FuncAppExpression.class)
+					expression = new FuncLitApp(firstToken, decs, (FuncAppExpression) returnExpression);
+				else if (returnExpression.getClass() == FuncCompExpression.class)
+					expression = new FuncLitComp(firstToken, decs, (FuncCompExpression) returnExpression);
+				else expression = new FuncLitExpression(firstToken, decs, returnExpression);
 			}
 		} break;
 		default:
