@@ -1,4 +1,6 @@
 
+import("doc/Lambdas.scandal")
+
 array:array dump = array x -> {
 	int i = 0
 	while i < size(x) {
@@ -49,7 +51,7 @@ array:float integrate = array x -> {
 	return sum
 }
 
-array:array scale = array x -> float:float lambda -> {
+array:array scale = array x -> array:float lambda -> {
 	float scalar = lambda(x)
 	int i = 0
 	while i < size(x) {

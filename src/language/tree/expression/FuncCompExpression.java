@@ -8,7 +8,7 @@ import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.AssignmentDeclaration;
 import language.tree.Node;
-import language.tree.UnassignedDeclaration;
+import language.tree.ParamDeclaration;
 
 public class FuncCompExpression extends Expression {
 	
@@ -44,7 +44,7 @@ public class FuncCompExpression extends Expression {
 		inputType = param.type;
 		if (inputType != lambdas.get(0).inputType) throw new Exception("Type mismatch");
 		compositeType = Node.getLambdaType(inputType, type);
-		isPartial = symtab.lookup(param.firstToken.text).getClass() == UnassignedDeclaration.class;
+		isPartial = symtab.lookup(param.firstToken.text).getClass() == ParamDeclaration.class;
 	}
 
 	@Override

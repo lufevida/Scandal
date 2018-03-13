@@ -2,12 +2,11 @@ package language.tree.expression;
 
 import org.objectweb.asm.MethodVisitor;
 
-import language.compiler.Lambda;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.AssignmentDeclaration;
 import language.tree.Declaration;
-import language.tree.UnassignedDeclaration;
+import language.tree.ParamDeclaration;
 
 public class IdentExpression extends Expression {
 	
@@ -32,7 +31,7 @@ public class IdentExpression extends Expression {
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		if (isReturnExpression) {
-			if (declaration.getClass() == UnassignedDeclaration.class) {
+			if (declaration.getClass() == ParamDeclaration.class) {
 				if (declaration.type == Types.FLOAT) mv.visitVarInsn(FLOAD, declaration.slotNumber);
 				else if (declaration.type == Types.ARRAY) mv.visitVarInsn(ALOAD, declaration.slotNumber);
 			}
@@ -46,9 +45,8 @@ public class IdentExpression extends Expression {
 			}
 		}
 		else if (isLambda()) {
-			Lambda lamb = symtab.lambdaWithName(firstToken.text);
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitFieldInsn(GETFIELD, symtab.className, lamb.name, lamb.expression.getInvocation());
+			mv.visitFieldInsn(GETFIELD, symtab.className, firstToken.text, symtab.lambdas.get(firstToken.text).getInvocation());
 		}
 		else if (type == Types.STRING || type == Types.ARRAY) mv.visitVarInsn(ALOAD, declaration.slotNumber);
 		else if (type == Types.FLOAT) mv.visitVarInsn(FLOAD, declaration.slotNumber);

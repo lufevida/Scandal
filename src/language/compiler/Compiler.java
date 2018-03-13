@@ -49,7 +49,7 @@ public class Compiler {
 		if (imports.contains(inPath)) return;
 		imports.add(inPath);
 		temp = getCode(inPath);
-		code += temp;
+		code = temp + code; // depth-first
 		Program program = getProgram(temp);
 		for (Statement s : program.statements)
 			if (s.getClass() == ImportStatement.class)

@@ -6,16 +6,15 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
-import language.compiler.Lambda;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
-import language.tree.UnassignedDeclaration;
+import language.tree.ParamDeclaration;
 
 public class FuncLitComp extends FuncLitExpression {
 	
 	public final FuncCompExpression comp;
 
-	public FuncLitComp(Token firstToken, ArrayList<UnassignedDeclaration> params, FuncCompExpression comp) {
+	public FuncLitComp(Token firstToken, ArrayList<ParamDeclaration> params, FuncCompExpression comp) {
 		super(firstToken, params, comp);
 		this.comp = comp;
 	}
@@ -24,9 +23,8 @@ public class FuncLitComp extends FuncLitExpression {
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		mv.visitVarInsn(ALOAD, 0);
 		for (IdentExpression id : comp.idents) {
-			Lambda lambda = symtab.lambdaWithName(id.firstToken.text);
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitFieldInsn(GETFIELD, symtab.className, lambda.name, lambda.expression.getInvocation());
+			mv.visitFieldInsn(GETFIELD, symtab.className, id.firstToken.text, symtab.lambdas.get(id.firstToken.text).getInvocation());
 		}
 		addInvocation(mv, symtab);
 	}

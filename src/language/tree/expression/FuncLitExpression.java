@@ -12,12 +12,12 @@ import org.objectweb.asm.Type;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.Node;
-import language.tree.UnassignedDeclaration;
+import language.tree.ParamDeclaration;
 
 public class FuncLitExpression extends Expression {
 	
 	public final boolean isAbstract;
-	public final ArrayList<UnassignedDeclaration> params;
+	public final ArrayList<ParamDeclaration> params;
 	public final Expression returnExpression;
 	protected Types inputType;
 	protected Types returnType;
@@ -25,7 +25,7 @@ public class FuncLitExpression extends Expression {
 	public String classSig = "";
 	public int lambdaSlot;
 
-	public FuncLitExpression(Token firstToken, ArrayList<UnassignedDeclaration> params, Expression returnExpression) {
+	public FuncLitExpression(Token firstToken, ArrayList<ParamDeclaration> params, Expression returnExpression) {
 		super(firstToken);
 		this.isAbstract = params.size() > 1;
 		this.params = params;
@@ -35,7 +35,7 @@ public class FuncLitExpression extends Expression {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		symtab.enterScope();
-		for (UnassignedDeclaration param : params) param.decorate(symtab);
+		for (ParamDeclaration param : params) param.decorate(symtab);
 		inputType = params.get(0).type;
 		returnExpression.decorate(symtab);
 		returnType = returnExpression.type;

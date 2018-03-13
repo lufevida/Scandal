@@ -7,17 +7,17 @@ import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
-import language.compiler.Lambda;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
+import language.tree.expression.FuncLitExpression;
 
 public class Program extends Node {
 
-	public final ArrayList<Declaration> declarations;
+	public final ArrayList<AssignmentDeclaration> declarations;
 	public final ArrayList<Statement> statements;
 	public byte[] bytecode;
 
-	public Program(Token firstToken, ArrayList<Declaration> declarations, ArrayList<Statement> statements) {
+	public Program(Token firstToken, ArrayList<AssignmentDeclaration> declarations, ArrayList<Statement> statements) {
 		super(firstToken);
 		this.declarations = declarations;
 		this.statements = statements;
@@ -25,7 +25,7 @@ public class Program extends Node {
 	
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
-		for (Declaration declaration : declarations) declaration.decorate(symtab);
+		for (AssignmentDeclaration declaration : declarations) declaration.decorate(symtab);
 		for (Statement statement : statements) statement.decorate(symtab);
 	}
 
@@ -82,7 +82,7 @@ public class Program extends Node {
 		mv.visitLabel(startLabel);
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitMethodInsn(INVOKESPECIAL, "javafx/application/Application", "<init>", "()V", false);
-		for (Declaration dec : program.declarations) {
+		for (AssignmentDeclaration dec : program.declarations) {
 			dec.startLabel = startLabel;
 			dec.endLabel = endLabel;
 			dec.generate(mv, symtab);
@@ -97,10 +97,13 @@ public class Program extends Node {
 	
 	private void addFields(ClassWriter cw, SymbolTable symtab) throws Exception {
 		FieldVisitor fv;
-		for (Lambda lambda : symtab.lambdas) if (!lambda.isAbstract) {
-			fv = cw.visitField(0, lambda.name, lambda.expression.getInvocation(), null, null);
-			fv.visitEnd();
-			lambda.expression.generate(cw, symtab);
+		for (AssignmentDeclaration dec : declarations) if (dec.isLambda()) {
+			FuncLitExpression lambda = (FuncLitExpression) dec.expression;
+			if (!lambda.isAbstract) {
+				fv = cw.visitField(0, dec.identToken.text, lambda.getInvocation(), null, null);
+				fv.visitEnd();
+				lambda.generate(cw, symtab);
+			}
 		}
 	}
 

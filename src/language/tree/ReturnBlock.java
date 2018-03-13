@@ -14,14 +14,14 @@ public class ReturnBlock extends Block {
 	public final Expression returnExpression;
 	public int paramCount = 0;
 
-	public ReturnBlock(Token firstToken, ArrayList<Declaration> declarations, ArrayList<Statement> statements, Expression returnExpression) {
+	public ReturnBlock(Token firstToken, ArrayList<AssignmentDeclaration> declarations, ArrayList<Statement> statements, Expression returnExpression) {
 		super(firstToken, declarations, statements);
 		this.returnExpression = returnExpression;
 	}
 	
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
-		for (Declaration declaration : declarations) declaration.decorate(symtab);
+		for (AssignmentDeclaration declaration : declarations) declaration.decorate(symtab);
 		for (Statement statement : statements) {
 			statement.decorate(symtab);
 			if (statement.getClass() == ImportStatement.class)
@@ -39,7 +39,7 @@ public class ReturnBlock extends Block {
 		mv.visitLabel(blockEnd);
 		int temp = symtab.slotCount;
 		symtab.slotCount = 1 + paramCount;
-		for (Declaration declaration : declarations) {
+		for (AssignmentDeclaration declaration : declarations) {
 			if (declaration.getClass() == AssignmentDeclaration.class) {
 				AssignmentDeclaration dec = (AssignmentDeclaration) declaration;
 				dec.expression.isReturnExpression = true;

@@ -111,7 +111,7 @@ public class ParserTests {
 		String input = " array sound = read(\"fileName.wav\", mono)";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
-		Declaration declaration = new Parser(scanner).declaration();
+		AssignmentDeclaration declaration = new Parser(scanner).assignmentDeclaration();
 		AssignmentDeclaration ad = (AssignmentDeclaration) declaration;
 		Expression e = ad.expression;
 		assertEquals(ReadExpression.class, e.getClass());
@@ -131,7 +131,7 @@ public class ParserTests {
 		String input = "float:float test = float x -> { int three = 3 bool test play(\"lisa.wav\", mono) return 0.0 }";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
-		AssignmentDeclaration dec = (AssignmentDeclaration) new Parser(scanner).declaration();
+		AssignmentDeclaration dec = new Parser(scanner).assignmentDeclaration();
 		FuncLitBlock expr = (FuncLitBlock) dec.expression;
 		assertEquals(expr.returnBlock.returnExpression, expr.returnExpression);
 	}
@@ -193,7 +193,7 @@ public class ParserTests {
 		String input = "float:float adder = float x -> float y -> x + y";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
-		AssignmentDeclaration dec = (AssignmentDeclaration) new Parser(scanner).declaration();
+		AssignmentDeclaration dec = new Parser(scanner).assignmentDeclaration();
 		FuncLitExpression expr = (FuncLitExpression) dec.expression;
 		FuncLitExpression e = (FuncLitExpression) expr.returnExpression;
 		assertEquals(e.returnExpression.getClass(), BinaryExpression.class);
@@ -239,8 +239,8 @@ public class ParserTests {
 		String input = "array:float lambda";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
-		Declaration d = new Parser(scanner).declaration();
-		assertEquals(d.getClass(), UnassignedDeclaration.class);
+		ParamDeclaration d = new Parser(scanner).unassignedDeclaration();
+		assertEquals(d.getClass(), ParamDeclaration.class);
 	}
 	
 	@Test
@@ -248,7 +248,7 @@ public class ParserTests {
 		String input = "float:float lambda = array:float x -> x";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
-		Declaration d = new Parser(scanner).declaration();
+		AssignmentDeclaration d = new Parser(scanner).assignmentDeclaration();
 		assertEquals(d.getClass(), AssignmentDeclaration.class);
 	}
 

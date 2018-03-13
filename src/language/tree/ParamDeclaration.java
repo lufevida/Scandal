@@ -7,9 +7,9 @@ import org.objectweb.asm.MethodVisitor;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 
-public class UnassignedDeclaration extends Declaration {
+public class ParamDeclaration extends Declaration {
 
-	public UnassignedDeclaration(Token firstToken, Token returnToken, Token identToken) {
+	public ParamDeclaration(Token firstToken, Token returnToken, Token identToken) {
 		super(firstToken, identToken);
 		if (returnToken != null) {
 			inputType = firstToken.kind == KW_FLOAT ? Types.FLOAT : Types.ARRAY;

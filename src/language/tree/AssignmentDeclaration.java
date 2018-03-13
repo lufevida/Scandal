@@ -4,7 +4,6 @@ import static language.compiler.Token.Kind.KW_FLOAT;
 
 import org.objectweb.asm.MethodVisitor;
 
-import language.compiler.Lambda;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
@@ -41,14 +40,13 @@ public class AssignmentDeclaration extends Declaration {
 			FuncLitExpression funcLit = (FuncLitExpression) expression;
 			if (funcLit.isAbstract) {
 				funcLit.lambdaSlot = symtab.lambdaCount++;
-				symtab.lambdas.add(new Lambda(identToken.text, funcLit.lambdaSlot, funcLit, true));
-				for (UnassignedDeclaration param : funcLit.params)
-					if (param.isLambda())
-						symtab.lambdas.add(new Lambda(param.identToken.text, Integer.MAX_VALUE, null, true));
+				symtab.lambdas.put(identToken.text, funcLit);
+				for (ParamDeclaration param : funcLit.params)
+					if (param.isLambda()) symtab.lambdas.put(param.identToken.text, null);
 				return;
 			}
 			funcLit.lambdaSlot = symtab.lambdaCount++;
-			symtab.lambdas.add(new Lambda(identToken.text, funcLit.lambdaSlot, funcLit, false));
+			symtab.lambdas.put(identToken.text, funcLit);
 			jvmType = funcLit.getInvocation();
 			funcLit.generate(mv, symtab);
 			mv.visitFieldInsn(PUTFIELD, symtab.className, identToken.text, jvmType);

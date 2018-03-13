@@ -1,10 +1,11 @@
 package language.compiler;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Stack;
 
 import language.tree.Declaration;
+import language.tree.expression.FuncLitExpression;
 
 public class SymbolTable {
 
@@ -13,12 +14,7 @@ public class SymbolTable {
 	public int scopeNumber = 0;
 	public int slotCount = 1;
 	public int lambdaCount = 0;
-	public final ArrayList<Lambda> lambdas = new ArrayList<>();
-	
-	public Lambda lambdaWithName(String name) {
-		for (Lambda l : lambdas) if (l.name.equals(name)) return l;
-		return null;
-	}
+	public HashMap<String, FuncLitExpression> lambdas = new HashMap<>();
 
 	public SymbolTable(String className) {
 		this.className = className;

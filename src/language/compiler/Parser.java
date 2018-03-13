@@ -45,7 +45,6 @@ import language.compiler.Token.Kind;
 import language.tree.AssignmentDeclaration;
 import language.tree.AssignmentStatement;
 import language.tree.Block;
-import language.tree.Declaration;
 import language.tree.IfStatement;
 import language.tree.ImportStatement;
 import language.tree.IndexedAssignmentStatement;
@@ -55,7 +54,7 @@ import language.tree.PrintStatement;
 import language.tree.Program;
 import language.tree.ReturnBlock;
 import language.tree.Statement;
-import language.tree.UnassignedDeclaration;
+import language.tree.ParamDeclaration;
 import language.tree.WhileStatement;
 import language.tree.WriteStatement;
 import language.tree.expression.ArrayItemExpression;
@@ -116,11 +115,11 @@ public class Parser {
 
 	public Program parse() throws Exception {
 		Token firstToken = token;
-		ArrayList<Declaration> declarations = new ArrayList<>();
+		ArrayList<AssignmentDeclaration> declarations = new ArrayList<>();
 		ArrayList<Statement> statements = new ArrayList<>();
 		while (token.kind != EOF) {
 			try {
-				Declaration declaration = declaration();
+				AssignmentDeclaration declaration = assignmentDeclaration();
 				declarations.add(declaration);
 			} catch (Exception declarationException) {
 				try {
@@ -137,12 +136,12 @@ public class Parser {
 
 	public Block block() throws Exception {
 		Token firstToken = token;
-		ArrayList<Declaration> declarations = new ArrayList<>();
+		ArrayList<AssignmentDeclaration> declarations = new ArrayList<>();
 		ArrayList<Statement> statements = new ArrayList<>();
 		match(LBRACE);
 		while (token.kind != RBRACE) {
 			try {
-				Declaration declaration = declaration();
+				AssignmentDeclaration declaration = assignmentDeclaration();
 				declarations.add(declaration);
 			} catch (Exception declarationException) {
 				try {
@@ -159,12 +158,12 @@ public class Parser {
 
 	public ReturnBlock returnBlock() throws Exception {
 		Token firstToken = token;
-		ArrayList<Declaration> declarations = new ArrayList<>();
+		ArrayList<AssignmentDeclaration> declarations = new ArrayList<>();
 		ArrayList<Statement> statements = new ArrayList<>();
 		match(LBRACE);
 		while (token.kind != KW_RETURN) {
 			try {
-				Declaration declaration = declaration();
+				AssignmentDeclaration declaration = assignmentDeclaration();
 				declarations.add(declaration);
 			} catch (Exception declarationException) {
 				try {
@@ -181,9 +180,8 @@ public class Parser {
 		return new ReturnBlock(firstToken, declarations, statements, expression);
 	}
 
-	public Declaration declaration() throws Exception {
-		if (!isDeclarationKind(token.kind))
-			throw new Exception("Illegal declaration: " + token.lineNumberPosition);
+	public AssignmentDeclaration assignmentDeclaration() throws Exception {
+		if (!isDeclarationKind(token.kind)) throw new Exception("Illegal declaration: " + token.lineNumberPosition);
 		Token returnToken = null;
 		Token firstToken = token;
 		consume();
@@ -197,14 +195,29 @@ public class Parser {
 		}
 		Token identToken = token;
 		match(IDENT);
-		if (token.kind == ASSIGN) {
-			match(ASSIGN);
-			Expression expression = expression();
-			return new AssignmentDeclaration(firstToken, returnToken, identToken, expression);
-		}
-		else return new UnassignedDeclaration(firstToken, returnToken, identToken);
+		match(ASSIGN);
+		Expression expression = expression();
+		return new AssignmentDeclaration(firstToken, returnToken, identToken, expression);
 	}
 	
+	public ParamDeclaration unassignedDeclaration() throws Exception {
+		if (!isDeclarationKind(token.kind)) throw new Exception("Illegal declaration: " + token.lineNumberPosition);
+		Token returnToken = null;
+		Token firstToken = token;
+		consume();
+		boolean isLambda = token.kind == COLON;
+		if (isLambda) {
+			consume();
+			if (token.kind != KW_FLOAT && token.kind != KW_ARRAY)
+				throw new Exception("Illegal return declaration: " + token.lineNumberPosition);
+			returnToken = token;
+			consume();
+		}
+		Token identToken = token;
+		match(IDENT);
+		return new ParamDeclaration(firstToken, returnToken, identToken);
+	}
+
 	private boolean isDeclarationKind(Token.Kind kind) {
 		switch (kind) {
 		case KW_INT:
@@ -607,12 +620,12 @@ public class Parser {
 		} break;
 		case KW_ARRAY:
 		case KW_FLOAT: {
-			ArrayList<UnassignedDeclaration> decs = new ArrayList<>();
-			UnassignedDeclaration declaration = (UnassignedDeclaration) declaration();
+			ArrayList<ParamDeclaration> decs = new ArrayList<>();
+			ParamDeclaration declaration = unassignedDeclaration();
 			decs.add(declaration);
 			match(ARROW);
 			while (token.kind == KW_FLOAT || token.kind == KW_ARRAY) {
-				UnassignedDeclaration dec = (UnassignedDeclaration) declaration();
+				ParamDeclaration dec = unassignedDeclaration();
 				decs.add(dec);
 				match(ARROW);
 			}

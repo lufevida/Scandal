@@ -10,13 +10,13 @@ import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.Node;
 import language.tree.ReturnBlock;
-import language.tree.UnassignedDeclaration;
+import language.tree.ParamDeclaration;
 
 public class FuncLitBlock extends FuncLitExpression {
 	
 	public final ReturnBlock returnBlock;
 
-	public FuncLitBlock(Token firstToken, ArrayList<UnassignedDeclaration> params, ReturnBlock returnBlock) {
+	public FuncLitBlock(Token firstToken, ArrayList<ParamDeclaration> params, ReturnBlock returnBlock) {
 		super(firstToken, params, returnBlock.returnExpression);
 		this.returnBlock = returnBlock;
 	}
@@ -24,7 +24,7 @@ public class FuncLitBlock extends FuncLitExpression {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		symtab.enterScope();
-		for (UnassignedDeclaration param : params) param.decorate(symtab);
+		for (ParamDeclaration param : params) param.decorate(symtab);
 		inputType = params.get(0).type;
 		returnBlock.decorate(symtab);
 		returnType = returnBlock.returnExpression.type;		

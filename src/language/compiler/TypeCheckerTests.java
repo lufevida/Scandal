@@ -20,7 +20,7 @@ public class TypeCheckerTests {
 		String input = "float:float adder = float x -> float y -> x + y";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
-		AssignmentDeclaration dec = (AssignmentDeclaration) new Parser(scanner).declaration();
+		AssignmentDeclaration dec = new Parser(scanner).assignmentDeclaration();
 		FuncLitExpression expr = (FuncLitExpression) dec.expression;
 		expr.decorate(null);
 		dec.decorate(null);

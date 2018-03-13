@@ -6,16 +6,15 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
-import language.compiler.Lambda;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
-import language.tree.UnassignedDeclaration;
+import language.tree.ParamDeclaration;
 
 public class FuncLitApp extends FuncLitExpression {
 	
 	public final FuncAppExpression app;
 
-	public FuncLitApp(Token firstToken, ArrayList<UnassignedDeclaration> params, FuncAppExpression app) {
+	public FuncLitApp(Token firstToken, ArrayList<ParamDeclaration> params, FuncAppExpression app) {
 		super(firstToken, params, app);
 		this.app = app;
 	}
@@ -23,14 +22,14 @@ public class FuncLitApp extends FuncLitExpression {
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		mv.visitVarInsn(ALOAD, 0);
-		Lambda lambda = symtab.lambdaWithName(returnExpression.firstToken.text);
-		if (lambda.isAbstract) {
+		//Lambda lambda = symtab.lambdaWithName(returnExpression.firstToken.text);
+		if (app.funcLit.isAbstract) {
 			for (Expression param : app.params)
 				if (!param.firstToken.text.equals(this.params.get(0).identToken.text)) param.generate(mv, symtab);
 		}
-		else if (lambda.isLocal) {
+		else if (app.isLocal) {
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitFieldInsn(GETFIELD, symtab.className, lambda.name, lambda.expression.getInvocation());
+			mv.visitFieldInsn(GETFIELD, symtab.className, app.firstToken.text, app.funcLit.getInvocation());
 		}
 		else {
 			// We are copying a field, so load self twice, change signature, and change internal variable counter
@@ -53,26 +52,24 @@ public class FuncLitApp extends FuncLitExpression {
 			if (arg.firstToken.text.equals(params.get(0).identToken.text) && app.params.indexOf(arg) != 0) throw new Exception("This feature is not yet supported");
 		if (capturesSelf) params.get(0).slotNumber = 1;
 		int paramCount = 0;
-		Lambda l = symtab.lambdaWithName(app.firstToken.text);
-		if (l.isAbstract) {
-			l.expression.returnExpression.isReturnExpression = true;
-			for (int i = 1; i < l.expression.params.size(); i++) {
-				UnassignedDeclaration parameter = l.expression.params.get(i);
+		FuncLitExpression l = symtab.lambdas.get(app.firstToken.text);
+		if (app.funcLit.isAbstract) {
+			l.returnExpression.isReturnExpression = true;
+			for (int i = 1; i < l.params.size(); i++) {
+				ParamDeclaration parameter = l.params.get(i);
 				parameter.slotNumber = paramCount++;
 				if (parameter.isLambda()) {
 					IdentExpression id = (IdentExpression) app.params.get(parameter.slotNumber + 1);
-					Lambda ell = symtab.lambdaWithName(parameter.identToken.text);
-					ell.expression = symtab.lambdaWithName(id.firstToken.text).expression;
-					ell.isLocal = true;
-					ell.paramSlot = parameter.slotNumber;
+					FuncLitExpression ell = symtab.lambdas.get(id.firstToken.text);
+					symtab.lambdas.replace(parameter.identToken.text, ell);
 				}
 			}
-			l.expression.params.get(0).slotNumber = paramCount;
-			if (l.expression.getClass() == FuncLitBlock.class) {
-				((FuncLitBlock) l.expression).returnBlock.paramCount = paramCount;
-				((FuncLitBlock) l.expression).returnBlock.generate(mv, symtab);
+			l.params.get(0).slotNumber = paramCount;
+			if (l.getClass() == FuncLitBlock.class) {
+				((FuncLitBlock) l).returnBlock.paramCount = paramCount;
+				((FuncLitBlock) l).returnBlock.generate(mv, symtab);
 			}
-			else l.expression.returnExpression.generate(mv, symtab);
+			else l.returnExpression.generate(mv, symtab);
 		}
 		else {
 			app.isReturnExpression = true;
