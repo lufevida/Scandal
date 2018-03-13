@@ -38,17 +38,15 @@ public class AssignmentDeclaration extends Declaration {
 		slotNumber = symtab.slotCount++;
 		if (isLambda()) {
 			FuncLitExpression funcLit = (FuncLitExpression) expression;
+			funcLit.lambdaSlot = symtab.lambdaCount++;
+			//symtab.lambdas.put(identToken.text, funcLit); // TODO
 			if (funcLit.isAbstract) {
-				funcLit.lambdaSlot = symtab.lambdaCount++;
-				symtab.lambdas.put(identToken.text, funcLit);
-				for (ParamDeclaration param : funcLit.params)
-					if (param.isLambda()) symtab.lambdas.put(param.identToken.text, null);
+				for (ParamDeclaration param : funcLit.params) if (param.isLambda())
+					symtab.lambdaParams.put(param.identToken.text, null);
 				return;
 			}
-			funcLit.lambdaSlot = symtab.lambdaCount++;
-			symtab.lambdas.put(identToken.text, funcLit);
-			jvmType = funcLit.getInvocation();
 			funcLit.generate(mv, symtab);
+			jvmType = funcLit.getInvocation();
 			mv.visitFieldInsn(PUTFIELD, symtab.className, identToken.text, jvmType);
 			return;
 		}

@@ -1,2 +1,10 @@
 
 import("doc/Prelude.scandal")
+
+/*
+float:float id = float x -> x
+float:float applyId = float y -> float:float f -> f(y)
+float:float applyApplyId = float z -> applyId(z, id)
+float eleven = applyApplyId(11.0)
+print(eleven)
+*/

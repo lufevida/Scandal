@@ -8,6 +8,7 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
+import language.tree.AssignmentDeclaration;
 import language.tree.ParamDeclaration;
 
 public class FuncLitComp extends FuncLitExpression {
@@ -18,13 +19,15 @@ public class FuncLitComp extends FuncLitExpression {
 		super(firstToken, params, comp);
 		this.comp = comp;
 	}
-	
+
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		mv.visitVarInsn(ALOAD, 0);
 		for (IdentExpression id : comp.idents) {
+			AssignmentDeclaration dec = (AssignmentDeclaration) symtab.lookup(id.firstToken.text);
+			FuncLitExpression lambda = (FuncLitExpression) dec.expression;
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitFieldInsn(GETFIELD, symtab.className, id.firstToken.text, symtab.lambdas.get(id.firstToken.text).getInvocation());
+			mv.visitFieldInsn(GETFIELD, symtab.className, id.firstToken.text, lambda.getInvocation());
 		}
 		addInvocation(mv, symtab);
 	}

@@ -26,7 +26,7 @@ public class FuncAppExpression extends Expression {
 	public void decorate(SymbolTable symtab) throws Exception {
 		Declaration lambdaDec = symtab.lookup(firstToken.text);
 		if (lambdaDec == null) throw new Exception("Function must have been declared in some enclosing scope");
-		if (lambdaDec.getClass() == ParamDeclaration.class) {
+		if (lambdaDec.getClass() == ParamDeclaration.class) {			
 			for (int i = 0; i < params.size(); i++) params.get(i).decorate(symtab);
 			isLocal = true;
 			type = lambdaDec.returnType;
@@ -43,7 +43,7 @@ public class FuncAppExpression extends Expression {
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		if (funcLit == null) funcLit = symtab.lambdas.get(firstToken.text);
+		if (funcLit == null) funcLit = symtab.lambdaParams.get(firstToken.text);
 		if (funcLit.isAbstract) throw new Exception("This feature is not yet supported");
 		if (isLocal) mv.visitVarInsn(ALOAD, paramSlot);
 		else {

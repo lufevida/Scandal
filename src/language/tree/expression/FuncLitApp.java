@@ -8,6 +8,7 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
+import language.tree.AssignmentDeclaration;
 import language.tree.ParamDeclaration;
 
 public class FuncLitApp extends FuncLitExpression {
@@ -18,11 +19,10 @@ public class FuncLitApp extends FuncLitExpression {
 		super(firstToken, params, app);
 		this.app = app;
 	}
-	
+
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		mv.visitVarInsn(ALOAD, 0);
-		//Lambda lambda = symtab.lambdaWithName(returnExpression.firstToken.text);
 		if (app.funcLit.isAbstract) {
 			for (Expression param : app.params)
 				if (!param.firstToken.text.equals(this.params.get(0).identToken.text)) param.generate(mv, symtab);
@@ -49,10 +49,12 @@ public class FuncLitApp extends FuncLitExpression {
 		mv.visitLabel(startLabel);
 		mv.visitLabel(endLabel);
 		for (Expression arg : app.params)
-			if (arg.firstToken.text.equals(params.get(0).identToken.text) && app.params.indexOf(arg) != 0) throw new Exception("This feature is not yet supported");
+			if (arg.firstToken.text.equals(params.get(0).identToken.text) && app.params.indexOf(arg) != 0)
+				throw new Exception("This feature is not yet supported");
 		if (capturesSelf) params.get(0).slotNumber = 1;
 		int paramCount = 0;
-		FuncLitExpression l = symtab.lambdas.get(app.firstToken.text);
+		AssignmentDeclaration dec = (AssignmentDeclaration) symtab.lookup(app.firstToken.text);
+		FuncLitExpression l = (FuncLitExpression) dec.expression;
 		if (app.funcLit.isAbstract) {
 			l.returnExpression.isReturnExpression = true;
 			for (int i = 1; i < l.params.size(); i++) {
@@ -60,8 +62,10 @@ public class FuncLitApp extends FuncLitExpression {
 				parameter.slotNumber = paramCount++;
 				if (parameter.isLambda()) {
 					IdentExpression id = (IdentExpression) app.params.get(parameter.slotNumber + 1);
-					FuncLitExpression ell = symtab.lambdas.get(id.firstToken.text);
-					symtab.lambdas.replace(parameter.identToken.text, ell);
+					AssignmentDeclaration lookup = (AssignmentDeclaration) symtab.lookup(id.firstToken.text);
+					FuncLitExpression func = (FuncLitExpression) lookup.expression;
+					symtab.lambdaParams.replace(parameter.identToken.text, func);
+					//symtab.lambdas.replace(parameter.identToken.text, symtab.lambdas.get(id.firstToken.text));
 				}
 			}
 			l.params.get(0).slotNumber = paramCount;

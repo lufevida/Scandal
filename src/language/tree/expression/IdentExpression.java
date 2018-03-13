@@ -45,8 +45,10 @@ public class IdentExpression extends Expression {
 			}
 		}
 		else if (isLambda()) {
+			AssignmentDeclaration dec = (AssignmentDeclaration) symtab.lookup(firstToken.text);
+			FuncLitExpression lambda = (FuncLitExpression) dec.expression;
 			mv.visitVarInsn(ALOAD, 0);
-			mv.visitFieldInsn(GETFIELD, symtab.className, firstToken.text, symtab.lambdas.get(firstToken.text).getInvocation());
+			mv.visitFieldInsn(GETFIELD, symtab.className, firstToken.text, lambda.getInvocation());
 		}
 		else if (type == Types.STRING || type == Types.ARRAY) mv.visitVarInsn(ALOAD, declaration.slotNumber);
 		else if (type == Types.FLOAT) mv.visitVarInsn(FLOAD, declaration.slotNumber);

@@ -14,7 +14,7 @@ public class SymbolTable {
 	public int scopeNumber = 0;
 	public int slotCount = 1;
 	public int lambdaCount = 0;
-	public HashMap<String, FuncLitExpression> lambdas = new HashMap<>();
+	public HashMap<String, FuncLitExpression> lambdaParams = new HashMap<>();
 
 	public SymbolTable(String className) {
 		this.className = className;
