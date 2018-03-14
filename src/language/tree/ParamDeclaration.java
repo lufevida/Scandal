@@ -6,8 +6,11 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
+import language.tree.expression.Expression;
 
 public class ParamDeclaration extends Declaration {
+	
+	public Expression expression;
 
 	public ParamDeclaration(Token firstToken, Token returnToken, Token identToken) {
 		super(firstToken, identToken);

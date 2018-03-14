@@ -40,7 +40,6 @@ public class FuncLitComp extends FuncLitExpression {
 		Label endLabel = new Label();
 		mv.visitLabel(startLabel);
 		mv.visitLabel(endLabel);
-		comp.isReturnExpression = true;
 		mv.visitLocalVariable(params.get(0).identToken.text, params.get(0).getJvmType(), null, startLabel, endLabel, comp.idents.size());
 		mv.visitVarInsn(ALOAD, 0);
 		for (int i = 1; i < comp.idents.size(); i++) {

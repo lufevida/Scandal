@@ -35,7 +35,10 @@ public class FuncLitExpression extends Expression {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		symtab.enterScope();
-		for (ParamDeclaration param : params) param.decorate(symtab);
+		for (ParamDeclaration param : params) {
+			param.decorate(symtab);
+			if (param.isLambda()) symtab.lambdaParams.put(param.identToken.text, null);
+		}
 		inputType = params.get(0).type;
 		returnExpression.decorate(symtab);
 		returnType = returnExpression.type;

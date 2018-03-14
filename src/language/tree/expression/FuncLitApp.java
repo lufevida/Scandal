@@ -8,7 +8,6 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
-import language.tree.AssignmentDeclaration;
 import language.tree.ParamDeclaration;
 
 public class FuncLitApp extends FuncLitExpression {
@@ -25,7 +24,8 @@ public class FuncLitApp extends FuncLitExpression {
 		mv.visitVarInsn(ALOAD, 0);
 		if (app.funcLit.isAbstract) {
 			for (Expression param : app.params)
-				if (!param.firstToken.text.equals(this.params.get(0).identToken.text)) param.generate(mv, symtab);
+				if (!param.firstToken.text.equals(params.get(0).identToken.text)) param.generate(mv, symtab);
+				else if (app.params.indexOf(param) != 0) throw new Exception("This feature is not yet supported");
 		}
 		else if (app.isLocal) {
 			mv.visitVarInsn(ALOAD, 0);
@@ -47,38 +47,19 @@ public class FuncLitApp extends FuncLitExpression {
 		Label startLabel = new Label();
 		Label endLabel = new Label();
 		mv.visitLabel(startLabel);
-		mv.visitLabel(endLabel);
-		for (Expression arg : app.params)
-			if (arg.firstToken.text.equals(params.get(0).identToken.text) && app.params.indexOf(arg) != 0)
-				throw new Exception("This feature is not yet supported");
+		mv.visitLabel(endLabel);				
 		if (capturesSelf) params.get(0).slotNumber = 1;
 		int paramCount = 0;
-		AssignmentDeclaration dec = (AssignmentDeclaration) symtab.lookup(app.firstToken.text);
-		FuncLitExpression l = (FuncLitExpression) dec.expression;
 		if (app.funcLit.isAbstract) {
-			l.returnExpression.isReturnExpression = true;
-			for (int i = 1; i < l.params.size(); i++) {
-				ParamDeclaration parameter = l.params.get(i);
-				parameter.slotNumber = paramCount++;
-				if (parameter.isLambda()) {
-					IdentExpression id = (IdentExpression) app.params.get(parameter.slotNumber + 1);
-					AssignmentDeclaration lookup = (AssignmentDeclaration) symtab.lookup(id.firstToken.text);
-					FuncLitExpression func = (FuncLitExpression) lookup.expression;
-					symtab.lambdaParams.replace(parameter.identToken.text, func);
-					//symtab.lambdas.replace(parameter.identToken.text, symtab.lambdas.get(id.firstToken.text));
-				}
+			for (int i = 1; i < app.funcLit.params.size(); i++) app.funcLit.params.get(i).slotNumber = paramCount++;
+			app.funcLit.params.get(0).slotNumber = paramCount;
+			if (app.funcLit.getClass() == FuncLitBlock.class) {
+				((FuncLitBlock) app.funcLit).returnBlock.paramCount = paramCount;
+				((FuncLitBlock) app.funcLit).returnBlock.generate(mv, symtab);
 			}
-			l.params.get(0).slotNumber = paramCount;
-			if (l.getClass() == FuncLitBlock.class) {
-				((FuncLitBlock) l).returnBlock.paramCount = paramCount;
-				((FuncLitBlock) l).returnBlock.generate(mv, symtab);
-			}
-			else l.returnExpression.generate(mv, symtab);
+			else app.funcLit.returnExpression.generate(mv, symtab);
 		}
-		else {
-			app.isReturnExpression = true;
-			app.generate(mv, symtab);
-		}
+		else app.generate(mv, symtab);
 		if (!capturesSelf) params.get(0).slotNumber = paramCount++;
 		mv.visitLocalVariable(params.get(0).identToken.text, params.get(0).getJvmType(), null, startLabel, endLabel, params.get(0).slotNumber);
 		if (app.type == Types.FLOAT) mv.visitInsn(FRETURN);

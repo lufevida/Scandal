@@ -38,13 +38,27 @@ public class FuncAppExpression extends Expression {
 			params.get(i).decorate(symtab);
 			if (params.get(i).type != funcLit.params.get(i).type) throw new Exception("Type mismatch");
 		}
+		if (funcLit.isAbstract) {
+			for (int i = 1; i < funcLit.params.size(); i++) {
+				if (funcLit.params.get(i).isLambda()) {
+					AssignmentDeclaration lookup = (AssignmentDeclaration) symtab.lookup(params.get(i).firstToken.text);
+					FuncLitExpression func = (FuncLitExpression) lookup.expression;
+					symtab.lambdaParams.replace(funcLit.params.get(i).identToken.text, func);
+				}
+			}
+		}
 		this.type = funcLit.returnType;
 	}
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		if (funcLit == null) funcLit = symtab.lambdaParams.get(firstToken.text);
-		if (funcLit.isAbstract) throw new Exception("This feature is not yet supported");
+		if (funcLit.isAbstract) {
+			for (int i = 0; i < params.size(); i++) funcLit.params.get(i).expression = params.get(i);
+			funcLit.returnExpression.isReturnExpression = true;
+			funcLit.returnExpression.generate(mv, symtab);
+			return;
+		}
 		if (isLocal) mv.visitVarInsn(ALOAD, paramSlot);
 		else {
 			mv.visitVarInsn(ALOAD, 0);

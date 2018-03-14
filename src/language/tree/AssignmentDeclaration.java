@@ -39,15 +39,9 @@ public class AssignmentDeclaration extends Declaration {
 		if (isLambda()) {
 			FuncLitExpression funcLit = (FuncLitExpression) expression;
 			funcLit.lambdaSlot = symtab.lambdaCount++;
-			//symtab.lambdas.put(identToken.text, funcLit); // TODO
-			if (funcLit.isAbstract) {
-				for (ParamDeclaration param : funcLit.params) if (param.isLambda())
-					symtab.lambdaParams.put(param.identToken.text, null);
-				return;
-			}
+			if (funcLit.isAbstract) return;
 			funcLit.generate(mv, symtab);
-			jvmType = funcLit.getInvocation();
-			mv.visitFieldInsn(PUTFIELD, symtab.className, identToken.text, jvmType);
+			mv.visitFieldInsn(PUTFIELD, symtab.className, identToken.text, funcLit.getInvocation());
 			return;
 		}
 		expression.generate(mv, symtab);
