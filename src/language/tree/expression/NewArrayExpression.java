@@ -18,12 +18,14 @@ public class NewArrayExpression extends Expression {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		size.decorate(symtab);
-		if (size.type != Types.INT) throw new Exception("Invalid EmptyArrayExpression");
+		if (size.type != Types.INT && size.type != Types.FLOAT)
+			throw new Exception("Invalid EmptyArrayExpression in line " + firstToken.lineNumber);
 	}
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		size.generate(mv, symtab);		
+		size.generate(mv, symtab);
+		if (size.type == Types.FLOAT) mv.visitInsn(F2I);
 		mv.visitIntInsn(NEWARRAY, T_FLOAT);
 	}
 

@@ -1,3 +1,0 @@
-array lisa = read("doc/monoLisa.wav", mono)
-lisa = pan(lisa, -0.3)
-play(lisa, stereo)

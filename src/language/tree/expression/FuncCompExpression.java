@@ -8,7 +8,6 @@ import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.AssignmentDeclaration;
 import language.tree.Node;
-import language.tree.ParamDeclaration;
 
 public class FuncCompExpression extends Expression {
 	
@@ -29,7 +28,7 @@ public class FuncCompExpression extends Expression {
 	public void decorate(SymbolTable symtab) throws Exception {
 		for (IdentExpression ident : idents) {
 			AssignmentDeclaration dec = (AssignmentDeclaration) symtab.lookup(ident.firstToken.text);
-			if (dec == null) throw new Exception("Composed function must have been declared in some enclosing scope");
+			if (dec == null) throw new Exception("Missing declaration in line " + firstToken.lineNumber);
 			FuncLitExpression lambda = (FuncLitExpression) dec.expression;
 			if (lambda.isAbstract) throw new Exception("Composed functions can only take one parameter");
 			lambdas.add(lambda);
@@ -44,7 +43,7 @@ public class FuncCompExpression extends Expression {
 		inputType = param.type;
 		if (inputType != lambdas.get(0).inputType) throw new Exception("Type mismatch");
 		compositeType = Node.getLambdaType(inputType, type);
-		isPartial = symtab.lookup(param.firstToken.text).getClass() == ParamDeclaration.class;
+		//isPartial = symtab.lookup(param.firstToken.text).getClass() == ParamDeclaration.class;
 	}
 
 	@Override

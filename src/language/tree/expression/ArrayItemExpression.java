@@ -21,7 +21,7 @@ public class ArrayItemExpression extends Expression {
 	public void decorate(SymbolTable symtab) throws Exception {
 		arrayDec = symtab.lookup(firstToken.text);
 		if (arrayDec == null) throw new Exception("Array must have been declared in some enclosing scope");
-		if (arrayDec.type != Types.ARRAY) throw new Exception("Type mismatch");
+		if (arrayDec.type != Types.ARRAY) throw new Exception("Type mismatch in line " + firstToken.lineNumber);
 		index.decorate(symtab);
 		if (index.type != Types.INT) throw new Exception("Array index must be an integer");
 	}

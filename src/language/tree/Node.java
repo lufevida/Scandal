@@ -14,8 +14,6 @@ public abstract class Node implements Opcodes {
 		BOOL,
 		STRING,
 		ARRAY,
-		FILTER,
-		WAVEFORM,
 		FLOAT_FLOAT,
 		FLOAT_ARRAY,
 		ARRAY_FLOAT,
@@ -54,8 +52,6 @@ public abstract class Node implements Opcodes {
 		case KW_BOOL: return Types.BOOL;
 		case KW_STRING: return Types.STRING;
 		case KW_ARRAY: return Types.ARRAY;
-		case KW_FILTER: return Types.FILTER;
-		case KW_WAVEFORM: return Types.WAVEFORM;
 		default: return null;
 		}
 	}
@@ -67,8 +63,6 @@ public abstract class Node implements Opcodes {
 		case KW_BOOL: return "Z";
 		case KW_STRING: return "Ljava/lang/String;";
 		case KW_ARRAY: return "[F";
-		case KW_FILTER: return "I";
-		case KW_WAVEFORM: return "I";
 		default: return null;
 		}
 	}

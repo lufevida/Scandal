@@ -1,5 +1,0 @@
-array lisa = read("doc/monoLisa.wav", mono)
-float amplitude = 0.7
-array panorama = line(1024, [1, -1, 1, -1, 1, -1])
-array vocals = track(lisa, 2000, amplitude, panorama)
-play(vocals, stereo)

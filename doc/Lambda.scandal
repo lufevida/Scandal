@@ -1,6 +1,0 @@
-
-import("doc/Prelude.scandal")
-
-float:float test = float x -> float y -> x + y
-float testApp = test(2.0, 3.0)
-print(testApp)

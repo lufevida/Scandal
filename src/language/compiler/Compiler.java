@@ -14,8 +14,8 @@ import org.objectweb.asm.util.TraceClassVisitor;
 
 import javafx.application.Application;
 import language.tree.ImportStatement;
+import language.tree.Node;
 import language.tree.Program;
-import language.tree.Statement;
 
 public class Compiler {
 
@@ -51,9 +51,9 @@ public class Compiler {
 		temp = getCode(inPath);
 		code = temp + code; // depth-first
 		Program program = getProgram(temp);
-		for (Statement s : program.statements)
-			if (s.getClass() == ImportStatement.class)
-				link(((ImportStatement) s).expression.firstToken.text);
+		for (Node node : program.nodes)
+			if (node.getClass() == ImportStatement.class)
+				link(((ImportStatement) node).expression.firstToken.text);
 	}
 	
 	private String getCode(String inPath) throws Exception {
@@ -64,8 +64,7 @@ public class Compiler {
 	private Program getProgram(String code) throws Exception {
 		Scanner scanner = new Scanner(code);
 		scanner.scan();
-		Program program = new Parser(scanner).parse();
-		return program;
+		return new Parser(scanner).parse();
 	}
 	
 	private String getClassName(String inPath) {

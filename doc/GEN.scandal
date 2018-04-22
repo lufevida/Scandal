@@ -1,0 +1,187 @@
+
+
+array:array GEN10 = array args -> {
+	int length = floor(args[0])
+	array table = new(length)
+	int i = 0
+	int j = 1
+	while i < length {
+		while j < size(args) {
+			table[i] = table[i] + args[j] * cos(j * 2 * pi * i / length - pi / 2)
+			j = j + 1
+		}
+		j = 1
+		i = i + 1
+	}
+	return table
+}
+
+func shift(array buffer, array shifter) {
+	int i = 0
+	while i < size(buffer) {
+		buffer[i] = buffer[i] + shifter[i % size(shifter)]
+		i = i + 1
+	}
+	return buffer
+}
+
+func scale(array buffer, array scalar) {
+	int i = 0
+	while i < size(buffer) {
+		buffer[i] = buffer[i] * scalar[i % size(scalar)]
+		i = i + 1
+	}
+	return buffer
+}
+
+func linseg(array args) {
+	int length = floor(args[0])
+	array table = new(length)
+	float height = 0.0
+	float increment = 0.0
+	int width = 0
+	int i = 0
+	int j = 1
+	while j < size(args) - 2 {
+		height = args[j]
+		increment = (args[j + 2] - args[j]) / args[j + 1]
+		width = floor(args[j + 1]) + i
+		while i < width {
+			if i < length { table[i] = height }
+			height = height + increment
+			i = i + 1
+		}
+		j = j + 2
+	}
+	return table
+}
+
+func oscil(array amps, array freqs, array table, float shift) {
+	int samples = size(amps) * 44100
+	array buffer = new(samples)
+	float phase = shift * size(table)
+	int i = 0
+	while i < samples {
+		if phase >= 1.0 * size(table) { phase = phase - 1.0 * size(table) }
+		buffer[i] = amps[i] * table[floor(phase)]
+		phase = phase + freqs[i]
+		i = i + 1
+	}
+	return buffer
+}
+
+
+
+func i1(array args, array f1) {
+	float p2 = args[0] * 44100.0
+	float p3 = args[1] * 44100.0
+	float ifreq = args[2]
+	float p6 = args[3] / 32768.0
+	float p7 = args[4]
+	float p8 = args[5] * 44100.0
+	float p9 = args[6]
+	array aglis = linseg([p3 + p2, 1, p2, 1, p8, 1, p3 + p2 - p8, p9])
+	array k1 = linseg([p3 + p2, 0, p2, 0, p3, 5])
+	
+	
+	return new(2)
+}
+
+array f1 = GEN10([8192, 1])
+
+array e1 = i1([0, 24.12, 2909.056, 200, 0.001, 17.8, 0.99], f1)
+
+/*
+	array k2 = oscil(k1, [p7], f1, 0.0)	
+	k2 = shift(k2, [ifreq])
+	k2 = scale(k2, aglis)
+	array k3 = linseg([p3 + p2, 0, p2, 0, p3 * 0.7, p6, p3 * 0.3, 0])
+	array a1 = oscil(k3, k2, f1, 0.0)
+	return a1
+*/
+
+
+
+array:array GEN7 = array args -> {
+	int length = floor(args[0])
+	array table = new(length)
+	float height = 0.0
+	float increment = 0.0
+	int width = 0
+	int i = 0
+	int j = 1
+	while j < size(args) - 2 {
+		height = args[j]
+		increment = (args[j + 2] - args[j]) / args[j + 1]
+		width = floor(args[j + 1]) + i
+		while i < width {
+			if i < length { table[i] = height }
+			height = height + increment
+			i = i + 1
+		}
+		j = j + 2
+	}
+	return table
+}
+
+array:array GEN10 = array args -> {
+	int length = floor(args[0])
+	array table = new(length)
+	int i = 0
+	int j = 1
+	while i < length {
+		while j < size(args) {
+			table[i] = table[i] + args[j] * cos(j * 2 * pi * i / length - pi / 2)
+			j = j + 1
+		}
+		j = 1
+		i = i + 1
+	}
+	return table
+}
+
+array:array oscil = array args -> array table -> {
+	int samples = floor(args[0])
+	array buffer = new(samples)
+	float amp = args[1]
+	float freq = args[2] * size(table) / 44100.0
+	float phase = 1.0 * size(table)
+	if size(args) == 4 { phase = phase * args[3] }
+	int i = 0
+	while i < samples {
+		if phase >= 1.0 * size(table) { phase = phase - size(table) }
+		buffer[i] = amp * table[floor(phase)]
+		phase = phase + freq
+		i = i + 1
+	}
+	return buffer
+}
+
+array:array ampmod = array buffer -> array amps -> {
+	int samples = size(buffer)
+	int i = 0
+	while i < samples {
+		buffer[i] = buffer[i] * amps[i]
+		i = i + 1
+	}
+	return buffer
+}
+
+float:float m2f = float note -> 440 * pow(2, (note - 69) / 12)
+
+array:array mix = array first -> array second -> {
+	int samples = size(first)
+	if size(second) < size(first) { samples = size(second) }
+	array buffer = new(samples)
+	int i = 0
+	while i < samples {
+		buffer[i] = first[i] + second[i]
+		i = i + 1
+	}
+	return buffer
+}
+
+array f10 = GEN10([2048, 0, 9, 0, 8, 0, 7, 0, 6, 0, 5])
+array f11 = GEN10([2048, 10, 10, 9, 0, 0, 0, 3, 2, 0, 0, 1])
+array f12 = GEN10([2048, 10, 0, 0, 0, 5, 0, 0, 0, 0, 0, 3])
+array f13 = GEN10([2048, 10, 0, 0, 0, 0, 3, 1])

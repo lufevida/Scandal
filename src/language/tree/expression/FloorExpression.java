@@ -18,7 +18,8 @@ public class FloorExpression extends Expression {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		param.decorate(symtab);
-		if (param.type != Types.INT && param.type != Types.FLOAT) throw new Exception("Invalid FloorExpression");
+		if (param.type != Types.INT && param.type != Types.FLOAT)
+			throw new Exception("Invalid FloorExpression in line " + firstToken.lineNumber + ", pos. " + firstToken.lineNumberPosition);
 	}
 
 	@Override

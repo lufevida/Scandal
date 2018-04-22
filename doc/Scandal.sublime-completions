@@ -1,0 +1,10 @@
+{
+	"scope": "source.csound",
+	"completions": [
+		"print(string)",
+		"plot(name, array, points)",
+		"play(array, channels)",
+		"record(duration)",
+		"write(array, name, channels)"
+	]
+}

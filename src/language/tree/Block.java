@@ -10,22 +10,19 @@ import language.compiler.Token;
 
 public class Block extends Node {
 
-	public final ArrayList<AssignmentDeclaration> declarations;
-	public final ArrayList<Statement> statements;
+	public final ArrayList<Node> nodes;
 
-	public Block(Token firstToken, ArrayList<AssignmentDeclaration> declarations, ArrayList<Statement> statements) {
+	public Block(Token firstToken, ArrayList<Node> nodes) {
 		super(firstToken);
-		this.declarations = declarations;
-		this.statements = statements;
+		this.nodes = nodes;
 	}
 	
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		symtab.enterScope();
-		for (AssignmentDeclaration declaration : declarations) declaration.decorate(symtab);
-		for (Statement statement : statements) {
-			if (statement.getClass() == ImportStatement.class) throw new Exception();
-			statement.decorate(symtab);
+		for (Node node : nodes) {
+			if (node.getClass() == ImportStatement.class) throw new Exception();
+			node.decorate(symtab);
 		}
 		symtab.leaveScope();
 	}
@@ -36,12 +33,14 @@ public class Block extends Node {
 		Label blockEnd = new Label();
 		mv.visitLabel(blockStart);
 		mv.visitLabel(blockEnd);
-		for (AssignmentDeclaration declaration : declarations) {
-			declaration.startLabel = blockStart;
-			declaration.endLabel = blockEnd;
-			declaration.generate(mv, symtab);
+		for (Node node : nodes) {
+			if (node.getClass() == AssignmentDeclaration.class) {
+				AssignmentDeclaration dec = (AssignmentDeclaration) node;
+				dec.startLabel = blockStart;
+				dec.endLabel = blockEnd;
+			}
+			node.generate(mv, symtab);
 		}
-		for (Statement statement : statements) statement.generate(mv, symtab);
 	}
 
 }

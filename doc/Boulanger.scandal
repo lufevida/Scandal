@@ -1,0 +1,69 @@
+
+import("doc/GEN.scandal")
+
+array:array f1 = array args -> oscil(args, GEN10([8192, 1]))
+array:array f9 = array args -> oscil(args, GEN10([2048, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1]))
+
+array:array i1Left = array args -> array:array f1 -> array:array f9 -> array:array linseg -> {
+	float p2 = args[0] * 44100.0
+	float p3 = args[1] * 44100.0
+	float ifreq = args[2]
+	float p6 = args[3] / 32768.0
+	float p7 = args[4]
+	float p8 = args[5] * 44100.0
+	float p9 = args[6]
+	int length = floor(p3 + p2)
+	array aglis = linseg([length, 1, floor(p2), 1, p8, 1, length - p8, p9])
+	
+	array k1 = linseg([length, 0, floor(p2), 0, p3, 5])
+	array k2 = f1([length, 1, p7])
+	array k3 = linseg([length, 0, floor(p2), 0, p3 * 0.7, p6, p3 * 0.3, 0])
+	array a1 = new(length)
+	
+	array k4 = linseg([length, 0, floor(p2), 0, p3 * 0.6, 6, p3 * 0.4, 0])
+	array k5 = f1([length, 1, p7 * 0.9, 1.4])
+	array k6 = linseg([length, 0, floor(p2), 0, p3 * 0.9, p6, p3 * 0.1, 0])
+	array a3 = new(length)
+
+	float twoPi = 2.0 * pi
+	float freq = 0.0
+	float phase = 0.0
+	int i = floor(p2)
+	while i < length {
+		k2[i] = k2[i] * k1[i]
+		freq = aglis[i] * (ifreq + k2[i]) * twoPi / 44100.0
+		phase = phase + freq
+		if phase >= twoPi { phase = phase - twoPi }
+		a1[i] = k3[i] * cos(phase)
+		i = i + 1
+	}
+
+	freq = 0.0
+	phase = 0.2 * twoPi
+	i = floor(p2)
+	while i < length {
+		k5[i] = k5[i] * k4[i]
+		freq = aglis[i] * (ifreq + 0.009 + k5[i]) * twoPi / 44100.0
+		phase = phase + freq
+		if phase >= twoPi { phase = phase - twoPi }
+		a3[i] = k6[i] * cos(phase)
+		i = i + 1
+	}
+	
+	
+	
+	return a3
+}
+
+array:array i1 = array args -> i1Left(args, f1, f9, GEN7)
+array:array e1 = array master -> mix(master, i1([0, 24.12, 2909.056, 200, 0.001, 17.8, 0.99]))
+array:array e2 = array master -> mix(master, i1([1, 21.76, 2777.719, 240, 0.001, 10.2, 0.99]))
+array:array e3 = array master -> mix(master, i1([3.6, 17.13, 3361.080, 390, 0.001, 11.3, 0.99]))
+array:array e4 = array master -> mix(master, i1([6.2, 15.02, 3227.854, 460, 0.001, 10.5, 0.99]))
+array:array e5 = array master -> mix(master, i1([8.4, 13.85, 3117.796, 680, 0.001, 13.8, 0.99]))
+
+array master = new(24 * 44100)
+master = e1.e2.e3.e4.e5(master)
+
+plot("", master, 2000)
+play(master, 1)

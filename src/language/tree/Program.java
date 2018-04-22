@@ -13,26 +13,24 @@ import language.tree.expression.FuncLitExpression;
 
 public class Program extends Node {
 
-	public final ArrayList<AssignmentDeclaration> declarations;
-	public final ArrayList<Statement> statements;
+	public final ArrayList<Node> nodes;
 	public byte[] bytecode;
 
-	public Program(Token firstToken, ArrayList<AssignmentDeclaration> declarations, ArrayList<Statement> statements) {
+	public Program(Token firstToken, ArrayList<Node> nodes) {
 		super(firstToken);
-		this.declarations = declarations;
-		this.statements = statements;
+		this.nodes = nodes;
 	}
 	
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
-		for (AssignmentDeclaration declaration : declarations) declaration.decorate(symtab);
-		for (Statement statement : statements) statement.decorate(symtab);
+		for (Node node : nodes) node.decorate(symtab);
 	}
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
 		String classDesc = "L" + symtab.className + ";";
+		//cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, symtab.className, null, "java/lang/Object", null);
 		cw.visit(V1_8, ACC_PUBLIC + ACC_SUPER, symtab.className, null, "javafx/application/Application", null);
 		cw.visitSource(symtab.className, null);
 		String sig = "java/lang/invoke/MethodHandles";
@@ -45,7 +43,7 @@ public class Program extends Node {
 		bytecode = cw.toByteArray();
 	}
 	
-	private void addMain(ClassWriter cw) {
+	private void addMain(ClassWriter cw) {		
 		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC + ACC_STATIC, "main", "([Ljava/lang/String;)V", null, null);
 		mv.visitCode();
 		Label startLabel = new Label();
@@ -82,12 +80,15 @@ public class Program extends Node {
 		mv.visitLabel(startLabel);
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitMethodInsn(INVOKESPECIAL, "javafx/application/Application", "<init>", "()V", false);
-		for (AssignmentDeclaration dec : program.declarations) {
-			dec.startLabel = startLabel;
-			dec.endLabel = endLabel;
-			dec.generate(mv, symtab);
+		for (Node node : nodes) {
+			if (node.getClass() == AssignmentDeclaration.class) {
+				AssignmentDeclaration dec = (AssignmentDeclaration) node;
+				dec.startLabel = startLabel;
+				dec.endLabel = endLabel;
+			}
+			node.generate(mv, symtab);
+			if (node.getClass() == MethodStatement.class) ((MethodStatement) node).generate(cw, symtab);
 		}
-		for (Statement statement : program.statements) statement.generate(mv, symtab);
 		mv.visitInsn(RETURN);
 		mv.visitLabel(endLabel);
 		mv.visitLocalVariable("this", classDesc, null, startLabel, endLabel, 0);
@@ -96,13 +97,19 @@ public class Program extends Node {
 	}
 	
 	private void addFields(ClassWriter cw, SymbolTable symtab) throws Exception {
+		//String sig = "Ljava/util/function/Function;";
 		FieldVisitor fv;
-		for (AssignmentDeclaration dec : declarations) if (dec.isLambda()) {
-			FuncLitExpression lambda = (FuncLitExpression) dec.expression;
-			if (!lambda.isAbstract) {
-				fv = cw.visitField(0, dec.identToken.text, lambda.getInvocation(), null, null);
-				fv.visitEnd();
-				lambda.generate(cw, symtab);
+		for (Node node : nodes) if (node.getClass() == AssignmentDeclaration.class) {
+			AssignmentDeclaration dec = (AssignmentDeclaration) node;
+			if (dec.isLambda()) {
+				FuncLitExpression lambda = (FuncLitExpression) dec.expression;
+				if (!lambda.isAbstract) {
+					//fv = cw.visitField(ACC_STATIC, "floatToArrayToArray", sig, "Ljava/util/function/Function<Ljava/lang/Integer;Ljava/util/function/Function<[F[F>;>;", null);
+					//fv = cw.visitField(ACC_STATIC, "arrayToArray", sig, "Ljava/util/function/Function<[F[F>;", null);
+					fv = cw.visitField(0, dec.identToken.text, lambda.getInvocation(), null, null);
+					fv.visitEnd();
+					lambda.generate(cw, symtab);
+				}
 			}
 		}
 	}

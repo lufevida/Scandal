@@ -24,9 +24,12 @@ public class FuncLitBlock extends FuncLitExpression {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		symtab.enterScope();
-		for (ParamDeclaration param : params) {
-			param.decorate(symtab);
-			if (param.isLambda()) symtab.lambdaParams.put(param.identToken.text, null);
+		for (int i = 0; i < params.size(); i++) {
+			params.get(i).decorate(symtab);
+			if (params.get(i).isLambda()) {
+				params.get(i).slotNumber = i - 1; // TODO: rethink this
+				symtab.lambdaParams.put(params.get(i).identToken.text, null);
+			}
 		}
 		inputType = params.get(0).type;
 		returnBlock.decorate(symtab);

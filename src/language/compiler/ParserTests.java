@@ -1,12 +1,19 @@
 package language.compiler;
 
-import static language.compiler.Token.Kind.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import language.tree.*;
+import language.tree.AssignmentDeclaration;
+import language.tree.AssignmentStatement;
+import language.tree.Declaration;
+import language.tree.IfStatement;
+import language.tree.IndexedAssignmentStatement;
+import language.tree.ParamDeclaration;
+import language.tree.Program;
+import language.tree.ReturnBlock;
+import language.tree.Statement;
+import language.tree.WhileStatement;
 import language.tree.expression.ArrayItemExpression;
 import language.tree.expression.ArraySizeExpression;
 import language.tree.expression.BinaryExpression;
@@ -20,6 +27,8 @@ import language.tree.expression.FuncLitExpression;
 import language.tree.expression.IntLitExpression;
 import language.tree.expression.ReadExpression;
 
+import static language.compiler.Token.Kind.*;
+
 public class ParserTests {
 
 	@Test
@@ -29,7 +38,7 @@ public class ParserTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		Declaration declaration = program.declarations.get(0);
+		Declaration declaration = (Declaration) program.nodes.get(0);
 		assertEquals(KW_INT, declaration.firstToken.kind);
 		assertEquals(IDENT, declaration.identToken.kind);
 	}
@@ -41,7 +50,7 @@ public class ParserTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		AssignmentDeclaration declaration = (AssignmentDeclaration) program.declarations.get(0);
+		AssignmentDeclaration declaration = (AssignmentDeclaration) program.nodes.get(0);
 		assertEquals(KW_FLOAT, declaration.firstToken.kind);
 		assertEquals(IDENT, declaration.identToken.kind);
 		assertEquals(FloatLitExpression.class, declaration.expression.getClass());
@@ -54,7 +63,7 @@ public class ParserTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		AssignmentStatement statement = (AssignmentStatement) program.statements.get(0);
+		AssignmentStatement statement = (AssignmentStatement) program.nodes.get(0);
 		assertEquals(IDENT, statement.firstToken.kind);
 		assertEquals(IntLitExpression.class, statement.expression.getClass());
 	}
@@ -66,7 +75,7 @@ public class ParserTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		IfStatement statement = (IfStatement) program.statements.get(0);
+		IfStatement statement = (IfStatement) program.nodes.get(0);
 		assertEquals(KW_IF, statement.firstToken.kind);
 		assertEquals(BoolLitExpression.class, statement.expression.getClass());
 		assertNotNull(statement.block);
@@ -79,7 +88,7 @@ public class ParserTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		WhileStatement statement = (WhileStatement) program.statements.get(0);
+		WhileStatement statement = (WhileStatement) program.nodes.get(0);
 		assertEquals(KW_WHILE, statement.firstToken.kind);
 		assertEquals(BinaryExpression.class, statement.expression.getClass());
 		assertNotNull(statement.block);
@@ -143,7 +152,7 @@ public class ParserTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		AssignmentDeclaration declaration = (AssignmentDeclaration) program.declarations.get(0);
+		AssignmentDeclaration declaration = (AssignmentDeclaration) program.nodes.get(0);
 		assertEquals(KW_FLOAT, declaration.firstToken.kind);
 		assertEquals(IDENT, declaration.identToken.kind);
 		assertEquals(FuncLitExpression.class, declaration.expression.getClass());
@@ -165,7 +174,7 @@ public class ParserTests {
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		AssignmentDeclaration declaration = (AssignmentDeclaration) program.declarations.get(0);
+		AssignmentDeclaration declaration = (AssignmentDeclaration) program.nodes.get(0);
 		assertEquals(KW_INT, declaration.firstToken.kind);
 		assertEquals(IDENT, declaration.identToken.kind);
 		assertEquals(FuncAppExpression.class, declaration.expression.getClass());
@@ -250,6 +259,14 @@ public class ParserTests {
 		scanner.scan();
 		AssignmentDeclaration d = new Parser(scanner).assignmentDeclaration();
 		assertEquals(d.getClass(), AssignmentDeclaration.class);
+	}
+	
+	@Test
+	public void testMethodStatement() throws Exception {
+		String input = "func sum(int a, int b) { return a + b }";
+		Scanner scanner = new Scanner(input);
+		scanner.scan();
+		new Parser(scanner).methodStatement();
 	}
 
 }

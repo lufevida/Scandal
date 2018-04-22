@@ -21,6 +21,11 @@ float:float returnBlock = float x -> {
 float:float idtest = float x -> x
 float:float idtest2 = float x -> idtest(x)
 
+float:float test = float x -> float y -> float z -> x + y + z
+float testApp = test(2.0, 3.0, eleven)
+print(testApp)
+float:float application = float x -> test(x, eleven, eleven)
+
 /*
 float:float threeArgs = float x -> float y -> float z -> x + y + z
 float:float twoArgs = float x -> float y -> threeArgs(x, y, 11.1)

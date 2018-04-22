@@ -9,13 +9,12 @@ import static language.compiler.Token.Kind.DIV;
 import static language.compiler.Token.Kind.DOT;
 import static language.compiler.Token.Kind.EOF;
 import static language.compiler.Token.Kind.EQUAL;
-import static language.compiler.Token.Kind.FLOAT_LIT;
 import static language.compiler.Token.Kind.GE;
 import static language.compiler.Token.Kind.GT;
 import static language.compiler.Token.Kind.IDENT;
-import static language.compiler.Token.Kind.INT_LIT;
 import static language.compiler.Token.Kind.KW_ARRAY;
 import static language.compiler.Token.Kind.KW_FLOAT;
+import static language.compiler.Token.Kind.KW_FUNC;
 import static language.compiler.Token.Kind.KW_IF;
 import static language.compiler.Token.Kind.KW_IMPORT;
 import static language.compiler.Token.Kind.KW_PLAY;
@@ -48,23 +47,24 @@ import language.tree.Block;
 import language.tree.IfStatement;
 import language.tree.ImportStatement;
 import language.tree.IndexedAssignmentStatement;
+import language.tree.MethodStatement;
+import language.tree.Node;
+import language.tree.ParamDeclaration;
 import language.tree.PlayStatement;
 import language.tree.PlotStatement;
 import language.tree.PrintStatement;
 import language.tree.Program;
 import language.tree.ReturnBlock;
 import language.tree.Statement;
-import language.tree.ParamDeclaration;
 import language.tree.WhileStatement;
 import language.tree.WriteStatement;
 import language.tree.expression.ArrayItemExpression;
 import language.tree.expression.ArrayLitExpression;
 import language.tree.expression.ArraySizeExpression;
 import language.tree.expression.BinaryExpression;
-import language.tree.expression.BiquadExpression;
 import language.tree.expression.BoolLitExpression;
+import language.tree.expression.CosExpression;
 import language.tree.expression.Expression;
-import language.tree.expression.FilterExpression;
 import language.tree.expression.FloatLitExpression;
 import language.tree.expression.FloorExpression;
 import language.tree.expression.FuncAppExpression;
@@ -77,15 +77,12 @@ import language.tree.expression.IdentExpression;
 import language.tree.expression.InfoExpression;
 import language.tree.expression.IntLitExpression;
 import language.tree.expression.NewArrayExpression;
-import language.tree.expression.OscillatorExpression;
-import language.tree.expression.PanExpression;
+import language.tree.expression.PiExpression;
+import language.tree.expression.PowExpression;
 import language.tree.expression.ReadExpression;
 import language.tree.expression.RecordExpression;
 import language.tree.expression.StringLitExpression;
-import language.tree.expression.TrackExpression;
-import language.tree.expression.TremoloExpression;
 import language.tree.expression.UnaryExpression;
-import language.tree.expression.WaveformExpression;
 
 public class Parser {
 
@@ -115,60 +112,59 @@ public class Parser {
 
 	public Program parse() throws Exception {
 		Token firstToken = token;
-		ArrayList<AssignmentDeclaration> declarations = new ArrayList<>();
-		ArrayList<Statement> statements = new ArrayList<>();
+		//ArrayList<AssignmentDeclaration> declarations = new ArrayList<>();
+		//ArrayList<Statement> statements = new ArrayList<>();
+		ArrayList<Node> nodes = new ArrayList<>();
 		while (token.kind != EOF) {
 			try {
 				AssignmentDeclaration declaration = assignmentDeclaration();
-				declarations.add(declaration);
+				nodes.add(declaration);
 			} catch (Exception declarationException) {
 				try {
 					Statement statement = statement();
-					statements.add(statement);
+					nodes.add(statement);
 				} catch (Exception statementException) {
-					throw new Exception("Illegal program: " + token.lineNumberPosition);
+					throw new Exception("Illegal program in line " + token.lineNumber + ", pos. " + token.lineNumberPosition);
 				}
 			}
 		}
 		matchEOF();
-		return new Program(firstToken, declarations, statements);
+		return new Program(firstToken, nodes);
 	}
 
 	public Block block() throws Exception {
 		Token firstToken = token;
-		ArrayList<AssignmentDeclaration> declarations = new ArrayList<>();
-		ArrayList<Statement> statements = new ArrayList<>();
+		ArrayList<Node> nodes = new ArrayList<>();
 		match(LBRACE);
 		while (token.kind != RBRACE) {
 			try {
 				AssignmentDeclaration declaration = assignmentDeclaration();
-				declarations.add(declaration);
+				nodes.add(declaration);
 			} catch (Exception declarationException) {
 				try {
 					Statement statement = statement();
-					statements.add(statement);
+					nodes.add(statement);
 				} catch (Exception statementException) {
 					throw new Exception("Illegal block: " + token.lineNumberPosition);
 				}
 			}
 		}
 		match(RBRACE);
-		return new Block(firstToken, declarations, statements);
+		return new Block(firstToken, nodes);
 	}
 
 	public ReturnBlock returnBlock() throws Exception {
 		Token firstToken = token;
-		ArrayList<AssignmentDeclaration> declarations = new ArrayList<>();
-		ArrayList<Statement> statements = new ArrayList<>();
+		ArrayList<Node> nodes = new ArrayList<>();
 		match(LBRACE);
 		while (token.kind != KW_RETURN) {
 			try {
 				AssignmentDeclaration declaration = assignmentDeclaration();
-				declarations.add(declaration);
+				nodes.add(declaration);
 			} catch (Exception declarationException) {
 				try {
 					Statement statement = statement();
-					statements.add(statement);
+					nodes.add(statement);
 				} catch (Exception statementException) {
 					throw new Exception("Illegal return block: " + token.lineNumberPosition);
 				}
@@ -177,7 +173,7 @@ public class Parser {
 		match(KW_RETURN);
 		Expression expression = expression();
 		match(RBRACE);
-		return new ReturnBlock(firstToken, declarations, statements, expression);
+		return new ReturnBlock(firstToken, nodes, expression);
 	}
 
 	public AssignmentDeclaration assignmentDeclaration() throws Exception {
@@ -224,8 +220,6 @@ public class Parser {
 		case KW_FLOAT:
 		case KW_BOOL:
 		case KW_STRING:
-		case KW_FILTER:
-		case KW_WAVEFORM:
 		case KW_ARRAY: return true;
 		default: return false;
 		}
@@ -257,6 +251,9 @@ public class Parser {
 		} break;
 		case KW_WRITE: {
 			statement = writeStatement();
+		} break;
+		case KW_FUNC: {
+			statement = methodStatement();
 		} break;
 		default: throw new Exception("Illegal statement: " + token.lineNumberPosition);
 		}
@@ -348,6 +345,23 @@ public class Parser {
 		Expression format = expression();
 		match(RPAREN);
 		return new WriteStatement(firstToken, array, name, format);
+	}
+	
+	public MethodStatement methodStatement() throws Exception {
+		Token firstToken = token;
+		ArrayList<ParamDeclaration> decs = new ArrayList<>();
+		match(KW_FUNC);
+		Token name = token;
+		match(IDENT);
+		match(LPAREN);
+		decs.add(unassignedDeclaration());
+		while (token.kind == COMMA) {
+			match(COMMA);
+			decs.add(unassignedDeclaration());
+		}
+		match(RPAREN);
+		ReturnBlock block = returnBlock();
+		return new MethodStatement(firstToken, name, decs, block);
 	}
 
 	public Expression expression() throws Exception {
@@ -468,28 +482,14 @@ public class Parser {
 		} break;
 		case LBRACKET: {
 			consume();
-			ArrayList<Float> floats = new ArrayList<>();
+			ArrayList<Expression> floats = new ArrayList<>();
+			floats.add(expression());
 			while (token.kind != RBRACKET) {
-				if (token.kind == INT_LIT || token.kind == FLOAT_LIT || token.kind == MINUS) {
-					if (token.kind == INT_LIT) floats.add((float) token.getIntValue());
-					else if (token.kind == FLOAT_LIT) floats.add(token.getFloatValue());
-					else if (token.kind == MINUS) {
-						consume();
-						if (token.kind == INT_LIT) floats.add((float) -token.getIntValue());
-						else if (token.kind == FLOAT_LIT) floats.add(-token.getFloatValue());
-					}
-					consume();
-					try {
-						match(COMMA);
-					} catch (Exception e) {
-						break;
-					}
-				} else {
-					throw new Exception("Illegal factor: " + token.lineNumberPosition);
-				}
+				match(COMMA);
+				floats.add(expression());
 			}
-			expression = new ArrayLitExpression(firstToken, floats);
 			match(RBRACKET);
+			expression = new ArrayLitExpression(firstToken, floats);
 		} break;
 		case KW_READ: {
 			consume();
@@ -499,32 +499,6 @@ public class Parser {
 			Expression format = expression();
 			match(RPAREN);
 			expression = new ReadExpression(firstToken, fileName, format);
-		} break;
-		case KW_OSCILLATOR: {
-			consume();
-			match(LPAREN);
-			Expression duration = expression();
-			match(COMMA);
-			Expression amplitude = expression();
-			match(COMMA);
-			Expression frequency = expression();
-			match(COMMA);
-			Expression shape = expression();
-			match(RPAREN);
-			expression = new OscillatorExpression(firstToken, duration, amplitude, frequency, shape);
-		} break;
-		case KW_BIQUAD: {
-			consume();
-			match(LPAREN);
-			Expression array = expression();
-			match(COMMA);
-			Expression cutoff = expression();
-			match(COMMA);
-			Expression resonance = expression();
-			match(COMMA);
-			Expression method = expression();
-			match(RPAREN);
-			expression = new BiquadExpression(firstToken, array, cutoff, resonance, method);
 		} break;
 		case KW_SIZE: {
 			consume();
@@ -540,28 +514,6 @@ public class Parser {
 			match(RPAREN);
 			expression = new NewArrayExpression(firstToken, size);
 		} break;
-		case KW_PAN: {
-			consume();
-			match(LPAREN);
-			Expression array = expression();
-			match(COMMA);
-			Expression position = expression();
-			match(RPAREN);
-			expression = new PanExpression(firstToken, array, position);
-		} break;
-		case KW_TREMOLO: {
-			consume();
-			match(LPAREN);
-			Expression array = expression();
-			match(COMMA);
-			Expression depth = expression();
-			match(COMMA);
-			Expression speed = expression();
-			match(COMMA);
-			Expression shape = expression();
-			match(RPAREN);
-			expression = new TremoloExpression(firstToken, array, depth, speed, shape);
-		} break;
 		case KW_RECORD: {
 			consume();
 			match(LPAREN);
@@ -576,48 +528,25 @@ public class Parser {
 			match(RPAREN);
 			expression = new FloorExpression(firstToken, param);
 		} break;
-		case KW_TRACK: {
-			consume();
-			match(LPAREN);
-			Expression array = expression();
-			match(COMMA);
-			Expression start = expression();
-			match(COMMA);
-			Expression gain = expression();
-			match(COMMA);
-			Expression pan = expression();
-			match(RPAREN);
-			expression = new TrackExpression(firstToken, array, start, gain, pan);
-		} break;
-		case KW_ALLPASS:
-		case KW_BANDPASS:
-		case KW_BANDSTOP:
-		case KW_LOWPASS:
-		case KW_HIPASS:
-		case KW_LOWSHELF:
-		case KW_HISHELF:
-		case KW_PEAKING: {
-			consume();
-			expression = new FilterExpression(firstToken);
-		} break;
-		case KW_COSINE:
-		case KW_SAWTOOTH:
-		case KW_SQUARE:
-		case KW_TRIANGLE:
-		case KW_NOISE: {
-			consume();
-			expression = new WaveformExpression(firstToken);
-		} break;
 		case KW_FALSE:
-		case KW_TRUE: {
+		case KW_TRUE:
 			consume();
 			expression = new BoolLitExpression(firstToken);
-		} break;
-		case LPAREN: {
+			break;
+		case LPAREN:
 			consume();
 			expression = expression();
 			match(RPAREN);
-		} break;
+			break;
+		case KW_COS:
+			expression = cosExpression();
+			break;
+		case KW_POW:
+			expression = powExpression();
+			break;
+		case KW_PI:
+			expression = piExpression();
+			break;
 		case KW_ARRAY:
 		case KW_FLOAT: {
 			ArrayList<ParamDeclaration> decs = new ArrayList<>();
@@ -646,6 +575,32 @@ public class Parser {
 			throw new Exception("Illegal factor: " + token.lineNumberPosition);
 		}
 		return expression;
+	}
+	
+	public CosExpression cosExpression() throws Exception {
+		Token firstToken = token;
+		consume();
+		match(LPAREN);
+		Expression phase = expression();
+		match(RPAREN);
+		return new CosExpression(firstToken, phase);
+	}
+	
+	public PowExpression powExpression() throws Exception {
+		Token firstToken = token;
+		consume();
+		match(LPAREN);
+		Expression base = expression();
+		match(COMMA);
+		Expression exponent = expression();
+		match(RPAREN);
+		return new PowExpression(firstToken, base, exponent);
+	}
+	
+	public PiExpression piExpression() throws Exception {
+		Token firstToken = token;
+		consume();
+		return new PiExpression(firstToken);
 	}
 
 }

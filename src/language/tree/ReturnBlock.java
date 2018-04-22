@@ -13,19 +13,18 @@ public class ReturnBlock extends Block {
 	
 	public final Expression returnExpression;
 	public int paramCount = 0;
+	public boolean resetCounter = true;
 
-	public ReturnBlock(Token firstToken, ArrayList<AssignmentDeclaration> declarations, ArrayList<Statement> statements, Expression returnExpression) {
-		super(firstToken, declarations, statements);
+	public ReturnBlock(Token firstToken, ArrayList<Node> nodes, Expression returnExpression) {
+		super(firstToken, nodes);
 		this.returnExpression = returnExpression;
 	}
 	
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
-		for (AssignmentDeclaration declaration : declarations) declaration.decorate(symtab);
-		for (Statement statement : statements) {
-			statement.decorate(symtab);
-			if (statement.getClass() == ImportStatement.class)
-				throw new Exception("Import statements are only allowed in the outmost scope");
+		for (Node node : nodes) {
+			if (node.getClass() == ImportStatement.class) throw new Exception();
+			node.decorate(symtab);
 		}
 		returnExpression.decorate(symtab);
 	}
@@ -38,19 +37,18 @@ public class ReturnBlock extends Block {
 		mv.visitLabel(blockStart);
 		mv.visitLabel(blockEnd);
 		int temp = symtab.slotCount;
-		symtab.slotCount = 1 + paramCount;
-		for (AssignmentDeclaration declaration : declarations) {
-			if (declaration.getClass() == AssignmentDeclaration.class) {
-				AssignmentDeclaration dec = (AssignmentDeclaration) declaration;
+		if (resetCounter) symtab.slotCount = 1 + paramCount;
+		for (Node node : nodes) {
+			if (node.getClass() == AssignmentDeclaration.class) {
+				AssignmentDeclaration dec = (AssignmentDeclaration) node;
+				dec.startLabel = blockStart;
+				dec.endLabel = blockEnd;
 				dec.expression.isReturnExpression = true;
 			}
-			declaration.startLabel = blockStart;
-			declaration.endLabel = blockEnd;
-			declaration.generate(mv, symtab);
+			node.generate(mv, symtab);
 		}
-		for (Statement statement : statements) statement.generate(mv, symtab);
 		returnExpression.generate(mv, symtab);
-		symtab.slotCount = temp;
+		if (resetCounter) symtab.slotCount = temp;
 	}
 
 }

@@ -1,0 +1,38 @@
+
+float:array oscillator = float duration -> float amplitude -> float frequency -> array:float shape -> {
+	int samples = floor(duration * 44100.0)
+	array buffer = new(samples)
+	float twoPi = 2.0 * pi
+	float freq = frequency * twoPi / 44100.0
+	array params = new(2)
+	params[1] = freq
+	int i = 0
+	while i < samples {
+		buffer[i] = amplitude * shape(params)
+		params[0] = params[0] + freq
+		if params[0] >= twoPi { params[0] = params[0] - twoPi }
+		i = i + 1
+	}
+	return buffer
+}
+
+float:array cosineOsc = float x -> oscillator(x, 0.7, 440.0, naiveSquare)
+play(cosineOsc(2.0), 1)
+
+array:float naiveCosine = array x -> { return cos(x[0]) }
+
+array:float naiveTriangle = array x -> {
+	float phase = 1.0 - x[0] / pi
+	if phase < 0.0 { phase = -phase }
+	return 2.0 * phase - 1.0
+}
+
+array:float naiveSawtooth = array x -> {
+	return 2.0 * (1.0 - x[0] / (2.0 * pi)) - 1.0
+}
+
+array:float naiveSquare = array x -> {
+	float phase = 1.0
+	if x[0] >= pi { phase = -phase }
+	return phase
+}

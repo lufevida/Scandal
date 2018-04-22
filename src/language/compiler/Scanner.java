@@ -72,71 +72,11 @@ public class Scanner {
 		case "play": {
 			token = new Token(Kind.KW_PLAY, startPos, endPos, lineNum, lineNumPos);
 		} break;
-		case "filter": {
-			token = new Token(Kind.KW_FILTER, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "allpass": {
-			token = new Token(Kind.KW_ALLPASS, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "bandpass": {
-			token = new Token(Kind.KW_BANDPASS, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "bandstop": {
-			token = new Token(Kind.KW_BANDSTOP, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "lowpass": {
-			token = new Token(Kind.KW_LOWPASS, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "hipass": {
-			token = new Token(Kind.KW_HIPASS, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "lowshelf": {
-			token = new Token(Kind.KW_LOWSHELF, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "hishelf": {
-			token = new Token(Kind.KW_HISHELF, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "peaking": {
-			token = new Token(Kind.KW_PEAKING, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "biquad": {
-			token = new Token(Kind.KW_BIQUAD, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "waveform": {
-			token = new Token(Kind.KW_WAVEFORM, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "cosine": {
-			token = new Token(Kind.KW_COSINE, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "sawtooth": {
-			token = new Token(Kind.KW_SAWTOOTH, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "square": {
-			token = new Token(Kind.KW_SQUARE, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "triangle": {
-			token = new Token(Kind.KW_TRIANGLE, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "noise": {
-			token = new Token(Kind.KW_NOISE, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "oscillator": {
-			token = new Token(Kind.KW_OSCILLATOR, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "tremolo": {
-			token = new Token(Kind.KW_TREMOLO, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "pan": {
-			token = new Token(Kind.KW_PAN, startPos, endPos, lineNum, lineNumPos);
-		} break;
 		case "record": {
 			token = new Token(Kind.KW_RECORD, startPos, endPos, lineNum, lineNumPos);
 		} break;
 		case "write": {
 			token = new Token(Kind.KW_WRITE, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "track": {
-			token = new Token(Kind.KW_TRACK, startPos, endPos, lineNum, lineNumPos);
 		} break;
 		case "return": {
 			token = new Token(Kind.KW_RETURN, startPos, endPos, lineNum, lineNumPos);
@@ -153,6 +93,18 @@ public class Scanner {
 		case "floor": {
 			token = new Token(Kind.KW_FLOOR, startPos, endPos, lineNum, lineNumPos);
 		} break;
+		case "pi": {
+			token = new Token(Kind.KW_PI, startPos, endPos, lineNum, lineNumPos);
+		} break;
+		case "cos": {
+			token = new Token(Kind.KW_COS, startPos, endPos, lineNum, lineNumPos);
+		} break;
+		case "pow": {
+			token = new Token(Kind.KW_POW, startPos, endPos, lineNum, lineNumPos);
+		} break;
+		case "func": {
+			token = new Token(Kind.KW_FUNC, startPos, endPos, lineNum, lineNumPos);
+		} break;
 		default: {
 			token = new Token(Kind.IDENT, substring, startPos, endPos, lineNum, lineNumPos);
 		} break;
@@ -166,7 +118,7 @@ public class Scanner {
 		int startPos = 0;
 		int length = chars.length();
 		int character;
-		int lineNum = 0;
+		int lineNum = 1;
 		int lineNumPos = 0;
 		boolean skipCommentFlag = false;
 		while (pos < length) {
