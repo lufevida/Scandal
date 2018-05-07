@@ -11,7 +11,6 @@ import org.junit.Test;
 import language.tree.AssignmentDeclaration;
 import language.tree.Program;
 import language.tree.expression.Expression;
-import language.tree.expression.FuncLitExpression;
 
 public class TypeCheckerTests {
 	
@@ -21,12 +20,12 @@ public class TypeCheckerTests {
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
 		AssignmentDeclaration dec = new Parser(scanner).assignmentDeclaration();
-		FuncLitExpression expr = (FuncLitExpression) dec.expression;
-		expr.decorate(null);
+		//FuncLitExpression expr = (FuncLitExpression) dec.expression;
+		//expr.decorate(null);
 		dec.decorate(null);
 		assertEquals(FLOAT_FLOAT, dec.type);
-		assertEquals(FLOAT_FLOAT, expr.type);
-		assertEquals(FLOAT, expr.returnExpression.type);
+		//assertEquals(FLOAT_FLOAT, expr.type);
+		//assertEquals(FLOAT, expr.returnExpression.type);
 	}
 	
 	@Test

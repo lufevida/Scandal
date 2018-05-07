@@ -14,6 +14,7 @@ public abstract class Node implements Opcodes {
 		BOOL,
 		STRING,
 		ARRAY,
+		LAMBDA,
 		FLOAT_FLOAT,
 		FLOAT_ARRAY,
 		ARRAY_FLOAT,
@@ -45,15 +46,20 @@ public abstract class Node implements Opcodes {
 		return null;
 	}
 	
-	public Types getType() {
-		switch (firstToken.kind) {
+	public static Types getType(Token.Kind kind) {
+		switch (kind) {
 		case KW_INT: return Types.INT;
 		case KW_FLOAT: return Types.FLOAT;
 		case KW_BOOL: return Types.BOOL;
 		case KW_STRING: return Types.STRING;
 		case KW_ARRAY: return Types.ARRAY;
+		case KW_LAMBDA: return Types.LAMBDA;
 		default: return null;
 		}
+	}
+	
+	public Types getType() {
+		return getType(firstToken.kind);
 	}
 	
 	public String getJvmType() {
@@ -63,6 +69,19 @@ public abstract class Node implements Opcodes {
 		case KW_BOOL: return "Z";
 		case KW_STRING: return "Ljava/lang/String;";
 		case KW_ARRAY: return "[F";
+		case KW_LAMBDA: return "Ljava/util/function/Function;";
+		default: return null;
+		}
+	}
+	
+	public String getClassType() {
+		switch (firstToken.kind) {
+		case KW_INT: return "Ljava/lang/Integer;";
+		case KW_FLOAT: return "Ljava/lang/Float;";
+		case KW_STRING: return "Ljava/lang/String;";
+		case KW_BOOL: return "Ljava/lang/Boolean;";
+		case KW_ARRAY: return "[F";
+		case KW_LAMBDA: return "Ljava/util/function/Function;";
 		default: return null;
 		}
 	}

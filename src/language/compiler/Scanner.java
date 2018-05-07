@@ -105,6 +105,18 @@ public class Scanner {
 		case "func": {
 			token = new Token(Kind.KW_FUNC, startPos, endPos, lineNum, lineNumPos);
 		} break;
+		case "lambda": {
+			token = new Token(Kind.KW_LAMBDA, startPos, endPos, lineNum, lineNumPos);
+		} break;
+		case "apply": {
+			token = new Token(Kind.KW_APPLY, startPos, endPos, lineNum, lineNumPos);
+		} break;
+		case "to": {
+			token = new Token(Kind.KW_TO, startPos, endPos, lineNum, lineNumPos);
+		} break;
+		case "then": {
+			token = new Token(Kind.KW_THEN, startPos, endPos, lineNum, lineNumPos);
+		} break;
 		default: {
 			token = new Token(Kind.IDENT, substring, startPos, endPos, lineNum, lineNumPos);
 		} break;
@@ -120,6 +132,7 @@ public class Scanner {
 		int character;
 		int lineNum = 1;
 		int lineNumPos = 0;
+		boolean skipLineFlag = false;
 		boolean skipCommentFlag = false;
 		while (pos < length) {
 			character = chars.charAt(pos);
@@ -131,6 +144,7 @@ public class Scanner {
 					if (character == '\n') {
 						lineNum++;
 						lineNumPos = 0;
+						skipLineFlag = false;
 					}
 					break;
 				}
@@ -140,9 +154,15 @@ public class Scanner {
 					lineNumPos += 2;
 					break;
 				}
-				if (skipCommentFlag) {
+				if (skipCommentFlag || skipLineFlag) {
 					pos++;
 					lineNumPos++;
+					break;
+				}
+				if (character == '/' && chars.charAt(pos + 1) == '/') {
+					skipLineFlag = true;
+					pos += 2;
+					lineNumPos += 2;
 					break;
 				}
 				if (character == '/' && chars.charAt(pos + 1) == '*') {

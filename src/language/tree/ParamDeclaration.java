@@ -11,6 +11,7 @@ import language.tree.expression.Expression;
 public class ParamDeclaration extends Declaration {
 	
 	public Expression expression;
+	public boolean wrap = false;
 
 	public ParamDeclaration(Token firstToken, Token returnToken, Token identToken) {
 		super(firstToken, identToken);
@@ -32,7 +33,6 @@ public class ParamDeclaration extends Declaration {
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		slotNumber = symtab.slotCount++;
-		mv.visitLocalVariable(firstToken.text, jvmType, null, startLabel, endLabel, slotNumber);
 	}
 
 }

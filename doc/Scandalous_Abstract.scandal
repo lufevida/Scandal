@@ -9,8 +9,8 @@ array:float max = array x -> {
 	return m
 }
 
-array:array scale = array x -> array:float lambda -> {
-	float scalar = lambda(x)
+array:array scale = array x -> array:float function -> {
+	float scalar = function(x)
 	int i = 0
 	while i < size(x) {
 		x[i] = x[i] * scalar
@@ -19,7 +19,7 @@ array:array scale = array x -> array:float lambda -> {
 	return x
 }
 
-array:float inverseArrayFloat = array x -> array:float lambda -> 1 / lambda(x)
+array:float inverseArrayFloat = array x -> array:float function -> 1 / function(x)
 
 array:float inverseMax = array x -> inverseArrayFloat(x, max)
 

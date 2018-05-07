@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+	<style type="text/css">${style}</style>
+	<script>${complex}</script>
+	<script>${simple}</script>
+</head>
+<body>
+	<form><textarea id="code" name="code">${code}</textarea></form>
+	<script>${syntax}</script>
+	<script>
+		var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
+			viewportMargin: Infinity,
+			lineNumbers: true,
+			tabindex: 4,
+			matchBrackets: true,
+			mode: "scandal"
+		});
+	</script>
+</body>
+</html>

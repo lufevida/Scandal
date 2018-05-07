@@ -28,12 +28,8 @@ public final class Settings {
 	}
 	
 	public static String getInfo() {
-		String output = "Sampling rate: " + samplingRate + "\n";
-		output += "Bit depth: " + bitDepth + "\n";
-		output += "Vector size: " + vectorSize + "\n";
-		output += "MIDI controller: " + midiController + "\n";
 		int index = 0;
-		output += "Audio devices:\n";
+		String output = "Audio devices:\n";
 		Mixer.Info[] mixers = AudioSystem.getMixerInfo();
 		for (Mixer.Info mixer : mixers) {
 			output += index++ + ": " + mixer.getName() + "\n";
@@ -44,6 +40,10 @@ public final class Settings {
 		for (MidiDevice.Info info : infos) {
 			output += index++ + ": " + info.getName() + "\n";
 		}
+		output += "Sampling rate: " + samplingRate + "\n";
+		output += "Bit depth: " + bitDepth + "\n";
+		output += "Vector size: " + vectorSize + "\n";
+		output += "MIDI controller: " + midiController;
 		return output;
 	}
 

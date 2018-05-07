@@ -12,16 +12,16 @@ import java.util.ArrayList;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.util.TraceClassVisitor;
 
-import javafx.application.Application;
 import language.tree.ImportStatement;
 import language.tree.Node;
 import language.tree.Program;
 
 public class Compiler {
 
+	private final String path;
 	private final String className;
-	private final SymbolTable symtab;
-	private final Program program;
+	private SymbolTable symtab;
+	private Program program;
 	private final ArrayList<String> imports = new ArrayList<>();
 	private String code = "";
 	private String temp = "";
@@ -31,14 +31,25 @@ public class Compiler {
 			super(parent);
 		}
 
-		public Class<? extends Application> define(String name, byte[] bytecode) {
-			return super.defineClass(name, bytecode, 0, bytecode.length).asSubclass(Application.class);
+		public Class<?> define(String name, byte[] bytecode) {
+			return super.defineClass(name, bytecode, 0, bytecode.length);
 		}
+		
+		/*public Class<? extends Application> define(String name, byte[] bytecode) {
+			return super.defineClass(name, bytecode, 0, bytecode.length).asSubclass(Application.class);
+		}*/
 	}
 
-	public Compiler(String inPath) throws Exception {
-		link(inPath);
-		className = getClassName(inPath);
+	public Compiler(String path) {
+		this.path = path;
+		className = getClassName(path);
+	}
+	
+	public void compile() throws Exception {
+		imports.clear();
+		code = "";
+		temp = "";
+		link(path);
 		symtab = new SymbolTable(className);
 		program = getProgram(code);
 		program.decorate(symtab);
@@ -73,10 +84,11 @@ public class Compiler {
 		return path.getFileName().toString().substring(0, extension);
 	}
 
-	public void run() throws Exception {
+	public Runnable getInstance() throws Exception {
 		//new DynamicClassLoader(getUrlClassLoader(userPath));
 		DynamicClassLoader loader = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
-		Application.launch(loader.define(className, program.bytecode), className);
+		return (Runnable) loader.define(className, program.bytecode).getConstructor().newInstance();
+		//Application.launch(loader.define(className, program.bytecode), className);
 	}
 
 	public void save() throws Exception {

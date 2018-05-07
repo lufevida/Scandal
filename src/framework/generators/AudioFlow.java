@@ -20,7 +20,7 @@ public class AudioFlow implements Runnable, LineListener {
 	private final AudioFormat format;
 	private final String name;
 	private final boolean record;
-	private boolean running = true;
+	public static boolean running = true;
 	private TargetDataLine targetDataLine;
 
 	public AudioFlow(RealTimePerformer performer, AudioFormat format) {
@@ -44,7 +44,7 @@ public class AudioFlow implements Runnable, LineListener {
 			targetDataLine.stop();
 			targetDataLine.close();
 		} else {
-			this.running = false;
+			AudioFlow.running = false;
 		}
 	}
 

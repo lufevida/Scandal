@@ -15,6 +15,7 @@ public class SymbolTable {
 	public int scopeNumber = 0;
 	public int slotCount = 1;
 	public int lambdaCount = 0;
+	public int newLambdaCount = 0;
 	public HashMap<String, AssignmentDeclaration> lambdaParams = new HashMap<>();
 	public HashMap<String, MethodStatement> methods = new HashMap<>();
 

@@ -2,7 +2,6 @@ package language.tree;
 
 import java.util.ArrayList;
 
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
@@ -29,18 +28,7 @@ public class Block extends Node {
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		Label blockStart = new Label();
-		Label blockEnd = new Label();
-		mv.visitLabel(blockStart);
-		mv.visitLabel(blockEnd);
-		for (Node node : nodes) {
-			if (node.getClass() == AssignmentDeclaration.class) {
-				AssignmentDeclaration dec = (AssignmentDeclaration) node;
-				dec.startLabel = blockStart;
-				dec.endLabel = blockEnd;
-			}
-			node.generate(mv, symtab);
-		}
+		for (Node node : nodes) node.generate(mv, symtab);
 	}
 
 }

@@ -68,7 +68,11 @@ public class Token {
 		KW_FLOOR("floor"),
 		KW_PI("pi"),
 		KW_COS("cos"),
-		KW_POW("pow");
+		KW_POW("pow"),
+		KW_LAMBDA("lambda"),
+		KW_APPLY("apply"),
+		KW_TO("to"),
+		KW_THEN("then");
 
 		final String text;
 

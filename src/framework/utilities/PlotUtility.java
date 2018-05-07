@@ -40,9 +40,9 @@ public class PlotUtility {
 		//lineChart.setTitle(title);
 		Platform.runLater(() -> {
 			Stage stage = new Stage();
-            stage.setScene(new Scene(lineChart, 800, 600));
-            stage.setTitle(title);
-            stage.show();
+			stage.setScene(new Scene(lineChart, 800, 600));
+			stage.setTitle(title);
+			stage.show();
 		});
 	}
 

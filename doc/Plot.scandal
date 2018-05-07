@@ -1,2 +1,0 @@
-array lisa = read("doc/monoLisa.wav", mono)
-plot("monoLisa.wav", lisa, 1000)
