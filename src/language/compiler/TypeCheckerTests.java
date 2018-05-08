@@ -2,31 +2,15 @@ package language.compiler;
 
 import static language.tree.Node.Types.BOOL;
 import static language.tree.Node.Types.FLOAT;
-import static language.tree.Node.Types.FLOAT_FLOAT;
 import static language.tree.Node.Types.INT;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import language.tree.AssignmentDeclaration;
 import language.tree.Program;
 import language.tree.expression.Expression;
 
 public class TypeCheckerTests {
-	
-	@Test
-	public void testCurrying() throws Exception {
-		String input = "float:float adder = float x -> float y -> x + y";
-		Scanner scanner = new Scanner(input);
-		scanner.scan();
-		AssignmentDeclaration dec = new Parser(scanner).assignmentDeclaration();
-		//FuncLitExpression expr = (FuncLitExpression) dec.expression;
-		//expr.decorate(null);
-		dec.decorate(null);
-		assertEquals(FLOAT_FLOAT, dec.type);
-		//assertEquals(FLOAT_FLOAT, expr.type);
-		//assertEquals(FLOAT, expr.returnExpression.type);
-	}
 	
 	@Test
 	public void testBinaryExpression1() throws Exception {

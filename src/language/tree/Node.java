@@ -8,42 +8,14 @@ import language.compiler.Token;
 
 public abstract class Node implements Opcodes {
 	
-	public static enum Types {
-		INT,
-		FLOAT,
-		BOOL,
-		STRING,
-		ARRAY,
-		LAMBDA,
-		FLOAT_FLOAT,
-		FLOAT_ARRAY,
-		ARRAY_FLOAT,
-		ARRAY_ARRAY
-	}
+	public static enum Types { INT, FLOAT, BOOL, STRING, ARRAY, LAMBDA }
 
 	public final Token firstToken;
 	public Types type;
-	public String jvmType;
 
 	public Node(Token firstToken) {
 		this.firstToken = firstToken;
 		this.type = getType();
-	}
-	
-	public boolean isLambda() {
-		return
-				type == Types.FLOAT_FLOAT ||
-				type == Types.FLOAT_ARRAY ||
-				type == Types.ARRAY_FLOAT ||
-				type == Types.ARRAY_ARRAY;
-	}
-
-	public static Types getLambdaType(Types inputType, Types returnType) {
-		if (inputType == Types.FLOAT && returnType == Types.FLOAT) return Types.FLOAT_FLOAT;
-		if (inputType == Types.FLOAT && returnType == Types.ARRAY) return Types.FLOAT_ARRAY;
-		if (inputType == Types.ARRAY && returnType == Types.FLOAT) return Types.ARRAY_FLOAT;
-		if (inputType == Types.ARRAY && returnType == Types.ARRAY) return Types.ARRAY_ARRAY;
-		return null;
 	}
 	
 	public static Types getType(Token.Kind kind) {

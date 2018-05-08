@@ -6,23 +6,22 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
+import language.tree.AssignmentDeclaration;
 import language.tree.Declaration;
-import language.tree.LambdaAppDeclaration;
 import language.tree.LambdaLitDeclaration;
 
 public class LambdaAppExpression extends Expression {
 	
+	public final IdentExpression lambda;
 	public final ArrayList<Expression> args;
 	public final int count;
-	public final IdentExpression lambda;
 	public LambdaLitExpression lambdaLit;
-	
 
-	public LambdaAppExpression(Token firstToken, ArrayList<Expression> args, IdentExpression lambda) {
+	public LambdaAppExpression(Token firstToken, IdentExpression lambda, ArrayList<Expression> args) {
 		super(firstToken);
+		this.lambda = lambda;
 		this.args = args;
 		this.count = args.size();
-		this.lambda = lambda;
 		this.type = Types.LAMBDA;
 	}
 
@@ -31,10 +30,22 @@ public class LambdaAppExpression extends Expression {
 		lambda.decorate(symtab);
 		Declaration dec = lambda.declaration;
 		while (dec.getClass() != LambdaLitDeclaration.class) {
-			LambdaAppExpression appExpression = ((LambdaAppDeclaration) dec).lambda;
-			for (int i = appExpression.args.size() - 1; i >= 0; i--)
-				if (!args.contains(appExpression.args.get(i))) args.add(0, appExpression.args.get(i));
-			dec = appExpression.lambda.declaration;
+			Expression e = ((AssignmentDeclaration) dec).expression;
+			if (e instanceof IdentExpression) {
+				IdentExpression identExpression = (IdentExpression) e;
+				dec = identExpression.declaration;
+			}
+			else if (e instanceof LambdaCompExpression) {
+				// Either should work, but check the last.
+				LambdaCompExpression compExpression = (LambdaCompExpression) e;
+				dec = compExpression.lambdas.get(compExpression.lambdas.size() - 1).declaration;
+			}
+			else {
+				LambdaAppExpression appExpression = (LambdaAppExpression) e;
+				for (int i = appExpression.args.size() - 1; i >= 0; i--)
+					if (!args.contains(appExpression.args.get(i))) args.add(0, appExpression.args.get(i));
+				dec = appExpression.lambda.declaration;
+			}
 		}
 		lambdaLit = ((LambdaLitDeclaration) dec).lambda;
 		for (int i = args.size() - count; i < args.size(); i++) {
@@ -47,6 +58,10 @@ public class LambdaAppExpression extends Expression {
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		lambda.generate(mv, symtab);
+		generateArgs(mv, symtab);
+	}
+	
+	public void generateArgs(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		for (int i = args.size() - count; i < args.size(); i++) {
 			args.get(i).generate(mv, symtab);
 			switch (args.get(i).type) {

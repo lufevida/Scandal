@@ -24,7 +24,7 @@ public class LambdaLitDeclaration extends Declaration {
 
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
-		if (symtab.topOfStackLookup(identToken.text) != null) throw new Exception("Redeclartion in line " + firstToken.lineNumber);
+		if (symtab.topOfStackLookup(identToken.text) != null) throw new Exception("Redeclaration in line " + firstToken.lineNumber);
 		lambda.decorate(symtab);
 		symtab.insert(identToken.text, this);		
 	}

@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.util.TraceClassVisitor;
 
-import language.tree.ImportStatement;
 import language.tree.Node;
 import language.tree.Program;
+import language.tree.statement.ImportStatement;
 
 public class Compiler {
 

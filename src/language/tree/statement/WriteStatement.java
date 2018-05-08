@@ -1,4 +1,4 @@
-package language.tree;
+package language.tree.statement;
 
 import org.objectweb.asm.MethodVisitor;
 

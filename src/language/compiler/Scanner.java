@@ -108,15 +108,6 @@ public class Scanner {
 		case "lambda": {
 			token = new Token(Kind.KW_LAMBDA, startPos, endPos, lineNum, lineNumPos);
 		} break;
-		case "apply": {
-			token = new Token(Kind.KW_APPLY, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "to": {
-			token = new Token(Kind.KW_TO, startPos, endPos, lineNum, lineNumPos);
-		} break;
-		case "then": {
-			token = new Token(Kind.KW_THEN, startPos, endPos, lineNum, lineNumPos);
-		} break;
 		default: {
 			token = new Token(Kind.IDENT, substring, startPos, endPos, lineNum, lineNumPos);
 		} break;

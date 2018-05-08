@@ -1,9 +1,10 @@
-package language.tree;
+package language.tree.statement;
 
 import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
+import language.tree.Declaration;
 import language.tree.expression.Expression;
 
 public class AssignmentStatement extends Statement {
@@ -26,15 +27,15 @@ public class AssignmentStatement extends Statement {
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		expression.generate(mv, symtab);
 		switch (expression.type) {
-		case STRING:
-		case ARRAY:
-			mv.visitVarInsn(ASTORE, declaration.slotNumber);
+		case INT:
+		case BOOL:
+			mv.visitVarInsn(ISTORE, declaration.slotNumber);
 			break;
 		case FLOAT:
 			mv.visitVarInsn(FSTORE, declaration.slotNumber);
 			break;
 		default:
-			mv.visitVarInsn(ISTORE, declaration.slotNumber);
+			mv.visitVarInsn(ASTORE, declaration.slotNumber);
 		}
 	}
 

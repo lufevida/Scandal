@@ -1,0 +1,27 @@
+float eleven = 11.0
+
+lambda mixture = string text -> float decimal -> int integer -> { return decimal }
+lambda p1 = mixture("Luis")
+//float p2 = p1(eleven, 1)
+//print(p2)
+lambda p2 = p1(eleven)
+float p3 = p2(3)
+//print(p3)
+
+lambda decrement = float x -> { return x - 1 }
+lambda negate = float x -> { return -x }
+lambda add5 = float x -> { return x + 5 }
+lambda times9 = float x -> { return x * 9 }
+//lambda decrement = float x -> { return x - eleven } // NOT ALLOWED
+
+float ten = decrement(eleven)
+lambda copy = decrement
+float applyCopy = copy(eleven)
+lambda returnApplication = float x -> { return decrement(x) }
+//lambda returnApplication = float x -> { return copy(x) } // NOT ALLOWED
+
+float twenty = decrement.add5.add5(eleven)
+lambda copyComposition = decrement.negate
+float applyCopyComposition = copyComposition(eleven)
+lambda returnComposition = float x -> { return decrement.negate.add5.times9(x) }
+//lambda returnComposition = float x -> { return copyComposition(x) } // NOT ALLOWED

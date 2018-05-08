@@ -1,13 +1,12 @@
-package language.tree;
+package language.tree.statement;
 
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
 
-public class PlayStatement extends Statement implements Opcodes {
+public class PlayStatement extends Statement {
 	
 	public final Expression channels;
 

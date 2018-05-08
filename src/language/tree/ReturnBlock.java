@@ -2,12 +2,12 @@ package language.tree;
 
 import java.util.ArrayList;
 
-import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
+import language.tree.statement.ImportStatement;
 
 public class ReturnBlock extends Block {
 	
@@ -32,10 +32,6 @@ public class ReturnBlock extends Block {
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		returnExpression.isReturnExpression = true;
-		Label blockStart = new Label();
-		Label blockEnd = new Label();
-		mv.visitLabel(blockStart);
-		mv.visitLabel(blockEnd);
 		int temp = symtab.slotCount;
 		if (resetCounter) symtab.slotCount = 1 + paramCount;
 		for (Node node : nodes) {

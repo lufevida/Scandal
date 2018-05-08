@@ -22,7 +22,7 @@ public class IdentExpression extends Expression {
 	public void decorate(SymbolTable symtab) throws Exception {
 		declaration = symtab.lookup(firstToken.text);
 		if (declaration == null)
-			throw new Exception("Invalid IdentExpression in line " + firstToken.lineNumber);
+			throw new Exception("Missing declaration in line " + firstToken.lineNumber);
 		type = declaration.type;
 		/*if (isLambda()) {
 			AssignmentDeclaration dec = (AssignmentDeclaration) declaration;

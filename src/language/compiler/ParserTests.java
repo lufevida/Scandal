@@ -11,15 +11,10 @@ import static org.junit.Assert.assertNotNull;
 import org.junit.Test;
 
 import language.tree.AssignmentDeclaration;
-import language.tree.AssignmentStatement;
 import language.tree.Declaration;
-import language.tree.IfStatement;
-import language.tree.IndexedAssignmentStatement;
 import language.tree.ParamDeclaration;
 import language.tree.Program;
 import language.tree.ReturnBlock;
-import language.tree.Statement;
-import language.tree.WhileStatement;
 import language.tree.expression.ArrayItemExpression;
 import language.tree.expression.ArraySizeExpression;
 import language.tree.expression.BinaryExpression;
@@ -28,6 +23,11 @@ import language.tree.expression.Expression;
 import language.tree.expression.FloatLitExpression;
 import language.tree.expression.IntLitExpression;
 import language.tree.expression.ReadExpression;
+import language.tree.statement.AssignmentStatement;
+import language.tree.statement.IfStatement;
+import language.tree.statement.IndexedAssignmentStatement;
+import language.tree.statement.Statement;
+import language.tree.statement.WhileStatement;
 
 public class ParserTests {
 
@@ -120,7 +120,7 @@ public class ParserTests {
 		String input = " array sound = read(\"fileName.wav\", mono)";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
-		AssignmentDeclaration declaration = new Parser(scanner).assignmentDeclaration();
+		Declaration declaration = new Parser(scanner).assignmentDeclaration();
 		AssignmentDeclaration ad = (AssignmentDeclaration) declaration;
 		Expression e = ad.expression;
 		assertEquals(ReadExpression.class, e.getClass());
@@ -257,7 +257,7 @@ public class ParserTests {
 		String input = "float:float lambda = array:float x -> x";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
-		AssignmentDeclaration d = new Parser(scanner).assignmentDeclaration();
+		Declaration d = new Parser(scanner).assignmentDeclaration();
 		assertEquals(d.getClass(), AssignmentDeclaration.class);
 	}
 	

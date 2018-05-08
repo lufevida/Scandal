@@ -1,13 +1,12 @@
-package language.tree;
+package language.tree.statement;
 
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
 
-public class PrintStatement extends Statement implements Opcodes {
+public class PrintStatement extends Statement {
 
 	public PrintStatement(Token firstToken, Expression expression) {
 		super(firstToken, expression);

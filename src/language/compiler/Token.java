@@ -4,7 +4,7 @@ public class Token {
 
 	public final Kind kind;
 	public final String text;
-	public final int position; // position in input array
+	public final int position;
 	public final int length;
 	public final int lineNumber;
 	public final int lineNumberPosition;
@@ -69,10 +69,7 @@ public class Token {
 		KW_PI("pi"),
 		KW_COS("cos"),
 		KW_POW("pow"),
-		KW_LAMBDA("lambda"),
-		KW_APPLY("apply"),
-		KW_TO("to"),
-		KW_THEN("then");
+		KW_LAMBDA("lambda");
 
 		final String text;
 
@@ -112,6 +109,49 @@ public class Token {
 			return Float.parseFloat(text);
 		} catch (NumberFormatException exception) {
 			throw new NumberFormatException("The token does not contain a float.");
+		}
+	}
+	
+	public boolean isDeclaration() {
+		switch (this.kind) {
+		case KW_INT:
+		case KW_BOOL:
+		case KW_FLOAT:
+		case KW_ARRAY:
+		case KW_STRING:
+		case KW_LAMBDA: return true;
+		default: return false;
+		}
+	}
+	
+	public boolean isComparison() {
+		switch (this.kind) {
+		case LT:
+		case LE:
+		case GT:
+		case GE:
+		case EQUAL:
+		case NOTEQUAL: return true;
+		default: return false;
+		}
+	}
+	
+	public boolean isSummand() {
+		switch (this.kind) {
+		case PLUS:
+		case MINUS:
+		case OR: return true;
+		default: return false;
+		}
+	}
+	
+	public boolean isFactor() {
+		switch (this.kind) {
+		case TIMES:
+		case DIV:
+		case MOD:
+		case AND: return true;
+		default: return false;
 		}
 	}
 

@@ -6,7 +6,7 @@ import java.util.Stack;
 
 import language.tree.AssignmentDeclaration;
 import language.tree.Declaration;
-import language.tree.MethodStatement;
+import language.tree.statement.MethodStatement;
 
 public class SymbolTable {
 

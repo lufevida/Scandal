@@ -1,6 +1,4 @@
-package language.tree;
-
-import static language.tree.Node.Types.STRING;
+package language.tree.statement;
 
 import org.objectweb.asm.MethodVisitor;
 
@@ -17,7 +15,7 @@ public class ImportStatement extends Statement {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		expression.decorate(symtab);
-		if (expression.type != STRING) throw new Exception();
+		if (expression.type != Types.STRING) throw new Exception();
 	}
 
 	@Override

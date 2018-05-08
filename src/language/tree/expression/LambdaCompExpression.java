@@ -10,16 +10,22 @@ import language.compiler.Token;
 public class LambdaCompExpression extends Expression {
 	
 	public final ArrayList<IdentExpression> lambdas;
+	public final LambdaAppExpression lambdaApp;
 
-	public LambdaCompExpression(Token firstToken, ArrayList<IdentExpression> lambdas) {
+	public LambdaCompExpression(Token firstToken, ArrayList<IdentExpression> lambdas, LambdaAppExpression lambdaApp) {
 		super(firstToken);
 		this.lambdas = lambdas;
-		this.type = Types.LAMBDA;
+		this.lambdaApp = lambdaApp;
+		if (lambdaApp == null) this.type = Types.LAMBDA;
 	}
 
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
-		for (IdentExpression lambda : lambdas) lambda.decorate(symtab);
+		for (IdentExpression lambda : lambdas) lambda.decorate(symtab); // TODO: type-check
+		if (lambdaApp != null) {
+			lambdaApp.decorate(symtab);
+			this.type = lambdaApp.type;
+		}
 	}
 
 	@Override
@@ -29,6 +35,7 @@ public class LambdaCompExpression extends Expression {
 			lambdas.get(i).generate(mv, symtab);
 			mv.visitMethodInsn(INVOKEINTERFACE, "java/util/function/Function", "andThen", "(Ljava/util/function/Function;)Ljava/util/function/Function;", true);
 		}
+		if (lambdaApp != null) lambdaApp.generateArgs(mv, symtab);
 	}
 
 }

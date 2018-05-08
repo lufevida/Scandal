@@ -8,6 +8,7 @@ import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
 import language.tree.expression.LambdaLitExpression;
+import language.tree.statement.ImportStatement;
 
 public class LambdaBlock extends Block {
 	

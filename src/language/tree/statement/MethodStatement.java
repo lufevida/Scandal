@@ -1,4 +1,4 @@
-package language.tree;
+package language.tree.statement;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,8 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
+import language.tree.ParamDeclaration;
+import language.tree.ReturnBlock;
 
 public class MethodStatement extends Statement {
 	
