@@ -1,11 +1,10 @@
 package framework.utilities;
 
 import javafx.application.Platform;
-import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.stage.Stage;
+import language.ide.MainView;
 
 public class PlotUtility {
 	
@@ -38,12 +37,7 @@ public class PlotUtility {
 		lineChart.getData().add(series);
 		lineChart.setCreateSymbols(false);
 		//lineChart.setTitle(title);
-		Platform.runLater(() -> {
-			Stage stage = new Stage();
-			stage.setScene(new Scene(lineChart, 800, 600));
-			stage.setTitle(title);
-			stage.show();
-		});
+		Platform.runLater(() -> MainView.addTab(title, lineChart));
 	}
 
 }

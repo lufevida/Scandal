@@ -1,0 +1,31 @@
+// Get sample count for a number of bars in a given metric.
+lambda barsToSamples = float bars -> float beats -> float bpm -> {
+	return 44100.0 * bars * beats * 60.0 / bpm
+}
+
+// Stretch the tail bars of a buffer with a given metric and tempo.
+lambda stretch = array start -> float tail -> float bars -> lambda barsToSamples -> {
+	float b2s = barsToSamples(bars)
+	int samples = size(start) + floor(b2s)
+	array buffer = new(samples)
+	b2s = barsToSamples(tail)
+	int offset = floor(b2s)
+	int i = 0
+	int j = size(start)
+	while i < size(start) {
+		buffer[i] = start[i]
+		i = i + 1
+	}
+	while i < samples {
+		buffer[i] = buffer[j - offset]
+		i = i + 1
+		j = j + 1
+	}
+	return buffer
+}
+
+// Example with quaternary matric and bpm = 130.
+//lambda b2s = float bars -> { return barsToSamples(bars, 4.0, 130.0) }
+//array vox = read("wav/vox8.wav", 1)
+//vox = stretch(vox, 2.0, 8.0, b2s)
+//play(vox, 1)

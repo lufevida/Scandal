@@ -4,7 +4,10 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
+import language.tree.Declaration;
+import language.tree.ParamDeclaration;
 import language.tree.expression.Expression;
+import language.tree.expression.LambdaAppExpression;
 
 public class IndexedAssignmentStatement extends AssignmentStatement {
 	
@@ -22,6 +25,11 @@ public class IndexedAssignmentStatement extends AssignmentStatement {
 		index.decorate(symtab);
 		if (index.type != Types.INT) throw new Exception();
 		expression.decorate(symtab);
+		if (expression instanceof LambdaAppExpression) {
+			LambdaAppExpression app = (LambdaAppExpression) expression;
+			Declaration dec = app.lambda.declaration;
+			if (dec instanceof ParamDeclaration) expression.type = Types.FLOAT;
+		}
 		if (expression.type != Types.FLOAT) throw new Exception();
 	}
 	

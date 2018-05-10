@@ -1,0 +1,16 @@
+// A naive algorithm to determine whether an integer is prime.
+lambda naivePrimeFinder = int p -> {
+	bool result = true
+	int q = 2
+	while (q < p) {
+		if (p % q == 0) {
+    		result = false
+        	q = p
+    	}
+    	q = q + 1
+	}
+	return result
+}
+
+// Test 571 and print.
+print(naivePrimeFinder(571))

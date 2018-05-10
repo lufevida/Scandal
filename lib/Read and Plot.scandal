@@ -1,0 +1,6 @@
+// Read a sound file into an array.
+array lisa = read("wav/monoLisa.wav", 1)
+
+// Give it a title and visualize its contents.
+string title = "A Scandalous Sound File"
+plot(title, lisa, 1000)

@@ -34,9 +34,9 @@ public class Program extends Node {
 		String sig = "java/lang/invoke/MethodHandles";
 		cw.visitInnerClass(sig + "$Lookup", sig, "Lookup", ACC_PUBLIC + ACC_FINAL + ACC_STATIC);
 		addInit(cw, classDesc, symtab);
-		addMain(cw, symtab);
-		addRun(cw, classDesc, symtab);
 		addFields(cw, symtab);
+		addRun(cw, classDesc, symtab);
+		addMain(cw, symtab);
 		cw.visitEnd();
 		bytecode = cw.toByteArray();
 	}
@@ -46,6 +46,29 @@ public class Program extends Node {
 		mv.visitCode();
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
+		for (Node node : nodes) if (node instanceof LambdaLitDeclaration) node.generate(mv, symtab);
+		mv.visitInsn(RETURN);
+		mv.visitMaxs(0, 0);
+		mv.visitEnd();
+	}
+	
+	private void addFields(ClassWriter cw, SymbolTable symtab) throws Exception {
+		FieldVisitor fv;
+		for (Node node : nodes) {
+			if (node instanceof LambdaLitDeclaration) {
+				LambdaLitDeclaration dec = (LambdaLitDeclaration) node;
+				fv = cw.visitField(ACC_STATIC, dec.identToken.text, dec.getJvmType(), null, null);
+				fv.visitEnd();
+				dec.lambda.generate(cw, symtab);
+			}
+			else if (node instanceof MethodStatement) ((MethodStatement) node).generate(cw, symtab);
+		}
+	}
+	
+	private void addRun(ClassWriter cw, String classDesc, SymbolTable symtab) throws Exception {
+		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", "()V", null, null);
+		mv.visitCode();
+		for (Node node : nodes) if (node.getClass() != LambdaLitDeclaration.class) node.generate(mv, symtab);
 		mv.visitInsn(RETURN);
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
@@ -61,28 +84,6 @@ public class Program extends Node {
 		mv.visitInsn(RETURN);
 		mv.visitMaxs(0, 0);
 		mv.visitEnd();
-	}
-	
-	private void addRun(ClassWriter cw, String classDesc, SymbolTable symtab) throws Exception {
-		MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "run", "()V", null, null);
-		mv.visitCode();
-		for (Node node : nodes) node.generate(mv, symtab);
-		mv.visitInsn(RETURN);
-		mv.visitMaxs(0, 0);
-		mv.visitEnd();
-	}
-	
-	private void addFields(ClassWriter cw, SymbolTable symtab) throws Exception {
-		FieldVisitor fv;
-		for (Node node : nodes) {
-			if (node instanceof LambdaLitDeclaration) {
-				LambdaLitDeclaration dec = (LambdaLitDeclaration) node;
-				fv = cw.visitField(ACC_STATIC, dec.identToken.text, dec.getJvmType(), dec.getFullSig(), null);
-				fv.visitEnd();
-				dec.lambda.generate(cw, symtab);
-			}
-			else if (node instanceof MethodStatement) ((MethodStatement) node).generate(cw, symtab);
-		}
 	}
 
 }

@@ -1,0 +1,78 @@
+
+func oscil(array amps, array freqs, array table, float shift) {
+	int samples = size(amps) * 44100
+	array buffer = new(samples)
+	float phase = shift * size(table)
+	int i = 0
+	while i < samples {
+		if phase >= 1.0 * size(table) { phase = phase - 1.0 * size(table) }
+		buffer[i] = amps[i] * table[floor(phase)]
+		phase = phase + freqs[i]
+		i = i + 1
+	}
+	return buffer
+}
+
+array:array oscil = array args -> array table -> {
+	int samples = floor(args[0])
+	array buffer = new(samples)
+	float amp = args[1]
+	float freq = args[2] * size(table) / 44100.0
+	float phase = 1.0 * size(table)
+	if size(args) == 4 { phase = phase * args[3] }
+	int i = 0
+	while i < samples {
+		if phase >= 1.0 * size(table) { phase = phase - size(table) }
+		buffer[i] = amp * table[floor(phase)]
+		phase = phase + freq
+		i = i + 1
+	}
+	return buffer
+}
+
+float eleven = 11.0
+
+lambda mixture = string text -> float decimal -> int integer -> { return decimal }
+lambda p1 = mixture("Luis")
+//float p2 = p1(eleven, 1)
+//print(p2)
+lambda p2 = p1(eleven)
+float p3 = p2(3)
+//print(p3)
+
+lambda decrement = float x -> { return x - 1 }
+lambda negate = float x -> { return -x }
+lambda add5 = float x -> { return x + 5 }
+lambda times9 = float x -> { return x * 9 }
+//lambda decrement = float x -> { return x - eleven } // NOT ALLOWED
+
+float ten = decrement(eleven)
+lambda copy = decrement
+float applyCopy = copy(eleven)
+lambda returnApplication = float x -> { return decrement(x) }
+//lambda returnApplication = float x -> { return copy(x) } // NOT ALLOWED
+
+float twenty = decrement.add5.add5(eleven)
+lambda copyComposition = decrement.negate
+float applyCopyComposition = copyComposition(eleven)
+lambda returnComposition = float x -> { return decrement.negate.add5.times9(x) }
+//lambda returnComposition = float x -> { return copyComposition(x) } // NOT ALLOWED
+
+float:float adder = float x -> float y -> x + y
+float:float add4 = float x -> adder(x, 4.0)
+float:float add6 = float x -> adder(x, 6.0)
+float twentyOne = add6.add4(eleven)
+float:float addOutlier = float x -> x + eleven
+float twelve = addOutlier(1.0)
+
+float:float idtest = float x -> x
+float:float idtest2 = float x -> idtest(x)
+
+float:float test = float x -> float y -> float z -> x + y + z
+float testApp = test(2.0, 3.0, eleven)
+print(testApp)
+float:float application = float x -> test(x, eleven, eleven)
+
+float:float threeArgs = float x -> float y -> float z -> x + y + z
+float:float twoArgs = float x -> float y -> threeArgs(x, y, 11.1)
+float:float oneArg = float x -> twoArgs(x, 22.2)

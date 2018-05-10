@@ -1,0 +1,12 @@
+import("lib/Max.scandal")
+import("lib/Scale.scandal")
+
+// Compute the reciprocal of `max`.
+lambda inverseMax = array x -> { return 1 / max(x) }
+
+// Normalize an audio buffer.
+lambda normalize = array x -> { return scale(x, inverseMax) }
+
+//import("lib/Scale.scandal")
+//print(inverseMax([1, 2, 3]))
+//array normal = normalize.dump([1, 2, 3])

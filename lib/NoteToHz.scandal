@@ -1,0 +1,4 @@
+// Get the cycles per second for a given MIDI note.
+lambda m2f = float note -> {
+	return 440 * pow(2, (note - 69) / 12)
+}

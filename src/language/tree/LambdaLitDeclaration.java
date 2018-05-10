@@ -13,7 +13,6 @@ public class LambdaLitDeclaration extends Declaration {
 	
 	public final LambdaLitExpression lambda;
 	public int lambdaSlot;
-	public String lambdaSig;
 
 	public LambdaLitDeclaration(Token firstToken, Token identToken, LambdaLitExpression lambda) {
 		super(firstToken, identToken);
@@ -24,7 +23,7 @@ public class LambdaLitDeclaration extends Declaration {
 
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
-		if (symtab.topOfStackLookup(identToken.text) != null) throw new Exception("Redeclaration in line " + firstToken.lineNumber);
+		if (symtab.topOfStackLookup(identToken.text) != null) throw new Exception("Redeclaration of: " + identToken.text);
 		lambda.decorate(symtab);
 		symtab.insert(identToken.text, this);		
 	}
@@ -33,7 +32,7 @@ public class LambdaLitDeclaration extends Declaration {
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		lambdaSlot = symtab.newLambdaCount;
 		symtab.newLambdaCount += lambda.params.size();
-		lambdaSig = "(" + lambda.params.get(0).getClassType() + ")";
+		String lambdaSig = "(" + lambda.params.get(0).getClassType() + ")";
 		if (lambda.params.size() == 1) lambdaSig += lambda.block.returnExpression.getClassType();
 		else lambdaSig += getJvmType();
 		mv.visitInvokeDynamicInsn("apply", "()Ljava/util/function/Function;", getHandle(), getObjects(symtab, lambdaSlot, lambdaSig));
@@ -57,15 +56,6 @@ public class LambdaLitDeclaration extends Declaration {
 		objs[1] = new Handle(Opcodes.H_INVOKESTATIC, symtab.className, "lambda$" + slot, sig, false);
 		objs[2] = Type.getType(sig);
 		return objs;
-	}
-
-	public String getFullSig() {
-		String sig = "";
-		for (int i = 0; i < lambda.params.size(); i++)
-			sig += "Ljava/util/function/Function<" + lambda.params.get(i).getClassType();
-		sig += lambda.block.returnExpression.getClassType();
-		for (int i = 0; i < lambda.params.size(); i++) sig += ">;";
-		return sig;
 	}
 
 }

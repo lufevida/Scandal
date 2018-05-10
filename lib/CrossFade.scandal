@@ -1,0 +1,27 @@
+//import("lib/Dump.scandal")
+import("lib/FadeIn.scandal")
+import("lib/FadeOut.scandal")
+
+// Creates a cross-fade of `overlap` samples between two audio buffers.
+lambda crossFade = array first -> array second -> int overlap -> {
+	int offset = size(first) - overlap
+	array buffer = new(size(second) + offset)
+	array fadeFirst = fadeOut(first, overlap)
+	array fadeSecond = fadeIn(second, overlap)
+	int i = 0
+	while i < size(first) {
+		buffer[i] = fadeFirst[i]
+		i = i + 1
+	}
+	i = 0
+	while i < size(second) {
+		buffer[i + offset] = buffer[i + offset] + fadeSecond[i]
+		i = i + 1
+	}
+	return buffer
+}
+
+//array first = [1, 2, 3, 4, 5]
+//array second = [4, 5, 6, 7, 8]
+//array crossed = crossFade(first, second, 2)
+//crossed = dump(crossed)

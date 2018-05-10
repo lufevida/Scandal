@@ -1,0 +1,21 @@
+// Delay an audio buffer.
+lambda delay = array x -> float time -> float feedback -> float wet -> {
+	int length = size(x)
+	array buffer = new(length)
+	array circular = new(length)
+	int readIndex = 0
+	int writeIndex = floor(time * 44.1)
+	int i = 0
+	while i < length {
+		buffer[i] = wet * circular[readIndex] + (1.0 - wet) * x[i]
+		circular[writeIndex] = x[i] + circular[readIndex] * feedback
+		i = i + 1
+		readIndex = readIndex + 1
+		if readIndex >= length { readIndex = 0 }
+		writeIndex = writeIndex + 1
+		if writeIndex >= length { writeIndex = 0 }
+	}
+	return buffer
+}
+
+//play(delay(read("wav/monoLisa.wav", 1), 0.1, 0.9, 0.5), 1)

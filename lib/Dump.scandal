@@ -1,0 +1,9 @@
+// Print an entire array to the console.
+lambda dump = array x -> {
+	int i = 0
+	while i < size(x) {
+		print(x[i])
+		i = i + 1
+	}
+	return x
+}

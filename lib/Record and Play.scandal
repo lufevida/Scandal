@@ -1,0 +1,7 @@
+// Say something to the microphone.
+print("Recording...")
+array recording = record(3000)
+
+// Then hear yourself.
+print("Playing...")
+play(recording, 1)

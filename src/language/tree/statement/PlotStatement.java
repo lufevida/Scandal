@@ -2,6 +2,7 @@ package language.tree.statement;
 
 import org.objectweb.asm.MethodVisitor;
 
+import javafx.application.Platform;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
@@ -29,12 +30,14 @@ public class PlotStatement extends Statement {
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		mv.visitTypeInsn(NEW, "framework/utilities/PlotUtility");
-		expression.generate(mv, symtab);
-		array.generate(mv, symtab);
-		points.generate(mv, symtab);
-		if (points.type == Types.FLOAT) mv.visitInsn(F2I);
-		mv.visitMethodInsn(INVOKESPECIAL, "framework/utilities/PlotUtility", "<init>", "(Ljava/lang/String;[FI)V", false);
+		if (Platform.isFxApplicationThread()) {
+			mv.visitTypeInsn(NEW, "framework/utilities/PlotUtility");
+			expression.generate(mv, symtab);
+			array.generate(mv, symtab);
+			points.generate(mv, symtab);
+			if (points.type == Types.FLOAT) mv.visitInsn(F2I);
+			mv.visitMethodInsn(INVOKESPECIAL, "framework/utilities/PlotUtility", "<init>", "(Ljava/lang/String;[FI)V", false);
+		}
 	}
 
 }

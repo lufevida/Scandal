@@ -1,0 +1,18 @@
+//import("lib/Dump.scandal")
+import("lib/Line.scandal")
+
+// Fade into an audio buffer.
+lambda fadeIn = array x -> int samples -> {
+	array fade = line([0, 1], samples)
+	array buffer = new(size(x))
+	int i = 0
+	while i < size(x) {
+		buffer[i] = x[i]
+		if i < samples { buffer[i] = buffer[i] * fade[i] }
+		i = i + 1
+	}
+	return buffer
+}
+
+//array fadeInTest = fadeIn([4, 4, 4, 4, 4], 3)
+//fadeInTest = dump(fadeInTest)

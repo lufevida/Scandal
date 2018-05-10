@@ -5,6 +5,8 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
+import language.tree.Declaration;
+import language.tree.ParamDeclaration;
 
 public class BinaryExpression extends Expression {
 
@@ -58,6 +60,16 @@ public class BinaryExpression extends Expression {
 			} break;
 			default: break;
 			}
+		}
+		if (e0 instanceof LambdaAppExpression) {
+			LambdaAppExpression app = (LambdaAppExpression) e0;
+			Declaration dec = app.lambda.declaration;
+			if (dec instanceof ParamDeclaration) throw new Exception("Lambdas cannot be used before declared.");
+		}
+		if (e1 instanceof LambdaAppExpression) {
+			LambdaAppExpression app = (LambdaAppExpression) e1;
+			Declaration dec = app.lambda.declaration;
+			if (dec instanceof ParamDeclaration) throw new Exception("Lambdas cannot be used before declared.");
 		}
 		if (type == null) throw new Exception("Invalid BinaryExpression");
 	}

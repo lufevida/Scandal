@@ -2,6 +2,7 @@ package language.tree.statement;
 
 import org.objectweb.asm.MethodVisitor;
 
+import javafx.application.Platform;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
@@ -20,9 +21,12 @@ public class PrintStatement extends Statement {
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		//mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
-		//expression.generate(mv, symtab);
-		//mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(" + expression.getJvmType() + ")V", false);
+		if (!Platform.isFxApplicationThread()) {
+			mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;");
+			expression.generate(mv, symtab);
+			mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(" + expression.getJvmType() + ")V", false);
+			return;
+		}
 		mv.visitFieldInsn(GETSTATIC, "language/ide/MainView", "console", "Ljavafx/scene/control/TextArea;");
 		expression.generate(mv, symtab);
 		if (expression.type != Types.STRING)

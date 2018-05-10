@@ -1,8 +1,10 @@
 package language.ide;
 
 import java.io.File;
+import java.nio.file.FileSystems;
 
 import javafx.application.Application;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.Menu;
@@ -20,10 +22,13 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 public class MainView extends Application {
+	
+	// TODO change all counters to double to increase precision
 
-	static final TabPane pane = new TabPane();
+	public static final TabPane pane = new TabPane();
 	static final Accordion accordion = new Accordion();
-	public static final TextArea console = new TextArea(); // TODO print exceptions
+	public static final TextArea console = new TextArea(); // TODO print exceptions, make it a text flow
+	static final TitledPane consolePane = new TitledPane("Console", console);
 
 	public void start(Stage stage) throws Exception {
 		Font.loadFont(getClass().getResourceAsStream("/language/ide/fontawesome-webfont.ttf"), 0);
@@ -38,8 +43,8 @@ public class MainView extends Application {
 		box.widthProperty().addListener((obs, old, val) -> resize(val));
 		HBox.setHgrow(pane, Priority.ALWAYS);
 		HBox.setHgrow(accordion, Priority.ALWAYS);
-		console.textProperty().addListener((obs, old, val) -> accordion.setExpandedPane(accordion.getPanes().get(1)));
-		accordion.getPanes().addAll(getBrowser(), new TitledPane("Console", console));
+		console.textProperty().addListener((obs, old, val) -> accordion.setExpandedPane(consolePane));
+		accordion.getPanes().addAll(getBrowser(), getPane("lib", "Examples"), getSamples(), consolePane);
 		accordion.setExpandedPane(accordion.getPanes().get(0));
 		box.getChildren().addAll(pane, accordion);
 		BorderPane root = new BorderPane();
@@ -59,11 +64,33 @@ public class MainView extends Application {
 		return new TitledPane("Browser", tree);
 	}
 	
+	private TitledPane getSamples() {
+		File f = FileSystems.getDefault().getPath("wav").toFile();
+	    TreeView<String> tree = new TreeView<>(new FileTreeItem(f));
+	    tree.setShowRoot(false);
+		tree.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> addMediaTab(((FileTreeItem) val).file));
+		return new TitledPane("Samples", tree);
+	}
+
+	static void addMediaTab(File file) {
+		if (alreadyOpen(file)) return;
+		pauseOthers();
+		pane.getTabs().add(new MediaTab(file));
+		pane.getSelectionModel().select(pane.getTabs().size() - 1);
+	}
+	
+	private TitledPane getPane(String path, String title) {
+		File f = FileSystems.getDefault().getPath(path).toFile();
+	    TreeView<String> tree = new TreeView<>(new FileTreeItem(f));
+	    tree.setShowRoot(false);
+		tree.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> addTab(((FileTreeItem) val).file));
+		return new TitledPane(title, tree);
+	}
+
 	static void addTab(File file) {
 		if (file == null || skipFile(file) || alreadyOpen(file)) return;
-		pane.getTabs().add(new FileTab(file));
+		pane.getTabs().add(new ScandalTab(file));
 		pane.getSelectionModel().select(pane.getTabs().size() - 1);
-		return;
 	}
 	
 	static boolean skipFile(File file) {
@@ -79,6 +106,17 @@ public class MainView extends Application {
 			return true;
 		}
 		return false;
+	}
+	
+	static void pauseOthers() {
+		for (Tab tab : pane.getTabs()) if (tab instanceof MediaTab) ((MediaTab) tab).pause();
+	}
+	
+	public static void addTab(String title, Node node) {
+		Tab tab = new Tab(title);
+		tab.setContent(node);
+		MainView.pane.getTabs().add(tab);
+		MainView.pane.getSelectionModel().select(MainView.pane.getTabs().size() - 1);
 	}
 	
 	private MenuBar getMenus() {

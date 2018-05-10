@@ -5,6 +5,7 @@ import org.objectweb.asm.MethodVisitor;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
+import language.tree.expression.LambdaAppExpression;
 
 public class AssignmentDeclaration extends Declaration {
 
@@ -17,9 +18,15 @@ public class AssignmentDeclaration extends Declaration {
 	
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
-		if (symtab.topOfStackLookup(identToken.text) != null) throw new Exception();
+		if (symtab.topOfStackLookup(identToken.text) != null)
+			throw new Exception("Redeclaration in line " + firstToken.lineNumber);
 		symtab.insert(identToken.text, this);
 		expression.decorate(symtab);
+		if (expression instanceof LambdaAppExpression) {
+			LambdaAppExpression app = (LambdaAppExpression) expression;
+			Declaration dec = app.lambda.declaration;
+			if (dec instanceof ParamDeclaration) expression.type = type;
+		}
 		if (expression.type != type) throw new Exception("Type mismatch in line " + firstToken.lineNumber);
 	}
 

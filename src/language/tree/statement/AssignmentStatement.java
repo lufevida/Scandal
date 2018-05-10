@@ -5,7 +5,9 @@ import org.objectweb.asm.MethodVisitor;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.Declaration;
+import language.tree.ParamDeclaration;
 import language.tree.expression.Expression;
+import language.tree.expression.LambdaAppExpression;
 
 public class AssignmentStatement extends Statement {
 	
@@ -20,6 +22,11 @@ public class AssignmentStatement extends Statement {
 		declaration = symtab.lookup(firstToken.text);
 		if (declaration == null) throw new Exception();
 		expression.decorate(symtab);
+		if (expression instanceof LambdaAppExpression) {
+			LambdaAppExpression app = (LambdaAppExpression) expression;
+			Declaration dec = app.lambda.declaration;
+			if (dec instanceof ParamDeclaration) expression.type = declaration.type;
+		}
 		if (expression.type != declaration.type) throw new Exception();
 	}
 

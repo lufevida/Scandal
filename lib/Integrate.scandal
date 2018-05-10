@@ -1,0 +1,10 @@
+// Integrate an array.
+lambda integrate = array x -> {
+	float sum = 0.0
+	int i = 0
+	while i < size(x) {
+		sum = sum + x[i]
+		i = i + 1
+	}
+	return sum
+}

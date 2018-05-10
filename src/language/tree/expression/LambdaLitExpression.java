@@ -58,6 +58,9 @@ public class LambdaLitExpression extends Expression {
 				case INT:
 					mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
 					break;
+				case BOOL:
+					mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
+					break;
 				case FLOAT:
 					mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
 					break;
@@ -94,6 +97,15 @@ public class LambdaLitExpression extends Expression {
 		String sig = "(" + params.get(i).getClassType();
 		if (i == params.size() - 1) return sig + ")" + block.returnExpression.getClassType();
 		return sig + ")" + dec.getJvmType();
+	}
+	
+	public String getJavaSig() {
+		String sig = "";
+		for (int i = 0; i < params.size(); i++)
+			sig += "Ljava/util/function/Function<" + params.get(i).getClassType();
+		sig += block.returnExpression.getClassType();
+		for (int i = 0; i < params.size(); i++) sig += ">;";
+		return sig;
 	}
 
 }

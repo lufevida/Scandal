@@ -6,11 +6,11 @@ import java.nio.file.Path;
 
 public final class CodeMirror {
 
-	public static final String skeleton = getCode("src/language/ide/skeleton.html");
-	public static final String style = getCode("src/language/ide/codemirror.css");
-	public static final String complex = getCode("src/language/ide/codemirror.js");
-	public static final String simple = getCode("src/language/ide/simple.js");
-	public static final String syntax = getCode("src/language/ide/syntax.js");
+	public static final String skeleton = getCode("jar/skeleton.html");
+	public static final String style = getCode("jar/codemirror.css");
+	public static final String complex = getCode("jar/codemirror.js");
+	public static final String simple = getCode("jar/simplemode.js");
+	public static final String syntax = getCode("jar/syntax.js");
 
 	public static String getCode(String inPath) {
 		Path path = FileSystems.getDefault().getPath(inPath);

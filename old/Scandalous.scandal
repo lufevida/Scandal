@@ -1,6 +1,33 @@
-import("doc/Scandalous_Abstract.scandal")
 
-float:float barsToSamples = float bars -> bars * 44100.0 * 4.0 * 60.0 / 130.0
+array:array fill = array start -> float index -> {
+	array loop = new(index)
+	if floor(index) == 0 { loop = read("samples/bass8.wav", 1) }
+	if floor(index) == 1 { loop = read("samples/kick8.wav", 1) }
+	if floor(index) == 2 { loop = read("samples/snare8.wav", 1) }
+	if floor(index) == 3 { loop = read("samples/shaker8.wav", 1) }
+	if floor(index) == 4 { loop = read("samples/clap4.wav", 1) }
+	if floor(index) == 5 { loop = read("samples/roll8.wav", 1) }
+	if floor(index) == 6 { loop = read("samples/hihat8.wav", 1) }
+	if floor(index) == 7 { loop = read("samples/hihat8-2.wav", 1) }
+	if floor(index) == 8 { loop = read("samples/fx2.wav", 1) }
+	if floor(index) == 9 { loop = read("samples/noise4.wav", 1) }
+	if floor(index) == 10 { loop = read("samples/pad8.wav", 1) }
+	if floor(index) == 11 { loop = read("samples/pulse8.wav", 1) }
+	if floor(index) == 12 { loop = read("samples/flute8.wav", 1) }
+	if floor(index) == 13 { loop = read("samples/vox8.wav", 1) }
+	int samples = size(start) + size(loop)
+	array buffer = new(samples)
+	int i = 0
+	while i < size(start) {
+		buffer[i] = start[i]
+		i = i + 1
+	}
+	while i < samples {
+		buffer[i] = loop[i - size(start)]
+		i = i + 1
+	}
+	return buffer
+}
 
 array:array loop12_4 = array buffer -> loop(buffer, 4.0, 12.0, barsToSamples)
 array:array loop16_4 = array buffer -> loop(buffer, 4.0, 16.0, barsToSamples)

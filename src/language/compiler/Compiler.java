@@ -18,13 +18,11 @@ import language.tree.statement.ImportStatement;
 
 public class Compiler {
 
-	private final String path;
-	private final String className;
+	private final String path, className;
 	private SymbolTable symtab;
 	private Program program;
 	private final ArrayList<String> imports = new ArrayList<>();
 	private String code = "";
-	private String temp = "";
 
 	private class DynamicClassLoader extends ClassLoader {
 		public DynamicClassLoader(ClassLoader parent) {
@@ -48,8 +46,8 @@ public class Compiler {
 	public void compile() throws Exception {
 		imports.clear();
 		code = "";
-		temp = "";
 		link(path);
+		for (String p : imports) code += getCode(p);
 		symtab = new SymbolTable(className);
 		program = getProgram(code);
 		program.decorate(symtab);
@@ -58,13 +56,11 @@ public class Compiler {
 
 	private void link(String inPath) throws Exception {
 		if (imports.contains(inPath)) return;
-		imports.add(inPath);
-		temp = getCode(inPath);
-		code = temp + code; // depth-first
-		Program program = getProgram(temp);
+		Program program = getProgram(getCode(inPath));
 		for (Node node : program.nodes)
 			if (node.getClass() == ImportStatement.class)
 				link(((ImportStatement) node).expression.firstToken.text);
+		imports.add(inPath);
 	}
 	
 	private String getCode(String inPath) throws Exception {

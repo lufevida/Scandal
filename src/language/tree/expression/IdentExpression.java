@@ -12,7 +12,6 @@ import language.tree.ParamDeclaration;
 public class IdentExpression extends Expression {
 	
 	public Declaration declaration;
-	//public FuncLitExpression funcLit;
 
 	public IdentExpression(Token firstToken) {
 		super(firstToken);
@@ -22,12 +21,8 @@ public class IdentExpression extends Expression {
 	public void decorate(SymbolTable symtab) throws Exception {
 		declaration = symtab.lookup(firstToken.text);
 		if (declaration == null)
-			throw new Exception("Missing declaration in line " + firstToken.lineNumber);
+			throw new Exception("Missing declaration of: " + firstToken.text);
 		type = declaration.type;
-		/*if (isLambda()) {
-			AssignmentDeclaration dec = (AssignmentDeclaration) declaration;
-			funcLit = (FuncLitExpression) dec.expression;
-		}*/
 	}
 
 	@Override
@@ -57,10 +52,6 @@ public class IdentExpression extends Expression {
 			else if (dec.expression.type == Types.FLOAT) mv.visitVarInsn(FLOAD, dec.slotNumber);
 			else if (dec.expression.type == Types.ARRAY) mv.visitVarInsn(ALOAD, dec.slotNumber);
 		}
-		/*else if (isLambda()) {
-			mv.visitVarInsn(ALOAD, 0);
-			mv.visitFieldInsn(GETFIELD, symtab.className, firstToken.text, funcLit.getInvocation());
-		}*/
 		else if (declaration instanceof LambdaLitDeclaration) mv.visitFieldInsn(GETSTATIC, symtab.className, firstToken.text, "Ljava/util/function/Function;");
 		else if (type == Types.STRING || type == Types.ARRAY || type == Types.LAMBDA) mv.visitVarInsn(ALOAD, declaration.slotNumber);
 		else if (type == Types.FLOAT) mv.visitVarInsn(FLOAD, declaration.slotNumber);

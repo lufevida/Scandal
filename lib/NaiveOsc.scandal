@@ -1,0 +1,40 @@
+// Get a naive (aliased) waveform into a buffer.
+lambda naiveOsc = float dur -> float amp -> float freq -> lambda shape -> {
+	int samples = floor(dur * 44100)
+	array buffer = new(samples)
+	float twoPi = 2 * pi
+	float frequency = freq * twoPi / 44100
+	float phase = 0.0
+	int i = 0
+	while i < samples {
+		buffer[i] = shape(phase)
+		buffer[i] = buffer[i] * amp
+		phase = phase + frequency
+		if phase >= twoPi { phase = phase - twoPi }
+		i = i + 1
+	}
+	return buffer
+}
+
+// The following lambdas produce classic waveforms.
+lambda naiveCosine = float phase -> {
+	return cos(phase)
+}
+
+lambda naiveSawtooth = float phase -> {
+	return 2 * (1 - phase / (2 * pi)) - 1
+}
+
+lambda naiveSquare = float phase -> {
+	float val = 1.0
+	if phase >= pi { val = -val }
+	return val
+}
+
+lambda naiveTriangle = float phase -> {
+	float val = 1 - phase / pi
+	if val < 0.0 { val = -val }
+	return 2 * val - 1
+}
+
+//play(naiveOsc(2.0, 0.3, 440.0, naiveTriangle), 1)
