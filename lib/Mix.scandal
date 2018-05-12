@@ -11,6 +11,6 @@ lambda mix = array first -> array second -> {
 	return buffer
 }
 
-import("lib/Dump.scandal")
+//import("lib/Dump.scandal")
 //array mixTest = mix([1, 1, 1], [2, 2, 2, 2])
 //mixTest = dump(mixTest)

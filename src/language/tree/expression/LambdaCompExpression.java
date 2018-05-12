@@ -9,6 +9,7 @@ import language.compiler.Token;
 
 public class LambdaCompExpression extends Expression {
 	
+	// TODO: accept lambda app expressions
 	public final ArrayList<IdentExpression> lambdas;
 	public final LambdaAppExpression lambdaApp;
 

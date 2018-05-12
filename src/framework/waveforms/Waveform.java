@@ -1,7 +1,5 @@
 package framework.waveforms;
 
-import framework.utilities.PlotUtility;
-
 public abstract class Waveform {
 
 	public final float twoPi = (float) Math.PI * 2;
@@ -23,10 +21,6 @@ public abstract class Waveform {
 			if (oscPhase >= twoPi) oscPhase -= twoPi;
 		}
 		return array;
-	}
-
-	public void plot(int samples, float frequency) {
-		new PlotUtility(this.getClass().getSimpleName(), getTable(samples, frequency));
 	}
 
 }

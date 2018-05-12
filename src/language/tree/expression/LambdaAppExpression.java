@@ -57,7 +57,7 @@ public class LambdaAppExpression extends Expression {
 			args.get(i).decorate(symtab);
 			if (args.get(i).type != lambdaLit.params.get(i).type) throw new Exception("Type mismatch in line " + firstToken.lineNumber);
 		}
-		if (args.size() == lambdaLit.params.size()) this.type = lambdaLit.block.returnExpression.type;
+		if (args.size() == lambdaLit.params.size()) this.type = lambdaLit.returnExpression.type;
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class LambdaAppExpression extends Expression {
 			default: break;
 			}
 			mv.visitMethodInsn(INVOKEINTERFACE, "java/util/function/Function", "apply", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
-			if (lambdaLit != null && i == lambdaLit.params.size() - 1) switch (lambdaLit.block.returnExpression.type) {
+			if (lambdaLit != null && i == lambdaLit.params.size() - 1) switch (lambdaLit.returnExpression.type) {
 			case INT:
 				mv.visitTypeInsn(CHECKCAST, "java/lang/Integer");
 				break;

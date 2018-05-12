@@ -1,0 +1,40 @@
+float eleven = 11.0
+
+// Currying, partial applications, and composition.
+lambda adder = float x -> float y -> x + y
+lambda add4 = adder(4.0)
+lambda add6 = adder(6.0)
+print(add6.add4(eleven))
+
+// Can copy lambdas and compositions.
+lambda id = float x -> x
+lambda copy = id
+print(copy(eleven))
+
+lambda copyComposition = add4.add6
+print(copyComposition(eleven))
+
+// Higher-order functions must declare type when applying lambda inside the block.
+lambda higherOrder = float x -> lambda f -> {
+	float val = f(x)
+	return val
+}
+print(higherOrder(eleven, id))
+
+// TODO: capture the environment.
+// lambda captureFloat = float x -> x + eleven
+// lambda captureLambda = float x -> copy(x)
+// lambda returnComposition = float x -> copyComposition(x)
+
+// TODO: compose partial applications
+// float val = adder(4.0).adder(6.0).id(eleven)
+
+// TODO: return lambdas
+// lambda mute4 = array start -> appendSilence(start, b2s(4.0))
+/*
+lambda mute = float bars -> {
+	lambda f = array start -> appendSilence(start, (b2s(bars)))
+	return f
+}
+*/
+// lambda mute8 = mute(8.0)

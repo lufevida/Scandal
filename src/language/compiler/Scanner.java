@@ -102,9 +102,6 @@ public class Scanner {
 		case "pow": {
 			token = new Token(Kind.KW_POW, startPos, endPos, lineNum, lineNumPos);
 		} break;
-		case "func": {
-			token = new Token(Kind.KW_FUNC, startPos, endPos, lineNum, lineNumPos);
-		} break;
 		case "lambda": {
 			token = new Token(Kind.KW_LAMBDA, startPos, endPos, lineNum, lineNumPos);
 		} break;

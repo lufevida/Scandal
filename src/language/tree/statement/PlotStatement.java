@@ -31,12 +31,12 @@ public class PlotStatement extends Statement {
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		if (Platform.isFxApplicationThread()) {
-			mv.visitTypeInsn(NEW, "framework/utilities/PlotUtility");
+			mv.visitTypeInsn(NEW, "language/ide/PlotTab");
 			expression.generate(mv, symtab);
 			array.generate(mv, symtab);
 			points.generate(mv, symtab);
 			if (points.type == Types.FLOAT) mv.visitInsn(F2I);
-			mv.visitMethodInsn(INVOKESPECIAL, "framework/utilities/PlotUtility", "<init>", "(Ljava/lang/String;[FI)V", false);
+			mv.visitMethodInsn(INVOKESPECIAL, "language/ide/PlotTab", "<init>", "(Ljava/lang/String;[FI)V", false);
 		}
 	}
 

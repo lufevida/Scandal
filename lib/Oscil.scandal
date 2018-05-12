@@ -1,0 +1,21 @@
+//import("lib/GEN10.scandal")
+
+// A simpler version of Csound's `oscil`.
+lambda oscil = float dur -> float amp -> float freq -> float phase -> array table -> {
+	int samples = floor(dur * 44100)
+	array buffer = new(samples)
+	float cps = freq * size(table) / 44100.0
+	float phi = 1.0 * size(table)
+	if phase > 0.0 { phi = phi * phase }
+	int i = 0
+	while i < samples {
+		if phi >= 1.0 * size(table) { phi = phi - size(table) }
+		buffer[i] = amp * table[floor(phi)]
+		phi = phi + cps
+		i = i + 1
+	}
+	return buffer
+}
+
+//array sine440 = oscil(2.0, 0.3, 440.0, 0.0, GEN10([4096, 1]))
+//play(sine440, 1)

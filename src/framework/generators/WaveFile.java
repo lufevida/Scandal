@@ -5,8 +5,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import framework.utilities.PlotUtility;
-
 public class WaveFile {
 	
 	public final Path path;
@@ -106,10 +104,6 @@ public class WaveFile {
 			return interleaved;
 		}
 		else return getMonoSum();
-	}
-	
-	public void plot(int size) {
-		new PlotUtility(path.getFileName().toString(), getMonoSum(), size);
 	}
 	
 	public void exportText(String path, String arrayName, int samples) throws Exception {

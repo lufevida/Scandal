@@ -33,7 +33,22 @@ public class AssignmentStatement extends Statement {
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		expression.generate(mv, symtab);
-		switch (expression.type) {
+		if (declaration instanceof ParamDeclaration) {
+			switch (expression.type) {
+			case INT:
+				mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+				break;
+			case BOOL:
+				mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
+				break;
+			case FLOAT:
+				mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
+				break;
+			default: break;
+			}
+			mv.visitVarInsn(ASTORE, declaration.slotNumber);
+		}
+		else switch (expression.type) {
 		case INT:
 		case BOOL:
 			mv.visitVarInsn(ISTORE, declaration.slotNumber);

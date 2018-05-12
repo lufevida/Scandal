@@ -8,7 +8,6 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
-import language.tree.statement.MethodStatement;
 
 public class Program extends Node {
 
@@ -61,7 +60,6 @@ public class Program extends Node {
 				fv.visitEnd();
 				dec.lambda.generate(cw, symtab);
 			}
-			else if (node instanceof MethodStatement) ((MethodStatement) node).generate(cw, symtab);
 		}
 	}
 	

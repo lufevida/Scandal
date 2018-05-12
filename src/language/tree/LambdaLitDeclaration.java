@@ -18,7 +18,6 @@ public class LambdaLitDeclaration extends Declaration {
 		super(firstToken, identToken);
 		this.lambda = lambda;
 		this.lambda.dec = this;
-		this.type = getType();
 	}
 
 	@Override
@@ -30,10 +29,10 @@ public class LambdaLitDeclaration extends Declaration {
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		lambdaSlot = symtab.newLambdaCount;
-		symtab.newLambdaCount += lambda.params.size();
+		lambdaSlot = symtab.lambdaCount;
+		symtab.lambdaCount += lambda.params.size();
 		String lambdaSig = "(" + lambda.params.get(0).getClassType() + ")";
-		if (lambda.params.size() == 1) lambdaSig += lambda.block.returnExpression.getClassType();
+		if (lambda.params.size() == 1) lambdaSig += lambda.returnExpression.getClassType();
 		else lambdaSig += getJvmType();
 		mv.visitInvokeDynamicInsn("apply", "()Ljava/util/function/Function;", getHandle(), getObjects(symtab, lambdaSlot, lambdaSig));
 		mv.visitFieldInsn(PUTSTATIC, symtab.className, identToken.text, getJvmType());

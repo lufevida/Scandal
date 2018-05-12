@@ -13,10 +13,15 @@ public abstract class FileTab extends Tab {
 		this.file = file;
 	}
 	
-	public abstract void save();
+	public void add() {
+		MainView.pane.getTabs().add(this);
+		MainView.pane.getSelectionModel().select(MainView.pane.getTabs().size() - 1);
+	}
 	
-	public abstract void run();
+	public void run() {};
 	
-	public abstract void pause();
+	public void pause() {};
+	
+	public void save() {};
 	
 }

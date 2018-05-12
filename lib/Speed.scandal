@@ -1,6 +1,5 @@
 // Change the speed of an audio buffer.
 lambda speed = array x -> float s -> {
-	//if s < 0.0 { s = -s } // NOT ALLOWED
 	int samples = floor(size(x) / s)
 	array buffer = new(samples)
 	int i = 0

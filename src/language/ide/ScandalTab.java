@@ -29,7 +29,10 @@ public class ScandalTab extends FileTab {
 			writer.write(snapshot());
 			writer.close();
 		}
-		catch (Exception e) { e.printStackTrace(); }
+		catch (Exception e) {
+			MainView.console.appendText(e.getMessage());
+			MainView.console.appendText("\n");
+		}
 	}
 	
 	public void run() {
@@ -37,11 +40,10 @@ public class ScandalTab extends FileTab {
 			compiler.compile();
 			compiler.getInstance().run();
 		}
-		catch (Exception e) { e.printStackTrace(); }
-	}
-	
-	public void pause() {
-		// TODO use audio flows instead
+		catch (Exception e) {
+			MainView.console.appendText(e.getMessage());
+			MainView.console.appendText("\n");
+		}
 	}
 
 }

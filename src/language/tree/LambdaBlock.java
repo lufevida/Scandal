@@ -7,13 +7,13 @@ import org.objectweb.asm.MethodVisitor;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
-import language.tree.expression.LambdaLitExpression;
+import language.tree.expression.LambdaLitBlock;
 import language.tree.statement.ImportStatement;
 
 public class LambdaBlock extends Block {
 	
 	public final Expression returnExpression;
-	public LambdaLitExpression lambda;
+	public LambdaLitBlock lambda;
 
 	public LambdaBlock(Token firstToken, ArrayList<Node> nodes, Expression returnExpression) {
 		super(firstToken, nodes);
@@ -22,10 +22,14 @@ public class LambdaBlock extends Block {
 	
 	public void decorate(SymbolTable symtab) throws Exception {
 		for (Node node : nodes) {
-			if (node.getClass() == ImportStatement.class) throw new Exception();
-			node.decorate(symtab);
+			if (node instanceof ImportStatement) throw new Exception("Cannot import inside lambda.");
+			else if (node instanceof Declaration && node.type == Types.LAMBDA)
+				throw new Exception("Cannot declare lambda inside lambda.");
+			else node.decorate(symtab);
 		}
 		returnExpression.decorate(symtab);
+		if (returnExpression.type == Types.LAMBDA)
+			throw new Exception("You must fix a type before consuming the lambda in line: " + returnExpression.firstToken.lineNumber);
 	}
 	
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {

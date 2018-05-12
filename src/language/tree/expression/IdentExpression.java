@@ -27,24 +27,32 @@ public class IdentExpression extends Expression {
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		if (declaration instanceof ParamDeclaration) {
+		if (declaration instanceof LambdaLitDeclaration) mv.visitFieldInsn(GETSTATIC, symtab.className, firstToken.text, "Ljava/util/function/Function;");
+		else if (declaration instanceof ParamDeclaration) {
 			ParamDeclaration dec = (ParamDeclaration) declaration;
 			if (dec.wrap) {
 				mv.visitVarInsn(ALOAD, dec.slotNumber);
 				switch (dec.type) {
 				case INT:
 					mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
-					break;
+					return;
 				case FLOAT:
 					mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F", false);
-					break;
-				default: break;
+					return;
+				default: return;
 				}
-			}			
-			else if (dec.expression != null) dec.expression.generate(mv, symtab); // this is a forced literal
-			else if (dec.type == Types.INT) mv.visitVarInsn(ILOAD, dec.slotNumber);
-			else if (dec.type == Types.FLOAT) mv.visitVarInsn(FLOAD, dec.slotNumber);
-			else if (dec.type == Types.ARRAY) mv.visitVarInsn(ALOAD, dec.slotNumber);
+			}
+			else switch (dec.type) {
+			case INT:
+				mv.visitVarInsn(ILOAD, dec.slotNumber);
+				return;
+			case FLOAT:
+				mv.visitVarInsn(FLOAD, dec.slotNumber);
+				return;
+			default:
+				mv.visitVarInsn(ALOAD, dec.slotNumber);
+				return;	
+			}
 		}
 		else if (isReturnExpression) {
 			AssignmentDeclaration dec = (AssignmentDeclaration) declaration;
@@ -52,10 +60,17 @@ public class IdentExpression extends Expression {
 			else if (dec.expression.type == Types.FLOAT) mv.visitVarInsn(FLOAD, dec.slotNumber);
 			else if (dec.expression.type == Types.ARRAY) mv.visitVarInsn(ALOAD, dec.slotNumber);
 		}
-		else if (declaration instanceof LambdaLitDeclaration) mv.visitFieldInsn(GETSTATIC, symtab.className, firstToken.text, "Ljava/util/function/Function;");
-		else if (type == Types.STRING || type == Types.ARRAY || type == Types.LAMBDA) mv.visitVarInsn(ALOAD, declaration.slotNumber);
-		else if (type == Types.FLOAT) mv.visitVarInsn(FLOAD, declaration.slotNumber);
-		else mv.visitVarInsn(ILOAD, declaration.slotNumber);
+		else switch (type) {
+		case INT:
+			mv.visitVarInsn(ILOAD, declaration.slotNumber);
+			return;
+		case FLOAT:
+			mv.visitVarInsn(FLOAD, declaration.slotNumber);
+			return;
+		default:
+			mv.visitVarInsn(ALOAD, declaration.slotNumber);
+			return;	
+		}
 	}
 
 }

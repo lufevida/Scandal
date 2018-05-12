@@ -1,6 +1,5 @@
 package framework.effects;
 
-import framework.utilities.PlotUtility;
 import framework.utilities.Settings;
 
 public abstract class Biquad {
@@ -128,7 +127,7 @@ public abstract class Biquad {
 			magnitude = (float) Math.sqrt(numerator / denominator);
 			data[i] = magnitude;   
 		}
-		new PlotUtility(this.getClass().getSimpleName() + " magnitude response", data);
+		//new PlotUtility(this.getClass().getSimpleName() + " magnitude response", data);
 	}
 
 }

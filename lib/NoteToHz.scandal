@@ -2,3 +2,5 @@
 lambda m2f = float note -> {
 	return 440 * pow(2, (note - 69) / 12)
 }
+
+//print(m2f(76.0))

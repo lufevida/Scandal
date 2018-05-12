@@ -1,12 +1,9 @@
 package language.compiler;
 
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Stack;
 
-import language.tree.AssignmentDeclaration;
 import language.tree.Declaration;
-import language.tree.statement.MethodStatement;
 
 public class SymbolTable {
 
@@ -15,9 +12,6 @@ public class SymbolTable {
 	public int scopeNumber = 0;
 	public int slotCount = 1;
 	public int lambdaCount = 0;
-	public int newLambdaCount = 0;
-	public HashMap<String, AssignmentDeclaration> lambdaParams = new HashMap<>();
-	public HashMap<String, MethodStatement> methods = new HashMap<>();
 
 	public SymbolTable(String className) {
 		this.className = className;

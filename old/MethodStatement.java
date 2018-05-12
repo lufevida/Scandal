@@ -1,15 +1,40 @@
 package language.tree.statement;
 
+import static language.compiler.Token.Kind.COMMA;
+import static language.compiler.Token.Kind.IDENT;
+import static language.compiler.Token.Kind.LPAREN;
+import static language.compiler.Token.Kind.RPAREN;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;
 
+import language.compiler.MethodStatement;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.ParamDeclaration;
 import language.tree.ReturnBlock;
+
+/*
+public HashMap<String, MethodStatement> methods = new HashMap<>();
+
+public MethodStatement methodStatement() throws Exception {
+	ArrayList<ParamDeclaration> decs = new ArrayList<>();
+	Token firstToken = match(KW_FUNC);
+	Token name = match(IDENT);
+	match(LPAREN);
+	decs.add(paramDeclaration());
+	while (token.kind == COMMA) {
+		match(COMMA);
+		decs.add(paramDeclaration());
+	}
+	match(RPAREN);
+	return new MethodStatement(firstToken, name, decs, returnBlock());
+}
+*/
 
 public class MethodStatement extends Statement {
 	

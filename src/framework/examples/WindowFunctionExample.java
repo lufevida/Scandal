@@ -1,11 +1,9 @@
 package framework.examples;
 
-import framework.generators.WindowFunction;
-
 public class WindowFunctionExample {
 
 	public static void main(String[] args) {
-		new WindowFunction(500).plot();
+		//new WindowFunction(500).plot();
 	}
 
 }

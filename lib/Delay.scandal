@@ -1,5 +1,5 @@
 // Delay an audio buffer.
-lambda delay = array x -> float time -> float feedback -> float wet -> {
+lambda delay = array x -> int time -> float feedback -> float wet -> {
 	int length = size(x)
 	array buffer = new(length)
 	array circular = new(length)
@@ -18,4 +18,4 @@ lambda delay = array x -> float time -> float feedback -> float wet -> {
 	return buffer
 }
 
-//play(delay(read("wav/monoLisa.wav", 1), 0.1, 0.9, 0.5), 1)
+//play(delay(read("wav/monoLisa.wav", 1), 200, 0.9, 0.5), 1)

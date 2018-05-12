@@ -15,10 +15,10 @@ public abstract class Node implements Opcodes {
 
 	public Node(Token firstToken) {
 		this.firstToken = firstToken;
-		this.type = getType();
+		type = getType(firstToken.kind);
 	}
 	
-	public static Types getType(Token.Kind kind) {
+	private static Types getType(Token.Kind kind) {
 		switch (kind) {
 		case KW_INT: return Types.INT;
 		case KW_FLOAT: return Types.FLOAT;
@@ -29,32 +29,25 @@ public abstract class Node implements Opcodes {
 		default: return null;
 		}
 	}
-	
-	public Types getType() {
-		return getType(firstToken.kind);
-	}
-	
+
 	public String getJvmType() {
-		switch (firstToken.kind) {
-		case KW_INT: return "I";
-		case KW_FLOAT: return "F";
-		case KW_BOOL: return "Z";
-		case KW_STRING: return "Ljava/lang/String;";
-		case KW_ARRAY: return "[F";
-		case KW_LAMBDA: return "Ljava/util/function/Function;";
+		switch (type) {
+		case INT: return "I";
+		case FLOAT: return "F";
+		case BOOL: return "Z";
+		case STRING: return "Ljava/lang/String;";
+		case ARRAY: return "[F";
+		case LAMBDA: return "Ljava/util/function/Function;";
 		default: return null;
 		}
 	}
 	
 	public String getClassType() {
-		switch (firstToken.kind) {
-		case KW_INT: return "Ljava/lang/Integer;";
-		case KW_FLOAT: return "Ljava/lang/Float;";
-		case KW_STRING: return "Ljava/lang/String;";
-		case KW_BOOL: return "Ljava/lang/Boolean;";
-		case KW_ARRAY: return "[F";
-		case KW_LAMBDA: return "Ljava/util/function/Function;";
-		default: return null;
+		switch (type) {
+		case INT: return "Ljava/lang/Integer;";
+		case FLOAT: return "Ljava/lang/Float;";
+		case BOOL: return "Ljava/lang/Boolean;";
+		default: return getJvmType();
 		}
 	}
 

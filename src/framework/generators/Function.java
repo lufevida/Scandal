@@ -1,7 +1,5 @@
 package framework.generators;
 
-import framework.utilities.PlotUtility;
-
 public abstract class Function {
 
 	public final int length;
@@ -12,9 +10,5 @@ public abstract class Function {
 	}
 	
 	public abstract float[] get();
-	
-	public void plot() {
-		new PlotUtility(this.getClass().getSimpleName(), get());
-	}
 
 }
