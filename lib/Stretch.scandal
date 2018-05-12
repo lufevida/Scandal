@@ -1,10 +1,10 @@
 // Get sample count for a number of bars in a given metric.
-lambda barsToSamples = float bars -> float beats -> float bpm -> {
+lambda barsToSamples = float bpm -> float beats -> float bars -> {
 	return floor(44100.0 * bars * beats * 60.0 / bpm)
 }
 
 // Stretch the tail bars of a buffer with a given metric and tempo.
-lambda stretch = array start -> float tail -> float bars -> lambda barsToSamples -> {
+lambda stretch = float tail -> float bars -> lambda barsToSamples -> array start -> {
 	int offset = barsToSamples(bars)
 	int samples = size(start) + offset
 	array buffer = new(samples)

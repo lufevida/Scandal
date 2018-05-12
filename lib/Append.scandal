@@ -1,5 +1,5 @@
 // Appends silence to and audio buffer.
-lambda appendSilence = array start -> int zeros -> {
+lambda appendSilence = int zeros -> array start -> {
 	int samples = size(start) + zeros
 	array buffer = new(samples)
 	int i = 0
@@ -11,7 +11,7 @@ lambda appendSilence = array start -> int zeros -> {
 }
 
 // Reads from a file and appends to an audio buffer.
-lambda appendFile = array start -> string path -> {
+lambda appendFile = string path -> array start -> {
 	array loop = read(path, 1)
 	int samples = size(start) + size(loop)
 	array buffer = new(samples)
