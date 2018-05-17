@@ -37,8 +37,8 @@ public class AdditiveSynthesizer extends PolyphonicSynthesizer {
 	private int harmonicCount;
 	public final Granulator granulator = new Granulator();
 	
-	public AdditiveSynthesizer(int controller, Wavetable baseWavetable) throws Exception {
-		super(controller, baseWavetable);
+	public AdditiveSynthesizer(Wavetable baseWavetable) throws Exception {
+		super(baseWavetable);
 		this.series = Series.BELL;
 		this.harmonicCount = 16;
 		attackSamples = 882;
@@ -48,8 +48,8 @@ public class AdditiveSynthesizer extends PolyphonicSynthesizer {
 		for (MidiNote note : midiNotes) ((AdditiveNote) note).init();
 	}
 
-	public AdditiveSynthesizer(int controller, Wavetable baseWavetable, Series series, int harmonicCount) throws Exception {
-		super(controller, baseWavetable);
+	public AdditiveSynthesizer(Wavetable baseWavetable, Series series, int harmonicCount) throws Exception {
+		super(baseWavetable);
 		this.series = series;
 		this.harmonicCount = harmonicCount;
 		for (MidiNote note : midiNotes) ((AdditiveNote) note).init();

@@ -19,7 +19,7 @@ public class AssignmentDeclaration extends Declaration {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		if (symtab.topOfStackLookup(identToken.text) != null)
-			throw new Exception("Redeclaration in line " + firstToken.lineNumber);
+			throw new Exception("Redeclaration in line: " + firstToken.lineNumber);
 		symtab.insert(identToken.text, this);
 		expression.decorate(symtab);
 		if (expression instanceof LambdaAppExpression) {

@@ -11,7 +11,7 @@ public class FileTreeItem extends TreeItem<String> {
 	public final File file;
 	public final Label label = new Label();
 	
-	public FileTreeItem() {
+	FileTreeItem() {
 		super("Computer");
 		file = new File("/");
 		label.setText(FontAwesome.LAPTOP.unicode);
@@ -21,7 +21,7 @@ public class FileTreeItem extends TreeItem<String> {
 		setExpanded(true);
 	}
 	
-	public FileTreeItem(File file) {
+	FileTreeItem(File file) {
 		super(file.getName());
 		this.file = file;
 		label.setText(file.isDirectory() ? FontAwesome.FOLDER.unicode : FontAwesome.FILE_TEXT.unicode);
@@ -40,8 +40,8 @@ public class FileTreeItem extends TreeItem<String> {
 			fetch();
 		}
 	}
-	
-	public void fetch() {
+
+	private void fetch() {
 		for (File f : file.listFiles()) if (!f.isHidden()) getChildren().add(new FileTreeItem(f));
 	}
 

@@ -19,8 +19,8 @@ public class GranularSynthesizer extends PolyphonicSynthesizer {
 	private final float[] array;
 	private final float baseFrequency;
 
-	public GranularSynthesizer(int controller, Wavetable baseWavetable) throws Exception {
-		super(controller, baseWavetable);
+	public GranularSynthesizer(Wavetable baseWavetable) throws Exception {
+		super(baseWavetable);
 		this.array = null;
 		this.baseFrequency = 1;
 		attackSamples = 22050;
@@ -29,8 +29,8 @@ public class GranularSynthesizer extends PolyphonicSynthesizer {
 		for (MidiNote note : midiNotes) ((GranularNote) note).init();
 	}
 	
-	public GranularSynthesizer(int controller, float[] array, float baseFrequency) throws Exception {
-		super(controller, new WavetableCosine());
+	public GranularSynthesizer(float[] array, float baseFrequency) throws Exception {
+		super(new WavetableCosine());
 		this.array = array;
 		this.baseFrequency = baseFrequency;
 		attackSamples = 22050;

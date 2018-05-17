@@ -20,7 +20,7 @@ public class AudioFlow implements Runnable, LineListener {
 	private final AudioFormat format;
 	private final String name;
 	private final boolean record;
-	public static boolean running = true;
+	private boolean running = true;
 	private TargetDataLine targetDataLine;
 
 	public AudioFlow(RealTimePerformer performer, AudioFormat format) {
@@ -43,9 +43,8 @@ public class AudioFlow implements Runnable, LineListener {
 			targetDataLine.drain();
 			targetDataLine.stop();
 			targetDataLine.close();
-		} else {
-			AudioFlow.running = false;
 		}
+		else running = false;
 	}
 
 	@Override
@@ -56,11 +55,8 @@ public class AudioFlow implements Runnable, LineListener {
 	@Override
 	public void run() {
 		try {
-			if (record) {
-				record(name);
-			} else {
-				play();
-			}
+			if (record) record(name);
+			else play();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

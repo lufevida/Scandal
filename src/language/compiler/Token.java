@@ -68,7 +68,8 @@ public class Token {
 		KW_PI("pi"),
 		KW_COS("cos"),
 		KW_POW("pow"),
-		KW_LAMBDA("lambda");
+		KW_LAMBDA("lambda"),
+		KW_FIELD("field");
 
 		final String text;
 
@@ -113,6 +114,7 @@ public class Token {
 	
 	public boolean isDeclaration() {
 		switch (this.kind) {
+		case KW_FIELD:
 		case KW_INT:
 		case KW_BOOL:
 		case KW_FLOAT:

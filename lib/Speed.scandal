@@ -23,4 +23,4 @@ lambda speed = array x -> float s -> {
 	return buffer
 }
 
-//play(speed(read("wav/monoLisa.wav", 1), 1.5), 1)
+play(speed(read("wav/monoLisa.wav", 1), 1.5), 1)

@@ -13,8 +13,8 @@ public class KarplusStrong extends PolyphonicSynthesizer {
 	private final Delay delay = new Delay();
 	public int delayTime = 500;
 
-	public KarplusStrong(int controller) throws Exception {
-		super(controller, new WavetableWhite());
+	public KarplusStrong() throws Exception {
+		super(new WavetableWhite());
 		attackSamples = decaySamples = releaseSamples = 44;
 		sustainLevel = 1.0f;
 	}

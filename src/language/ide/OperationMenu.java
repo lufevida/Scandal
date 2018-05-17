@@ -7,7 +7,7 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 
-public enum MenuOperation {
+public enum OperationMenu {
 	
 	NEW("New", KeyCode.N),
 	OPEN("Open", KeyCode.O),
@@ -20,7 +20,7 @@ public enum MenuOperation {
 	final FileChooser chooser = new FileChooser();
 	final TabPane pane = MainView.pane;
 	
-	MenuOperation(String name, KeyCode key) {
+	OperationMenu(String name, KeyCode key) {
 		item = new MenuItem(name);
 		item.setAccelerator(new KeyCodeCombination(key, KeyCombination.SHORTCUT_DOWN));
 		item.setOnAction(e -> action());

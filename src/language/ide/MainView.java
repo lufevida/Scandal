@@ -3,6 +3,7 @@ package language.ide;
 import java.io.File;
 import java.nio.file.FileSystems;
 
+import framework.generators.MidiKeyboardController;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.control.Accordion;
@@ -32,7 +33,13 @@ public class MainView extends Application {
 		stage.setTitle("Scandal");
 		stage.setMaximized(true);
 		stage.setScene(getScene());
+		stage.setOnCloseRequest(e -> deinit());
 		stage.show();
+	}
+	
+	private void deinit() {
+		if (MidiKeyboardController.device != null) MidiKeyboardController.device.close();
+		System.exit(0);
 	}
 	
 	private Scene getScene() {
@@ -105,17 +112,27 @@ public class MainView extends Application {
 
 	private MenuBar getMenus() {
 		Menu fileMenu = new Menu("File");
-		fileMenu.getItems().add(MenuOperation.NEW.item);
-		fileMenu.getItems().add(MenuOperation.OPEN.item);
-		fileMenu.getItems().add(MenuOperation.SAVE.item);
-		fileMenu.getItems().add(MenuOperation.CLOSE.item);
+		fileMenu.getItems().add(OperationMenu.NEW.item);
+		fileMenu.getItems().add(OperationMenu.OPEN.item);
+		fileMenu.getItems().add(OperationMenu.SAVE.item);
+		fileMenu.getItems().add(OperationMenu.CLOSE.item);
 		fileMenu.getItems().add(new SeparatorMenuItem());
-		fileMenu.getItems().add(MenuOperation.RUN.item);
-		fileMenu.getItems().add(MenuOperation.PAUSE.item);
+		fileMenu.getItems().add(OperationMenu.RUN.item);
+		fileMenu.getItems().add(OperationMenu.PAUSE.item);
 		MenuBar bar = new MenuBar();
 		bar.setUseSystemMenuBar(true);
-		bar.getMenus().add(fileMenu);
+		bar.getMenus().addAll(fileMenu, getWidgetsMenu());
 		return bar;
+	}
+
+	private Menu getWidgetsMenu() {
+		Menu widgets = new Menu("Widgets");
+		widgets.getItems().add(WidgetMenu.CLASSIC.item);
+		widgets.getItems().add(WidgetMenu.KARPLUS.item);
+		widgets.getItems().add(WidgetMenu.ADDITIVE.item);
+		widgets.getItems().add(WidgetMenu.GRANULAR.item);
+		widgets.getItems().add(WidgetMenu.GRANULATOR.item);
+		return widgets;
 	}
 
 	public static void main(String[] args) {

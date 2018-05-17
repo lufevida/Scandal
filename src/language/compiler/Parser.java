@@ -1,71 +1,13 @@
 package language.compiler;
 
-import static language.compiler.Token.Kind.ARROW;
-import static language.compiler.Token.Kind.ASSIGN;
-import static language.compiler.Token.Kind.COMMA;
-import static language.compiler.Token.Kind.DOT;
-import static language.compiler.Token.Kind.EOF;
-import static language.compiler.Token.Kind.IDENT;
-import static language.compiler.Token.Kind.KW_IF;
-import static language.compiler.Token.Kind.KW_IMPORT;
-import static language.compiler.Token.Kind.KW_PLAY;
-import static language.compiler.Token.Kind.KW_PLOT;
-import static language.compiler.Token.Kind.KW_PRINT;
-import static language.compiler.Token.Kind.KW_RETURN;
-import static language.compiler.Token.Kind.KW_WHILE;
-import static language.compiler.Token.Kind.KW_WRITE;
-import static language.compiler.Token.Kind.LBRACE;
-import static language.compiler.Token.Kind.LBRACKET;
-import static language.compiler.Token.Kind.LPAREN;
-import static language.compiler.Token.Kind.RBRACE;
-import static language.compiler.Token.Kind.RBRACKET;
-import static language.compiler.Token.Kind.RPAREN;
+import static language.compiler.Token.Kind.*;
 
 import java.util.ArrayList;
 
 import language.compiler.Token.Kind;
-import language.tree.AssignmentDeclaration;
-import language.tree.Block;
-import language.tree.Declaration;
-import language.tree.LambdaBlock;
-import language.tree.LambdaLitDeclaration;
-import language.tree.Node;
-import language.tree.ParamDeclaration;
-import language.tree.Program;
-import language.tree.ReturnBlock;
-import language.tree.expression.ArrayItemExpression;
-import language.tree.expression.ArrayLitExpression;
-import language.tree.expression.ArraySizeExpression;
-import language.tree.expression.BinaryExpression;
-import language.tree.expression.BoolLitExpression;
-import language.tree.expression.CosExpression;
-import language.tree.expression.Expression;
-import language.tree.expression.FloatLitExpression;
-import language.tree.expression.FloorExpression;
-import language.tree.expression.IdentExpression;
-import language.tree.expression.InfoExpression;
-import language.tree.expression.IntLitExpression;
-import language.tree.expression.LambdaAppExpression;
-import language.tree.expression.LambdaCompExpression;
-import language.tree.expression.LambdaLitBlock;
-import language.tree.expression.LambdaLitExpression;
-import language.tree.expression.NewArrayExpression;
-import language.tree.expression.PiExpression;
-import language.tree.expression.PowExpression;
-import language.tree.expression.ReadExpression;
-import language.tree.expression.RecordExpression;
-import language.tree.expression.StringLitExpression;
-import language.tree.expression.UnaryExpression;
-import language.tree.statement.AssignmentStatement;
-import language.tree.statement.IfStatement;
-import language.tree.statement.ImportStatement;
-import language.tree.statement.IndexedAssignmentStatement;
-import language.tree.statement.PlayStatement;
-import language.tree.statement.PlotStatement;
-import language.tree.statement.PrintStatement;
-import language.tree.statement.Statement;
-import language.tree.statement.WhileStatement;
-import language.tree.statement.WriteStatement;
+import language.tree.*;
+import language.tree.expression.*;
+import language.tree.statement.*;
 
 public class Parser {
 
@@ -142,12 +84,15 @@ public class Parser {
 	}
 
 	public Declaration assignmentDeclaration() throws Exception {
+		boolean isField = token.kind == KW_FIELD;
+		if (isField) consume();
 		Token firstToken = consume();
 		Token identToken = match(IDENT);
 		match(ASSIGN);
 		Expression e = expression();
 		if (e instanceof LambdaLitExpression)
 			return new LambdaLitDeclaration(firstToken, identToken, (LambdaLitExpression) e);
+		if (isField) return new FieldDeclaration(firstToken, identToken, e);
 		return new AssignmentDeclaration(firstToken, identToken, e);
 	}
 	

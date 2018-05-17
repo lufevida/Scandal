@@ -28,14 +28,14 @@ public class MediaTab extends FileTab {
 		player.setAutoPlay(true);
 		player.currentTimeProperty().addListener(obs -> setTime(player.getCurrentTime().toSeconds()));
 		player.setOnReady(() -> setTime(player.getMedia().getDuration().toSeconds()));
-		player.setOnEndOfMedia(() -> rewind());
+		player.setOnEndOfMedia(this::rewind);
 		MediaView mediaView = new MediaView(player);
 		pane.setCenter(mediaView);
 		setContent(pane);
 		setOnClosed(e -> pause());
 	}
 	
-	ToolBar getBar() {
+	private ToolBar getBar() {
 		ToolBar bar = new ToolBar();
 		HBox spacer = new HBox();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -43,56 +43,51 @@ public class MediaTab extends FileTab {
 		return bar;
 	}
 	
-	Button getMute() {
+	private Button getMute() {
 		Button b = new Button(FontAwesome.VOLUME_UP.unicode);
 		b.setFont(Font.font("FontAwesome"));
 		b.setOnAction(e -> mute(b));
 		return b;
 	}
 	
-	void mute(Button b) {
+	private void mute(Button b) {
 		mute = !mute;
 		b.setText(mute ? FontAwesome.VOLUME_OFF.unicode : FontAwesome.VOLUME_UP.unicode);
 		player.setVolume(mute ? 0 : 1);
 	}
 	
-	Button getPlay() {
+	private Button getPlay() {
 		Button b = new Button(FontAwesome.PLAY.unicode);
 		b.setFont(Font.font("FontAwesome"));
 		b.setOnAction(e -> run());
 		return b;
 	}
 	
-	Button getPause() {
+	private Button getPause() {
 		Button b = new Button(FontAwesome.PAUSE.unicode);
 		b.setFont(Font.font("FontAwesome"));
 		b.setOnAction(e -> pause());
 		return b;
 	}
 	
-	Button getRewind() {
+	private Button getRewind() {
 		Button b = new Button(FontAwesome.STEP_BACKWARD.unicode);
 		b.setFont(Font.font("FontAwesome"));
 		b.setOnAction(e -> rewind());
 		return b;
 	}
 	
-	void rewind() {
-		player.seek(player.getStartTime());
-	}
+	private void rewind() { player.seek(player.getStartTime()); }
 	
-	void setTime(Double time) {
+	private void setTime(Double time) {
 		int secs = time.intValue();
 		int mins = secs / 60;
+		if (mins > 0) secs -= mins * 60;
 		setText(String.format(formatter, mins, secs));
 	}
 
-	public void run() {
-		player.play();
-	}
+	public void run() { player.play(); }
 
-	public void pause() {
-		player.pause();
-	}
+	public void pause() { player.pause(); }
 
 }

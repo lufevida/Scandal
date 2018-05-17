@@ -22,4 +22,4 @@ lambda GEN7 = array args -> {
 }
 
 array gen7 = GEN7([1024, 0, 512, 5, 256, 2, 128, 5, 128, 0])
-plot("GEN7", gen7, 99)
+plot("GEN7", gen7, 50)

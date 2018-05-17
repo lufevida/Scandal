@@ -15,6 +15,10 @@ public class WavePlayer implements RealTimePerformer {
 	public float masterVolume = 0.5f;
 	public float playbackSpeed = 1.0f;
 	
+	public WavePlayer(float[] buffer) throws Exception {
+		fileBuffer = buffer;
+	}
+	
 	public WavePlayer(String path) throws Exception {
 		fileBuffer = new WaveFile(path).getMonoSum();
 	}

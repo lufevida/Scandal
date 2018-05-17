@@ -6,6 +6,7 @@ import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.AssignmentDeclaration;
 import language.tree.Declaration;
+import language.tree.FieldDeclaration;
 import language.tree.LambdaLitDeclaration;
 import language.tree.ParamDeclaration;
 
@@ -27,7 +28,12 @@ public class IdentExpression extends Expression {
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		if (declaration instanceof LambdaLitDeclaration) mv.visitFieldInsn(GETSTATIC, symtab.className, firstToken.text, "Ljava/util/function/Function;");
+		if (declaration instanceof LambdaLitDeclaration) {
+			mv.visitFieldInsn(GETSTATIC, symtab.className, firstToken.text, "Ljava/util/function/Function;");
+		}
+		else if (declaration instanceof FieldDeclaration) {
+			mv.visitFieldInsn(GETSTATIC, symtab.className, firstToken.text, declaration.getJvmType());
+		}
 		else if (declaration instanceof ParamDeclaration) {
 			ParamDeclaration dec = (ParamDeclaration) declaration;
 			if (dec.wrap) {

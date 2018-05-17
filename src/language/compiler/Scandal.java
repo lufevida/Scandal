@@ -1,14 +1,11 @@
 package language.compiler;
 
-public class Dump implements Runnable {
+public class Scandal {
 
 	public static void main(String[] args) throws Exception {
-		Compiler c = new Compiler("lib/Lambdas.scandal");
+		Compiler c = new Compiler(args[0]);
 		c.compile();
-		c.print();
 		c.getInstance().run();
 	}
-
-	public void run() {}
 
 }

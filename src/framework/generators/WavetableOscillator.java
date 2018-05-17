@@ -15,11 +15,12 @@ public class WavetableOscillator implements RealTimePerformer {
 	public final Wavetable wavetable;
 	public float[] mixVector = new float[Settings.vectorSize];
 	private final ByteBuffer buffer = ByteBuffer.allocate(Settings.vectorSize * Settings.bitDepth / 8);
-	private final AudioFlow flow = new AudioFlow(this, Settings.mono);
+	private final AudioFlow flow;
 
-	public WavetableOscillator(Wavetable wavetable) {
+	public WavetableOscillator(Wavetable wavetable) throws Exception {
 		this.wavetable = wavetable;
 		frequencyScale = (float) wavetable.tableSize / Settings.samplingRate;
+		flow = new AudioFlow(this, Settings.mono);
 	}
 
 	public float[] get(int duration, float amplitude, float frequency) {

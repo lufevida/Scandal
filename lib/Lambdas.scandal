@@ -1,4 +1,4 @@
-float eleven = 11.0
+field float eleven = 11.0
 
 // Currying, partial applications, and composition.
 lambda adder = float x -> float y -> x + y
@@ -8,11 +8,8 @@ print(add6.add4(eleven))
 
 // Can copy lambdas and compositions.
 lambda id = float x -> x
-lambda copy = id
+field lambda copy = id
 print(copy(eleven))
-
-lambda copyComposition = add4.add6
-print(copyComposition(eleven))
 
 // Higher-order functions infer parameter types upon applications inside block.
 lambda higherOrder = float x -> lambda f -> {
@@ -21,10 +18,18 @@ lambda higherOrder = float x -> lambda f -> {
 }
 print(higherOrder(eleven, id))
 
-// TODO: capture the environment.
-// lambda captureFloat = float x -> x + eleven
-// lambda captureLambda = float x -> copy(x)
-// lambda returnComposition = float x -> copyComposition(x)
+field lambda copyComposition = add4.add6
+print(copyComposition(eleven))
+
+// Can capture the environment.
+lambda captureFloat = float x -> x + eleven
+print(captureFloat(eleven))
+
+lambda captureLambda = float x -> copy(x)
+print(captureLambda(eleven))
+
+lambda captureComposition = float x -> copyComposition(x)
+print(captureComposition(eleven))
 
 // TODO: compose partial applications
 // TODO: return lambdas

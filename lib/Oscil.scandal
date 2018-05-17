@@ -1,4 +1,4 @@
-//import("lib/GEN10.scandal")
+import("lib/GEN10.scandal")
 
 // A simpler version of Csound's `oscil`.
 lambda oscil = float dur -> float amp -> float freq -> float phase -> array table -> {
@@ -17,5 +17,5 @@ lambda oscil = float dur -> float amp -> float freq -> float phase -> array tabl
 	return buffer
 }
 
-//array sine440 = oscil(2.0, 0.3, 440.0, 0.0, GEN10([4096, 1]))
-//play(sine440, 1)
+array sine440 = oscil(2.0, 0.3, 440.0, 0.0, GEN10([4096, 1]))
+play(sine440, 1)

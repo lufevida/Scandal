@@ -9,7 +9,7 @@ import framework.waveforms.WavetableCosine;
 
 public class AudioTaskScheduleExample {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
 		float[] envelope = new BreakpointFunction(512, new float[]{0, 1, 0}).get();
 		float[] longEnvelope = new BreakpointFunction(512, new float[]{0, 0.5f, 0, 1, 0, 0.5f, 0}).get();
 		float[] glide = new BreakpointFunction(512, new float[]{880, 55, 2200, 1100, 4400}).get();

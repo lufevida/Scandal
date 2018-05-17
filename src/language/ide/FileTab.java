@@ -18,10 +18,10 @@ public abstract class FileTab extends Tab {
 		MainView.pane.getSelectionModel().select(MainView.pane.getTabs().size() - 1);
 	}
 	
-	public void run() {};
+	public void run() {}
 	
-	public void pause() {};
+	public void pause() {}
 	
-	public void save() {};
+	public void save() {}
 	
 }

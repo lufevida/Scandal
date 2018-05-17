@@ -25,8 +25,8 @@ public class PolyphonicSynthesizer extends MidiKeyboardController implements Rea
 
 	public static enum ADSR { ATTACK, DECAY, SUSTAIN, RELEASE, OFF }
 
-	public PolyphonicSynthesizer(int controller, Wavetable baseWavetable) throws Exception {
-		super(controller);
+	public PolyphonicSynthesizer(Wavetable baseWavetable) throws Exception {
+		super();
 		this.baseWavetable = baseWavetable;
 		fillMidiNotesArray();
 	}
@@ -157,7 +157,6 @@ public class PolyphonicSynthesizer extends MidiKeyboardController implements Rea
 	public void stopFlow() {
 		flow.quit();
 		close();
-		System.exit(0);
 	}
 
 	@Override

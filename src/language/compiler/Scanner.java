@@ -105,6 +105,9 @@ public class Scanner {
 		case "lambda": {
 			token = new Token(Kind.KW_LAMBDA, startPos, endPos, lineNum, lineNumPos);
 		} break;
+		case "field": {
+			token = new Token(Kind.KW_FIELD, startPos, endPos, lineNum, lineNumPos);
+		} break;
 		default: {
 			token = new Token(Kind.IDENT, substring, startPos, endPos, lineNum, lineNumPos);
 		} break;

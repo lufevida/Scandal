@@ -10,24 +10,26 @@ import javax.sound.midi.Receiver;
 import javax.sound.midi.Sequence;
 import javax.sound.midi.Track;
 
+import framework.utilities.Settings;
+
 public abstract class MidiKeyboardController implements Receiver {
+	
+	public static MidiDevice device;
 
-	public final MidiDevice device;
-
-	public MidiKeyboardController(int controller) throws Exception {
-		device = MidiSystem.getMidiDevice(MidiSystem.getMidiDeviceInfo()[controller]);
+	public MidiKeyboardController() throws Exception {
+		if (device == null) device = MidiSystem.getMidiDevice(MidiSystem.getMidiDeviceInfo()[Settings.midiController]);
 		device.open();
 		device.getTransmitter().setReceiver(this);
 	}
 
 	@Override
 	public void send(MidiMessage message, long timeStamp) {
-		int statusByte = message.getMessage()[0];
+		int rawStatus = message.getMessage()[0];
 		int firstByte = message.getMessage()[1];
 		int secondByte = message.getMessage()[2];
-		int rawStatus = statusByte & 0xF0; // without channel
-		int channelByte = statusByte & 0x0F;
-		switch (rawStatus) {
+		int statusByte = rawStatus & 0xF0; // without channel
+		int channelByte = rawStatus & 0x0F;
+		switch (statusByte) {
 		case 0x80: {
 			handleNoteOff(firstByte, secondByte, channelByte);
 		} break;
@@ -106,10 +108,7 @@ public abstract class MidiKeyboardController implements Receiver {
 			}
 		}
 	}
-
-	@Override
-	public void close() {
-		device.close();
-	}
+	
+	public void close() {}
 
 }

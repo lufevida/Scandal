@@ -60,6 +60,11 @@ public class Program extends Node {
 				fv.visitEnd();
 				dec.lambda.generate(cw, symtab);
 			}
+			if (node instanceof FieldDeclaration) {
+				FieldDeclaration dec = (FieldDeclaration) node;
+				fv = cw.visitField(ACC_STATIC, dec.identToken.text, dec.getJvmType(), null, null);
+				fv.visitEnd();
+			}
 		}
 	}
 	

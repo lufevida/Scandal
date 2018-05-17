@@ -5,6 +5,7 @@ import org.objectweb.asm.MethodVisitor;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.Declaration;
+import language.tree.FieldDeclaration;
 import language.tree.ParamDeclaration;
 import language.tree.expression.Expression;
 import language.tree.expression.LambdaAppExpression;
@@ -47,6 +48,9 @@ public class AssignmentStatement extends Statement {
 			default: break;
 			}
 			mv.visitVarInsn(ASTORE, declaration.slotNumber);
+		}
+		else if (declaration instanceof FieldDeclaration) {
+			mv.visitFieldInsn(PUTSTATIC, symtab.className, declaration.identToken.text, declaration.getJvmType());
 		}
 		else switch (expression.type) {
 		case INT:

@@ -2,6 +2,7 @@ package language.tree.statement;
 
 import org.objectweb.asm.MethodVisitor;
 
+import javafx.application.Platform;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
@@ -25,12 +26,20 @@ public class PlayStatement extends Statement {
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		mv.visitTypeInsn(NEW, "framework/generators/AudioTask");
-		mv.visitInsn(DUP);
-		mv.visitMethodInsn(INVOKESPECIAL, "framework/generators/AudioTask", "<init>", "()V", false);
+		if (!Platform.isFxApplicationThread()) {
+			mv.visitTypeInsn(NEW, "framework/generators/AudioTask");
+			mv.visitInsn(DUP);
+			mv.visitMethodInsn(INVOKESPECIAL, "framework/generators/AudioTask", "<init>", "()V", false);
+			expression.generate(mv, symtab);
+			channels.generate(mv, symtab);
+			mv.visitMethodInsn(INVOKEVIRTUAL, "framework/generators/AudioTask", "play", "([FI)V", false);
+			return;
+		}
+		mv.visitTypeInsn(NEW, "language/ide/WaveTab");
+		mv.visitLdcInsn(symtab.className);
 		expression.generate(mv, symtab);
 		channels.generate(mv, symtab);
-		mv.visitMethodInsn(INVOKEVIRTUAL, "framework/generators/AudioTask", "play", "([FI)V", false);
+		mv.visitMethodInsn(INVOKESPECIAL, "language/ide/WaveTab", "<init>", "(Ljava/lang/String;[FI)V", false);		
 	}
 
 }

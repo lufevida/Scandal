@@ -9,7 +9,7 @@ import framework.waveforms.WavetableCosine;
 
 public class WavetableOscillatorUtility {
 
-	public float[] get(int duration, float amplitude, float frequency, int shape) {
+	public float[] get(int duration, float amplitude, float frequency, int shape) throws Exception {
 		switch (shape) {
 		case 2: return new WavetableOscillator(new ClassicSawtooth()).get(duration, amplitude, frequency);
 		case 3: return new WavetableOscillator(new ClassicSquare()).get(duration, amplitude, frequency);
@@ -19,7 +19,7 @@ public class WavetableOscillatorUtility {
 		}
 	}
 
-	public float[] get(int duration, float[] amplitude, float frequency, int shape) {
+	public float[] get(int duration, float[] amplitude, float frequency, int shape) throws Exception {
 		switch (shape) {
 		case 2: return new WavetableOscillator(new ClassicSawtooth()).get(duration, amplitude, frequency);
 		case 3: return new WavetableOscillator(new ClassicSquare()).get(duration, amplitude, frequency);
@@ -29,7 +29,7 @@ public class WavetableOscillatorUtility {
 		}
 	}
 
-	public float[] get(int duration, float amplitude, float[] frequency, int shape) {
+	public float[] get(int duration, float amplitude, float[] frequency, int shape) throws Exception {
 		switch (shape) {
 		case 2: return new WavetableOscillator(new ClassicSawtooth()).get(duration, amplitude, frequency);
 		case 3: return new WavetableOscillator(new ClassicSquare()).get(duration, amplitude, frequency);
@@ -39,7 +39,7 @@ public class WavetableOscillatorUtility {
 		}
 	}
 
-	public float[] get(int duration, float[] amplitude, float[] frequency, int shape) {
+	public float[] get(int duration, float[] amplitude, float[] frequency, int shape) throws Exception {
 		switch (shape) {
 		case 2: return new WavetableOscillator(new ClassicSawtooth()).get(duration, amplitude, frequency);
 		case 3: return new WavetableOscillator(new ClassicSquare()).get(duration, amplitude, frequency);
