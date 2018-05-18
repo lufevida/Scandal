@@ -10,14 +10,13 @@ import org.objectweb.asm.Type;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
-import language.tree.LambdaLitDeclaration;
 import language.tree.ParamDeclaration;
 
 public class LambdaLitExpression extends Expression {
 	
 	public final ArrayList<ParamDeclaration> params;
 	public final Expression returnExpression;
-	public LambdaLitDeclaration dec;
+	public int lambdaSlot;
 
 	public LambdaLitExpression(Token firstToken, ArrayList<ParamDeclaration> params, Expression returnExpression) {
 		super(firstToken);
@@ -28,7 +27,6 @@ public class LambdaLitExpression extends Expression {
 	public void decorate(SymbolTable symtab) throws Exception {
 		symtab.enterScope();
 		for (int i = 0; i < params.size(); i++) {
-			params.get(i).wrap = true;
 			params.get(i).slotNumber = i;
 			params.get(i).decorate(symtab);
 		}
@@ -36,36 +34,51 @@ public class LambdaLitExpression extends Expression {
 		symtab.leaveScope();
 	}
 
-	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {}
+	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
+		lambdaSlot = symtab.lambdaCount;
+		symtab.lambdaCount += params.size();
+		String lambdaSig = "(" + params.get(0).getClassType() + ")";
+		if (params.size() == 1) lambdaSig += returnExpression.getClassType();
+		else lambdaSig += "Ljava/util/function/Function;";
+		mv.visitInvokeDynamicInsn("apply", "()Ljava/util/function/Function;", getHandle(), getObjects(symtab, lambdaSlot, lambdaSig));
+	}
 	
 	public void generate(ClassWriter cw, SymbolTable symtab) throws Exception {
 		MethodVisitor mv;
 		for (int i = 0; i < params.size(); i++) {
-			mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC + ACC_SYNTHETIC, "lambda$" + (dec.lambdaSlot + i), getSig(i), null, null);
+			mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC + ACC_SYNTHETIC, "lambda$" + (lambdaSlot + i), getSig(i), null, null);
 			mv.visitCode();
 			if (i == params.size() - 1) {
 				returnExpression.generate(mv, symtab);
-				switch (returnExpression.type) {
-				case INT:
-					mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
-					break;
-				case BOOL:
-					mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
-					break;
-				case FLOAT:
-					mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
-					break;
-				default: break;
-				}
+				getValueOf(returnExpression.type, mv);
 			}
 			else {
 				for (int j = 0; j <= i; j++) mv.visitVarInsn(ALOAD, j);
-				mv.visitInvokeDynamicInsn("apply", getSig(i), dec.getHandle(), getObjects(symtab, dec.lambdaSlot, i + 1));
+				mv.visitInvokeDynamicInsn("apply", getSig(i), getHandle(), getObjects(symtab, lambdaSlot, i + 1));
 			}
 			mv.visitInsn(ARETURN);
 			mv.visitMaxs(0, 0);
 			mv.visitEnd();
 		}
+	}
+	
+	public Handle getHandle() {
+		String sig = "(Ljava/lang/invoke/MethodHandles$Lookup;";
+		sig += "Ljava/lang/String;";
+		sig += "Ljava/lang/invoke/MethodType;";
+		sig += "Ljava/lang/invoke/MethodType;";
+		sig += "Ljava/lang/invoke/MethodHandle;";
+		sig += "Ljava/lang/invoke/MethodType;)";
+		sig += "Ljava/lang/invoke/CallSite;";
+		return new Handle(Opcodes.H_INVOKESTATIC, "java/lang/invoke/LambdaMetafactory", "metafactory", sig, false);
+	}
+	
+	public Object[] getObjects(SymbolTable symtab, int slot, String sig) {
+		Object[] objs = new Object[3];
+		objs[0] = Type.getType("(Ljava/lang/Object;)Ljava/lang/Object;");
+		objs[1] = new Handle(Opcodes.H_INVOKESTATIC, symtab.className, "lambda$" + slot, sig, false);
+		objs[2] = Type.getType(sig);
+		return objs;
 	}
 	
 	Object[] getObjects(SymbolTable symtab, int slot, int i) {
@@ -80,13 +93,13 @@ public class LambdaLitExpression extends Expression {
 		String sig = "(";
 		for (int j = 0; j <= i; j++) sig += params.get(j).getClassType();
 		if (i == params.size() - 1) return sig + ")" + returnExpression.getClassType();
-		return sig + ")" + dec.getJvmType();
+		return sig + ")" + "Ljava/util/function/Function;";
 	}
 	
 	String getInOutSig(int i) {
 		String sig = "(" + params.get(i).getClassType();
 		if (i == params.size() - 1) return sig + ")" + returnExpression.getClassType();
-		return sig + ")" + dec.getJvmType();
+		return sig + ")" + "Ljava/util/function/Function;";
 	}
 
 }

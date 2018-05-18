@@ -23,7 +23,6 @@ public class LambdaLitBlock extends LambdaLitExpression {
 	public void decorate(SymbolTable symtab) throws Exception {
 		symtab.enterScope();
 		for (int i = 0; i < params.size(); i++) {
-			params.get(i).wrap = true;
 			params.get(i).slotNumber = i;
 			params.get(i).decorate(symtab);
 		}
@@ -34,7 +33,7 @@ public class LambdaLitBlock extends LambdaLitExpression {
 	public void generate(ClassWriter cw, SymbolTable symtab) throws Exception {
 		MethodVisitor mv;
 		for (int i = 0; i < params.size(); i++) {
-			mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC + ACC_SYNTHETIC, "lambda$" + (dec.lambdaSlot + i), getSig(i), null, null);
+			mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC + ACC_SYNTHETIC, "lambda$" + (lambdaSlot + i), getSig(i), null, null);
 			mv.visitCode();
 			if (i == params.size() - 1) {
 				block.generate(mv, symtab);
@@ -53,7 +52,7 @@ public class LambdaLitBlock extends LambdaLitExpression {
 			}
 			else {
 				for (int j = 0; j <= i; j++) mv.visitVarInsn(ALOAD, j);
-				mv.visitInvokeDynamicInsn("apply", getSig(i), dec.getHandle(), getObjects(symtab, dec.lambdaSlot, i + 1));
+				mv.visitInvokeDynamicInsn("apply", getSig(i), getHandle(), getObjects(symtab, lambdaSlot, i + 1));
 			}
 			mv.visitInsn(ARETURN);
 			mv.visitMaxs(0, 0);

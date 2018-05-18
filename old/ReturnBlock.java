@@ -1,14 +1,32 @@
 package language.tree;
 
+import static language.compiler.Token.Kind.KW_RETURN;
+import static language.compiler.Token.Kind.LBRACE;
+import static language.compiler.Token.Kind.RBRACE;
+
 import java.util.ArrayList;
 
 import org.objectweb.asm.MethodVisitor;
 
+import language.compiler.ReturnBlock;
 import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
 import language.tree.statement.ImportStatement;
-
+/*
+public ReturnBlock returnBlock() throws Exception {
+	Token firstToken = match(LBRACE);
+	ArrayList<Node> nodes = new ArrayList<>();
+	while (token.kind != KW_RETURN) {
+		if (token.isDeclaration()) nodes.add(assignmentDeclaration());
+		else nodes.add(statement());
+	}
+	match(KW_RETURN);
+	Expression expression = expression();
+	match(RBRACE);
+	return new ReturnBlock(firstToken, nodes, expression);
+}
+*/
 public class ReturnBlock extends Block {
 	
 	public final Expression returnExpression;

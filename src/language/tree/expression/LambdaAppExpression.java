@@ -69,71 +69,13 @@ public class LambdaAppExpression extends Expression {
 	public void generateArgs(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		for (int i = args.size() - count; i < args.size(); i++) {
 			args.get(i).generate(mv, symtab);
-			switch (args.get(i).type) {
-			case INT:
-				mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
-				break;
-			case BOOL:
-				mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
-				break;
-			case FLOAT:
-				mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
-				break;
-			default: break;
-			}
+			getValueOf(args.get(i).type, mv);
 			mv.visitMethodInsn(INVOKEINTERFACE, "java/util/function/Function", "apply", "(Ljava/lang/Object;)Ljava/lang/Object;", true);
-			if (lambdaLit != null && i == lambdaLit.params.size() - 1) switch (lambdaLit.returnExpression.type) {
-			case INT:
-				mv.visitTypeInsn(CHECKCAST, "java/lang/Integer");
-				break;
-			case BOOL:
-				mv.visitTypeInsn(CHECKCAST, "java/lang/Boolean");
-				break;
-			case FLOAT:
-				mv.visitTypeInsn(CHECKCAST, "java/lang/Float");
-				break;
-			case ARRAY:
-				mv.visitTypeInsn(CHECKCAST, "[F");
-				break;
-			case STRING:
-				mv.visitTypeInsn(CHECKCAST, "java/lang/String");
-				break;
-			default: break;
-			}
-			else if (lambdaLit != null) mv.visitTypeInsn(CHECKCAST, "java/util/function/Function");
-			else if (lambda.declaration instanceof ParamDeclaration) {
-				switch (this.type) {
-				case INT:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Integer");
-					break;
-				case BOOL:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Boolean");
-					break;
-				case FLOAT:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/Float");
-					break;
-				case ARRAY:
-					mv.visitTypeInsn(CHECKCAST, "[F");
-					break;
-				case STRING:
-					mv.visitTypeInsn(CHECKCAST, "java/lang/String");
-					break;
-				default: break;
-				}
-			}
+			if (lambda.declaration instanceof ParamDeclaration) getCheckCast(this.type, mv);
+			else if (i == lambdaLit.params.size() - 1) getCheckCast(lambdaLit.returnExpression.type, mv);
+			else getCheckCast(Types.LAMBDA, mv);
 		}
-		switch (this.type) {
-		case INT:
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
-			break;
-		case BOOL:
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Boolean", "booleanValue", "()Z", false);
-			break;
-		case FLOAT:
-			mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F", false);
-			break;
-		default: break;
-		}
+		getTypeValue(this.type, mv);
 	}
 
 }

@@ -76,10 +76,6 @@ public class BinaryExpression extends Expression {
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		if (isReturnExpression) {
-			e0.isReturnExpression = true;
-			e1.isReturnExpression = true;
-		}
 		e0.generate(mv, symtab);
 		switch (op.kind) {
 		case MOD: {

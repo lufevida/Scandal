@@ -10,6 +10,7 @@ public class FieldDeclaration extends AssignmentDeclaration {
 
 	public FieldDeclaration(Token firstToken, Token identToken, Expression expression) {
 		super(firstToken, identToken, expression);
+		isField = true;
 	}
 
 	@Override

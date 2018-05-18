@@ -56,19 +56,6 @@ public class Parser {
 		match(RBRACE);
 		return new Block(firstToken, nodes);
 	}
-
-	public ReturnBlock returnBlock() throws Exception {
-		Token firstToken = match(LBRACE);
-		ArrayList<Node> nodes = new ArrayList<>();
-		while (token.kind != KW_RETURN) {
-			if (token.isDeclaration()) nodes.add(assignmentDeclaration());
-			else nodes.add(statement());
-		}
-		match(KW_RETURN);
-		Expression expression = expression();
-		match(RBRACE);
-		return new ReturnBlock(firstToken, nodes, expression);
-	}
 	
 	public LambdaBlock lambdaBlock() throws Exception {
 		Token firstToken = match(LBRACE);

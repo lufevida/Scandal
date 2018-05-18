@@ -6,8 +6,6 @@ import language.compiler.SymbolTable;
 import language.compiler.Token;
 
 public class ParamDeclaration extends Declaration {
-	
-	public boolean wrap = false;
 
 	public ParamDeclaration(Token firstToken, Token identToken) {
 		super(firstToken, identToken);
