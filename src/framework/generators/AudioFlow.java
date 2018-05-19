@@ -67,9 +67,8 @@ public class AudioFlow implements Runnable, LineListener {
 		sourceDataLine.addLineListener(this);
 		sourceDataLine.open(format, Settings.vectorSize * Settings.bitDepth / 8);
 		sourceDataLine.start();
-		ByteBuffer buffer;
 		while (running) {
-			buffer = performer.getVector();
+			ByteBuffer buffer = performer.getVector();
 			sourceDataLine.write(buffer.array(), 0, buffer.position());
 		}
 		sourceDataLine.drain();

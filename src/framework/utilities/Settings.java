@@ -31,15 +31,11 @@ public final class Settings {
 		int index = 0;
 		String output = "Audio devices:\n";
 		Mixer.Info[] mixers = AudioSystem.getMixerInfo();
-		for (Mixer.Info mixer : mixers) {
-			output += index++ + ": " + mixer.getName() + "\n";
-		}
+		for (Mixer.Info mixer : mixers) output += index++ + ": " + mixer.getName() + "\n";
 		index = 0;
 		output += "MIDI devices:\n";
 		MidiDevice.Info[] infos = MidiSystem.getMidiDeviceInfo();
-		for (MidiDevice.Info info : infos) {
-			output += index++ + ": " + info.getName() + "\n";
-		}
+		for (MidiDevice.Info info : infos) output += index++ + ": " + info.getName() + "\n";
 		output += "Sampling rate: " + samplingRate + "\n";
 		output += "Bit depth: " + bitDepth + "\n";
 		output += "Vector size: " + vectorSize + "\n";
