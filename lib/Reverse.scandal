@@ -10,5 +10,5 @@ lambda reverse = array x -> {
 	return y
 }
 
-//import("lib/Dump.scandal")
-//array reverseTest = reverse.dump([1, 2, 3])
+import("lib/Dump.scandal")
+array reverseTest = reverse.dump([1, 2, 3, 4, 5])

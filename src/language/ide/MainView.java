@@ -28,7 +28,7 @@ public class MainView extends Application {
 	public static final TextArea console = new TextArea();
 	static final TitledPane consolePane = new TitledPane("Console", console);
 
-	public void start(Stage stage) throws Exception {
+	public void start(Stage stage) {
 		Font.loadFont(getClass().getResourceAsStream("/language/ide/fontawesome-webfont.ttf"), 0);
 		stage.setTitle("Scandal");
 		stage.setMaximized(false);
