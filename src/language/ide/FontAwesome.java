@@ -789,7 +789,7 @@ public enum FontAwesome {
     YOUTUBE_PLAY("\uf16A"),
     YOUTUBE_SQUARE("\uf166");
 	
-	final String unicode;
+	public final String unicode;
 
     FontAwesome(String unicode) {
         this.unicode = unicode;

@@ -4,10 +4,10 @@ lambda naivePrimeFinder = int p -> {
 	int q = 2
 	while (q < p) {
 		if (p % q == 0) {
-    		result = false
-        	q = p
-    	}
-    	q = q + 1
+			result = false
+			q = p
+		}
+		q = q + 1
 	}
 	return result
 }

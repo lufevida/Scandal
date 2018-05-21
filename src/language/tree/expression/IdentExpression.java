@@ -33,6 +33,7 @@ public class IdentExpression extends Expression {
 		}
 		else switch (type) {
 		case INT:
+		case BOOL:
 			mv.visitVarInsn(ILOAD, declaration.slotNumber);
 			return;
 		case FLOAT:

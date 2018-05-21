@@ -1,4 +1,4 @@
-package language.ide;
+package language.ide.widget;
 
 import framework.generators.KarplusStrong;
 

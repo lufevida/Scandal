@@ -38,7 +38,7 @@ public class MediaTab extends FileTab {
 	private ToolBar getBar() {
 		ToolBar bar = new ToolBar();
 		HBox spacer = new HBox();
-		HBox.setHgrow(spacer, Priority.ALWAYS);
+		HBox.setHgrow(spacer, Priority.ALWAYS); // consider a change listener
 		bar.getItems().addAll(spacer, getMute(), getPlay(), getPause(), getRewind());
 		return bar;
 	}

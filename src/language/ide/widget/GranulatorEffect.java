@@ -1,4 +1,4 @@
-package language.ide;
+package language.ide.widget;
 
 import framework.effects.Granulator;
 import framework.generators.WavePlayer;

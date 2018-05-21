@@ -1,4 +1,4 @@
-package language.ide;
+package language.ide.widget;
 
 import framework.generators.RealTimePerformer;
 import javafx.beans.value.ChangeListener;
@@ -9,6 +9,7 @@ import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import language.ide.FileTab;
 
 import java.io.File;
 
@@ -35,7 +36,7 @@ public abstract class WidgetTab extends FileTab {
 		label.setAlignment(Pos.CENTER_LEFT);
 		Slider slider = new Slider(min, max, init);
 		slider.valueProperty().addListener(cb);
-		HBox.setHgrow(slider, Priority.ALWAYS);
+		HBox.setHgrow(slider, Priority.ALWAYS); // consider a change listener
 		Label value = new Label();
 		value.textProperty().bind(slider.valueProperty().asString("%.2f " + unit));
 		value.setAlignment(Pos.CENTER_RIGHT);

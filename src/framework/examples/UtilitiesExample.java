@@ -1,17 +1,6 @@
 package framework.examples;
 
-import javafx.application.Application;
-import javafx.stage.Stage;
-
-public class UtilitiesExample extends Application implements Runnable {
-
-	@Override
-	public void start(Stage stage) {}
-	
-	@Override
-	public void run() {
-		Application.launch();
-	}
+public class UtilitiesExample {
 	
 	public static void main(String[] args) throws Exception {
 //		Settings.printInfo();

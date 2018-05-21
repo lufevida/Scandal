@@ -58,14 +58,15 @@ public class Compiler {
 		if (imports.contains(inPath)) return;
 		Program program = getProgram(getCode(inPath));
 		for (Node node : program.nodes)
-			if (node.getClass() == ImportStatement.class)
+			if (node instanceof ImportStatement)
 				link(((ImportStatement) node).expression.firstToken.text);
 		imports.add(inPath);
 	}
 	
-	private String getCode(String inPath) throws Exception {
+	public static String getCode(String inPath) {
 		Path path = FileSystems.getDefault().getPath(inPath);
-		return new String(Files.readAllBytes(path));
+		try { return new String(Files.readAllBytes(path)); }
+		catch (Exception e) { return ""; }
 	}
 	
 	private Program getProgram(String code) throws Exception {

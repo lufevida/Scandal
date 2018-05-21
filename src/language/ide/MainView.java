@@ -17,9 +17,9 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.TreeView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import language.ide.widget.WidgetMenu;
 
 public class MainView extends Application {
 
@@ -31,7 +31,7 @@ public class MainView extends Application {
 	public void start(Stage stage) throws Exception {
 		Font.loadFont(getClass().getResourceAsStream("/language/ide/fontawesome-webfont.ttf"), 0);
 		stage.setTitle("Scandal");
-		stage.setMaximized(true);
+		stage.setMaximized(false);
 		stage.setScene(getScene());
 		stage.setOnCloseRequest(e -> deinit());
 		stage.show();
@@ -45,11 +45,9 @@ public class MainView extends Application {
 	private Scene getScene() {
 		HBox box = new HBox();
 		box.widthProperty().addListener((obs, old, val) -> resize(val));
-		HBox.setHgrow(pane, Priority.ALWAYS);
-		HBox.setHgrow(accordion, Priority.ALWAYS);
 		console.textProperty().addListener((obs, old, val) -> accordion.setExpandedPane(consolePane));
-		accordion.getPanes().addAll(getBrowser(), getLib(), getSamples(), consolePane);
-		accordion.setExpandedPane(accordion.getPanes().get(1));
+		accordion.getPanes().addAll(getSettings(), getBrowser(), getLib(), getSamples(), consolePane);
+		accordion.setExpandedPane(accordion.getPanes().get(2));
 		box.getChildren().addAll(pane, accordion);
 		BorderPane root = new BorderPane();
 		root.setCenter(box);
@@ -60,6 +58,10 @@ public class MainView extends Application {
 	private void resize(Number val) {
 		pane.setPrefWidth((double) val * 0.7);
 		accordion.setPrefWidth((double) val * 0.3);
+	}
+	
+	private TitledPane getSettings() {
+		return new TitledPane("Settings", new SettingsBox());
 	}
 	
 	private TitledPane getBrowser() {
@@ -135,8 +137,6 @@ public class MainView extends Application {
 		return widgets;
 	}
 
-	public static void main(String[] args) {
-		launch(args);
-	}
+	public static void main(String[] args) { launch(args); }
 
 }

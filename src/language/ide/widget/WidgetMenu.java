@@ -1,4 +1,4 @@
-package language.ide;
+package language.ide.widget;
 
 import javafx.scene.control.MenuItem;
 
@@ -10,7 +10,7 @@ public enum WidgetMenu {
     GRANULAR("Granular Synthesizer"),
     GRANULATOR("Granulator Effect");
 
-    final MenuItem item;
+    public final MenuItem item;
 
     WidgetMenu(String name) {
         item = new MenuItem(name);

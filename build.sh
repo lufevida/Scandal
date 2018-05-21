@@ -1,4 +1,3 @@
-
 # Config
 PROJECT_NAME="Scandal"
 PROJECT_VERSION="1.0"
