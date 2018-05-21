@@ -5,8 +5,6 @@
 
 Scandal is both a Java framework and a domain-specific language designed to process sounds. Examples of how to use the language, as well as a complete description of its [syntax](https://github.com/lufevida/Scandal/blob/master/src/language/sublime/Syntax.md) can be found in the [sublime](https://github.com/lufevida/Scandal/blob/master/src/language/sublime) package. Examples of how to use the framework can be found in the [examples](https://github.com/lufevida/Scandal/blob/master/src/framework/examples) package.
 
-![Screenshot](https://raw.githubusercontent.com/lufevida/Scandal/master/doc/Screenshot.jpg)
-
 ## Installation
 
 The very first step is to have [Java](https://www.java.com/en/download/) installed. Then go to the [releases](https://github.com/lufevida/Scandal/releases) page and download the `Scandal.zip` file. Next, open [Sublime Text](https://www.sublimetext.com), and select
