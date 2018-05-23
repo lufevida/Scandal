@@ -1,6 +1,0 @@
-// The keyword `info` returns a string with
-// a list of available audio and MIDI devices.
-string devices = info
-
-// Print the list to the console.
-print(devices)

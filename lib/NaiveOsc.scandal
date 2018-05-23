@@ -17,17 +17,13 @@ lambda naiveOsc = float dur -> float amp -> float freq -> lambda shape -> {
 }
 
 // The following lambdas produce classic waveforms.
-lambda naiveCosine = float phase -> {
-	return cos(phase)
-}
+lambda naiveCosine = float phase -> cos(phase)
 
-lambda naiveSawtooth = float phase -> {
-	return 2 * (1 - phase / (2 * pi)) - 1
-}
+lambda naiveSawtooth = float phase -> 2 * (1 - phase / (2 * pi)) - 1
 
 lambda naiveSquare = float phase -> {
 	float val = 1.0
-	if phase >= pi { val = -val }
+	if phase >= pi { val = -1.0 }
 	return val
 }
 
@@ -37,4 +33,4 @@ lambda naiveTriangle = float phase -> {
 	return 2 * val - 1
 }
 
-//play(naiveOsc(2.0, 0.3, 440.0, naiveTriangle), 1)
+//play(naiveOsc(2.0, 0.2, 440.0, naiveTriangle), 1)

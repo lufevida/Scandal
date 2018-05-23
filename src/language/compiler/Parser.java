@@ -225,7 +225,6 @@ public class Parser {
 		if (token.isDeclaration()) return lambdaLitExpression(token);
 		switch (token.kind) {
 		case LPAREN: return parenthesizedExpression(consume());
-		case KW_INFO: return new InfoExpression(consume());
 		case INT_LIT: return new IntLitExpression(consume());
 		case FLOAT_LIT: return new FloatLitExpression(consume());
 		case STRING_LIT: return new StringLitExpression(consume());

@@ -16,4 +16,4 @@ lambda GEN10 = array args -> {
 }
 
 array gen10 = GEN10([1024, 1, 0.5, 0.33, 0.25, 0.2])
-plot("GEN10", gen10, 512)
+plot("GEN10", gen10, 64)

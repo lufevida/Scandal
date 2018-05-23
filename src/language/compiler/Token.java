@@ -59,7 +59,6 @@ public class Token {
 		KW_PLAY("play"),
 		KW_RECORD("record"),
 		KW_WRITE("write"),
-		KW_INFO("info"),
 		KW_RETURN("return"),
 		KW_SIZE("size"),
 		KW_NEW("new"),

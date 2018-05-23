@@ -20,7 +20,7 @@ import language.compiler.Compiler;
 public class ScandalTab extends FileTab {
 
 	private static final String[] KEYWORDS = new String[] {
-			"if", "while", "return", "import", "write", "play", "plot", "print", "true", "false", "pi", "info", "floor",
+			"if", "while", "return", "import", "write", "play", "plot", "print", "true", "false", "pi", "floor",
 			"cos", "pow", "size", "new", "read", "record", "int", "float", "bool", "string", "array", "lambda", "field"};
 	private static final String KEYWORD = "?<KEYWORD>\\b(" + String.join("|", KEYWORDS) + ")\\b";
 	private static final String STRING = "?<STRING>\"([^\"\\\\]|\\\\.)*\"";
@@ -36,7 +36,7 @@ public class ScandalTab extends FileTab {
 		super(file);
 		compiler = new Compiler(file.getPath());
 		cleanup = codeArea.multiPlainChanges()
-				.successionEnds(Duration.ofMillis(250))
+				.successionEnds(Duration.ofMillis(200))
 				.subscribe(ignore -> codeArea.setStyleSpans(0, computeHighlighting(codeArea.getText())));
 		codeArea.replaceText(0, 0, Compiler.getCode(file.getPath()));
 		codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
