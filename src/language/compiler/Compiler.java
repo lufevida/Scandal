@@ -83,7 +83,8 @@ public class Compiler {
 
 	public Runnable getInstance() throws Exception {
 		//new DynamicClassLoader(getUrlClassLoader(userPath));
-		DynamicClassLoader loader = new DynamicClassLoader(Thread.currentThread().getContextClassLoader());
+		//ClassLoader context = Thread.currentThread().getContextClassLoader();
+		DynamicClassLoader loader = new DynamicClassLoader(ClassLoader.getSystemClassLoader());
 		return (Runnable) loader.define(className, program.bytecode).getConstructor().newInstance();
 		//Application.launch(loader.define(className, program.bytecode), className);
 	}

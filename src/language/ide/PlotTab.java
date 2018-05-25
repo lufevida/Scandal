@@ -2,6 +2,7 @@ package language.ide;
 
 import java.io.File;
 
+import javafx.application.Platform;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -19,7 +20,7 @@ public class PlotTab extends FileTab {
 		lineChart.getData().add(series);
 		lineChart.setCreateSymbols(size < 100);
 		setContent(lineChart);
-		add();
+		Platform.runLater(() -> add());
 	}
 
 }

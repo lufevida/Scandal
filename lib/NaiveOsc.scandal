@@ -33,4 +33,4 @@ lambda naiveTriangle = float phase -> {
 	return 2 * val - 1
 }
 
-//play(naiveOsc(2.0, 0.2, 440.0, naiveTriangle), 1)
+play(naiveOsc(2.0, 0.2, 440.0, naiveTriangle), 1)

@@ -56,7 +56,7 @@ public class Program extends Node {
 		for (Node node : nodes) {
 			if (node instanceof LambdaLitDeclaration) {
 				LambdaLitDeclaration dec = (LambdaLitDeclaration) node;
-				fv = cw.visitField(ACC_STATIC, dec.identToken.text, dec.getJvmType(), null, null);
+				fv = cw.visitField(ACC_FINAL + ACC_STATIC, dec.identToken.text, dec.getJvmType(), null, null);
 				fv.visitEnd();
 				dec.lambda.generate(cw, symtab);
 			}

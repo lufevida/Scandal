@@ -78,7 +78,7 @@ public class ScandalTab extends FileTab {
 	public void run() {
 		try {
 			compiler.compile();
-			compiler.getInstance().run();
+			new Thread(compiler.getInstance()).start();
 		}
 		catch (Exception e) {
 			MainView.console.appendText(e.getMessage());

@@ -15,7 +15,7 @@ public class FieldDeclaration extends AssignmentDeclaration {
 
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
-		if (symtab.topOfStackLookup(identToken.text) != null)
+		if (symtab.lookup(identToken.text) != null)
 			throw new Exception("Redeclaration in line: " + firstToken.lineNumber);
 		symtab.insert(identToken.text, this);
 		expression.decorate(symtab);

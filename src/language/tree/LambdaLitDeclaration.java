@@ -18,7 +18,7 @@ public class LambdaLitDeclaration extends AssignmentDeclaration {
 
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
-		if (symtab.topOfStackLookup(identToken.text) != null) throw new Exception("Redeclaration of: " + identToken.text);
+		if (symtab.lookup(identToken.text) != null) throw new Exception("Redeclaration of: " + identToken.text);
 		symtab.insert(identToken.text, this);
 		lambda.decorate(symtab);
 	}
