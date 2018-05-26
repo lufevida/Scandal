@@ -21,17 +21,17 @@ public enum WidgetMenu {
         try {
             switch (this) {
             case CLASSIC:
-            		new ClassicSynth().add();
-            		return;
+            	new ClassicSynth().add();
+            	return;
             case KARPLUS:
                 new KarplusSynth().add();
                 return;
             case ADDITIVE:
-            		new AdditiveSynth().add();
-            		return;
+            	new AdditiveSynth().add();
+            	return;
             case GRANULAR:
-            		new GranularSynth().add();
-            		return;
+            	new GranularSynth().add();
+            	return;
             case GRANULATOR:
                 new GranulatorEffect().add();
                 return;

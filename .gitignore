@@ -3,5 +3,6 @@
 .project
 .settings
 target
+bundles
 wav
-doc
+old

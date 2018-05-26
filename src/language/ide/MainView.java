@@ -1,7 +1,6 @@
 package language.ide;
 
 import java.io.File;
-import java.nio.file.FileSystems;
 
 import framework.generators.MidiKeyboardController;
 import javafx.application.Application;
@@ -71,15 +70,16 @@ public class MainView extends Application {
 	}
 	
 	private TitledPane getLib() {
-		File f = FileSystems.getDefault().getPath("lib").toFile();
-	    TreeView<String> tree = new TreeView<>(new FileTreeItem(f));
+		File f = new File(System.getProperty("user.dir") + "/lib");
+		TreeView<String> tree = new TreeView<>(new FileTreeItem(f));
 	    tree.setShowRoot(false);
 		tree.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> addScandalTab(((FileTreeItem) val).file));
 		return new TitledPane("Examples", tree);
 	}
 	
 	private TitledPane getSamples() {
-		File f = FileSystems.getDefault().getPath("wav").toFile();
+		//File f = FileSystems.getDefault().getPath("wav").toFile();
+		File f = new File(System.getProperty("user.dir") + "/wav");
 	    TreeView<String> tree = new TreeView<>(new FileTreeItem(f));
 	    tree.setShowRoot(false);
 		tree.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> addMediaTab(((FileTreeItem) val).file));

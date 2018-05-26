@@ -1,14 +1,13 @@
 # Config
 PROJECT_NAME="Scandal"
-PROJECT_VERSION="1.0"
-MAIN_CLASS="Scandal"
-ICON_SOURCE="ShowTime.png"
+PROJECT_VERSION="2.0"
+MAIN_CLASS="language.ide.MainView"
+ICON_SOURCE="bundles/icon.png"
 
 # Create executable jar
-javac *.java -d .
-echo -e "Main-Class: $MAIN_CLASS" > MANIFEST.MF
-echo "Manifest-Version: $PROJECT_VERSION" >> MANIFEST.MF
-jar -cmf MANIFEST.MF $PROJECT_NAME.jar *.class
+export M2_HOME=/Applications/apache-maven-3.5.3
+export PATH=$PATH:$M2_HOME/bin
+mvn package
 
 # Create icns file
 mkdir $PROJECT_NAME.iconset
@@ -24,16 +23,17 @@ javapackager -deploy -nosign \
 	-appclass $MAIN_CLASS \
 	-name $PROJECT_NAME \
 	-outfile $PROJECT_NAME \
-	-srcfiles $PROJECT_NAME.jar \
+	-srcfiles target/$PROJECT_NAME-$PROJECT_VERSION-jar-with-dependencies.jar \
 	-Bicon=$PROJECT_NAME.icns \
 	-BappVersion=$PROJECT_VERSION
 
+# Copy resources
+cp -r ./lib ./bundles/Scandal.app/Contents/Java
+cp -r ./wav ./bundles/Scandal.app/Contents/Java
+
 # Cleanup
-rm Manifest.mf
-rm *.class
 rm -rf $PROJECT_NAME.iconset
 rm $PROJECT_NAME.icns
-rm $PROJECT_NAME.jar
 rm $PROJECT_NAME.html
 rm $PROJECT_NAME.jnlp
 
