@@ -2,7 +2,7 @@
 PROJECT_NAME="Scandal"
 PROJECT_VERSION="2.0"
 MAIN_CLASS="language.ide.MainView"
-ICON_SOURCE="bundles/icon.png"
+ICON_SOURCE="./bundles/icon.png"
 
 # Create executable jar
 export M2_HOME=/Applications/apache-maven-3.5.3
@@ -28,8 +28,7 @@ javapackager -deploy -nosign \
 	-BappVersion=$PROJECT_VERSION
 
 # Copy resources
-cp -r ./lib ./bundles/Scandal.app/Contents/Java
-cp -r ./wav ./bundles/Scandal.app/Contents/Java
+cp -r ./lib ./bundles/$PROJECT_NAME.app/Contents/Java
 
 # Cleanup
 rm -rf $PROJECT_NAME.iconset

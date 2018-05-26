@@ -29,10 +29,10 @@ public enum OperationMenu {
 	void action() {
 		switch (this) {
 		case NEW:
-			MainView.addScandalTab(chooser.showSaveDialog(pane.getScene().getWindow()));
+			MainView.addTab(chooser.showSaveDialog(pane.getScene().getWindow()), false);
 			return;
 		case OPEN:
-			MainView.addScandalTab(chooser.showOpenDialog(pane.getScene().getWindow()));
+			MainView.addTab(chooser.showOpenDialog(pane.getScene().getWindow()), true);
 			return;
 		default: break;
 		}

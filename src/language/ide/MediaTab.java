@@ -30,6 +30,7 @@ public class MediaTab extends FileTab {
 		player.setOnReady(() -> setTime(player.getMedia().getDuration().toSeconds()));
 		player.setOnEndOfMedia(this::rewind);
 		MediaView mediaView = new MediaView(player);
+		mediaView.fitWidthProperty().bind(pane.widthProperty());
 		pane.setCenter(mediaView);
 		setContent(pane);
 		setOnClosed(e -> pause());

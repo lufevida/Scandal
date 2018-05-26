@@ -1,6 +1,8 @@
 package language.ide;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 
 import framework.generators.MidiKeyboardController;
 import javafx.application.Application;
@@ -26,6 +28,7 @@ public class MainView extends Application {
 	static final Accordion accordion = new Accordion();
 	public static final TextArea console = new TextArea();
 	static final TitledPane consolePane = new TitledPane("Console", console);
+	static final List<String> mediaTypes = Arrays.asList("aif", "aiff", "flv", "mp3", "mp4", "m4a", "m4v", "wav");
 
 	public void start(Stage stage) {
 		Font.loadFont(getClass().getResourceAsStream("/language/ide/fontawesome-webfont.ttf"), 0);
@@ -45,7 +48,7 @@ public class MainView extends Application {
 		HBox box = new HBox();
 		box.widthProperty().addListener((obs, old, val) -> resize(val));
 		console.textProperty().addListener((obs, old, val) -> accordion.setExpandedPane(consolePane));
-		accordion.getPanes().addAll(getSettings(), getBrowser(), getLib(), getSamples(), consolePane);
+		accordion.getPanes().addAll(getSettings(), getBrowser(), getLib(), consolePane);
 		accordion.setExpandedPane(accordion.getPanes().get(2));
 		box.getChildren().addAll(pane, accordion);
 		BorderPane root = new BorderPane();
@@ -65,43 +68,26 @@ public class MainView extends Application {
 	
 	private TitledPane getBrowser() {
 		TreeView<String> tree = new TreeView<>(new FileTreeItem());
-		tree.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> addScandalTab(((FileTreeItem) val).file));
+		tree.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> addTab(((FileTreeItem) val).file, true));
 		return new TitledPane("Browser", tree);
 	}
 	
 	private TitledPane getLib() {
+		//File f = FileSystems.getDefault().getPath("lib").toFile();
 		File f = new File(System.getProperty("user.dir") + "/lib");
 		TreeView<String> tree = new TreeView<>(new FileTreeItem(f));
 	    tree.setShowRoot(false);
-		tree.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> addScandalTab(((FileTreeItem) val).file));
+		tree.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> addTab(((FileTreeItem) val).file, true));
 		return new TitledPane("Examples", tree);
 	}
 	
-	private TitledPane getSamples() {
-		//File f = FileSystems.getDefault().getPath("wav").toFile();
-		File f = new File(System.getProperty("user.dir") + "/wav");
-	    TreeView<String> tree = new TreeView<>(new FileTreeItem(f));
-	    tree.setShowRoot(false);
-		tree.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> addMediaTab(((FileTreeItem) val).file));
-		return new TitledPane("Samples", tree);
-	}
-	
-	static void addMediaTab(File file) {
-		if (alreadyOpen(file)) return;
-		for (Tab tab : pane.getTabs()) if (tab instanceof MediaTab) ((MediaTab) tab).pause();
-		new MediaTab(file).add();
-	}
-
-	static void addScandalTab(File file) {
-		if (file == null || skipFile(file) || alreadyOpen(file)) return;
-		new ScandalTab(file).add();
-	}
-	
-	static boolean skipFile(File file) {
-		if (file.isDirectory()) return true;
+	static void addTab(File file, boolean exists) {
+		if (file == null || file.isDirectory() || alreadyOpen(file)) return;
 		String name = file.getPath();
 		int dot = name.lastIndexOf('.') + 1;
-		return !name.substring(dot, name.length()).equals("scandal");
+		String extension = name.substring(dot, name.length());
+		if (extension.equals("scandal")) new ScandalTab(file).add();
+		else if (mediaTypes.contains(extension) && exists) addMediaTab(file);
 	}
 	
 	static boolean alreadyOpen(File file) {
@@ -110,6 +96,11 @@ public class MainView extends Application {
 			return true;
 		}
 		return false;
+	}
+	
+	static void addMediaTab(File file) {
+		for (Tab tab : pane.getTabs()) if (tab instanceof MediaTab) ((MediaTab) tab).pause();
+		new MediaTab(file).add();
 	}
 
 	private MenuBar getMenus() {
