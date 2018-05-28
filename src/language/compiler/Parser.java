@@ -296,7 +296,7 @@ public class Parser {
 		match(LBRACKET);
 		Expression index = expression();
 		match(RBRACKET);
-		return new ArrayItemExpression(firstToken, index);
+		return new ArrayItemExpression(firstToken, new IdentExpression(firstToken), index);
 	}
 	
 	public ArrayLitExpression arrayLitExpression(Token firstToken) throws Exception {

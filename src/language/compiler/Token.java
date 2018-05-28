@@ -110,7 +110,7 @@ public class Token {
 			throw new NumberFormatException("The token does not contain a float.");
 		}
 	}
-	
+
 	public boolean isDeclaration() {
 		switch (this.kind) {
 		case KW_FIELD:
@@ -123,7 +123,7 @@ public class Token {
 		default: return false;
 		}
 	}
-	
+
 	public boolean isComparison() {
 		switch (this.kind) {
 		case LT:
@@ -135,7 +135,7 @@ public class Token {
 		default: return false;
 		}
 	}
-	
+
 	public boolean isSummand() {
 		switch (this.kind) {
 		case PLUS:
@@ -144,7 +144,7 @@ public class Token {
 		default: return false;
 		}
 	}
-	
+
 	public boolean isFactor() {
 		switch (this.kind) {
 		case TIMES:
