@@ -47,7 +47,6 @@ public class LambdaLitExpression extends Expression {
 		MethodVisitor mv;
 		for (int i = 0; i < params.size(); i++) {
 			mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC + ACC_SYNTHETIC, "lambda$" + (lambdaSlot + i), getSig(i), null, null);
-			mv.visitCode();
 			if (i == params.size() - 1) {
 				returnExpression.generate(mv, symtab);
 				getValueOf(returnExpression.type, mv);
@@ -58,7 +57,6 @@ public class LambdaLitExpression extends Expression {
 			}
 			mv.visitInsn(ARETURN);
 			mv.visitMaxs(0, 0);
-			mv.visitEnd();
 		}
 	}
 	

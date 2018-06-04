@@ -10,17 +10,19 @@ import language.tree.expression.Expression;
 import language.tree.expression.LambdaLitBlock;
 import language.tree.statement.ImportStatement;
 
-public class LambdaBlock extends Block {
+public class ReturnBlock extends Block {
 	
 	public final Expression returnExpression;
 	public LambdaLitBlock lambda;
 
-	public LambdaBlock(Token firstToken, ArrayList<Node> nodes, Expression returnExpression) {
+	public ReturnBlock(Token firstToken, ArrayList<Node> nodes, Expression returnExpression) {
 		super(firstToken, nodes);
 		this.returnExpression = returnExpression;
 	}
 	
 	public void decorate(SymbolTable symtab) throws Exception {
+		int temp = symtab.slotCount;
+		symtab.slotCount = lambda.params.size();
 		for (Node node : nodes) {
 			if (node instanceof ImportStatement) throw new Exception("Cannot import inside lambda.");
 			else if (node instanceof Declaration && node.type == Types.LAMBDA)
@@ -30,14 +32,12 @@ public class LambdaBlock extends Block {
 		returnExpression.decorate(symtab);
 		if (returnExpression.type == Types.LAMBDA)
 			throw new Exception("You must fix a type before consuming the lambda in line: " + returnExpression.firstToken.lineNumber);
+		symtab.slotCount = temp;
 	}
 	
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		int temp = symtab.slotCount;
-		symtab.slotCount = lambda.params.size();
 		for (Node node : nodes) node.generate(mv, symtab);
 		returnExpression.generate(mv, symtab);
-		symtab.slotCount = temp;
 	}
 
 }

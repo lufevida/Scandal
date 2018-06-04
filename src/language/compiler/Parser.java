@@ -57,7 +57,7 @@ public class Parser {
 		return new Block(firstToken, nodes);
 	}
 	
-	public LambdaBlock lambdaBlock() throws Exception {
+	public ReturnBlock lambdaBlock() throws Exception {
 		Token firstToken = match(LBRACE);
 		ArrayList<Node> nodes = new ArrayList<>();
 		while (token.kind != KW_RETURN) {
@@ -67,10 +67,10 @@ public class Parser {
 		match(KW_RETURN);
 		Expression expression = expression();
 		match(RBRACE);
-		return new LambdaBlock(firstToken, nodes, expression);
+		return new ReturnBlock(firstToken, nodes, expression);
 	}
 
-	public Declaration assignmentDeclaration() throws Exception {
+	public AssignmentDeclaration assignmentDeclaration() throws Exception {
 		boolean isField = token.kind == KW_FIELD;
 		if (isField) consume();
 		Token firstToken = consume();

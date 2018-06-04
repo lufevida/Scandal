@@ -21,10 +21,10 @@ public class AssignmentDeclaration extends Declaration {
 		if (symtab.topOfStackLookup(identToken.text) != null)
 			throw new Exception("Redeclaration in line: " + firstToken.lineNumber);
 		symtab.insert(identToken.text, this);
+		slotNumber = symtab.slotCount++;
 		expression.decorate(symtab);
 		if (expression instanceof LambdaAppExpression) {
-			LambdaAppExpression app = (LambdaAppExpression) expression;
-			Declaration dec = app.lambda.declaration;
+			Declaration dec = ((LambdaAppExpression) expression).lambda.declaration;
 			if (dec instanceof ParamDeclaration) expression.type = type;
 		}
 		if (expression.type != type) throw new Exception("Type mismatch in line " + firstToken.lineNumber);
@@ -32,7 +32,6 @@ public class AssignmentDeclaration extends Declaration {
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		slotNumber = symtab.slotCount++;
 		expression.generate(mv, symtab);
 		switch (expression.type) {
 		case INT:

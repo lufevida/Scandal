@@ -7,14 +7,14 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
-import language.tree.LambdaBlock;
+import language.tree.ReturnBlock;
 import language.tree.ParamDeclaration;
 
 public class LambdaLitBlock extends LambdaLitExpression {
 	
-	public final LambdaBlock block;
+	public final ReturnBlock block;
 
-	public LambdaLitBlock(Token firstToken, ArrayList<ParamDeclaration> params, LambdaBlock block) {
+	public LambdaLitBlock(Token firstToken, ArrayList<ParamDeclaration> params, ReturnBlock block) {
 		super(firstToken, params, block.returnExpression);
 		this.block = block;
 		this.block.lambda = this;
