@@ -6,7 +6,6 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
-import language.tree.statement.ImportStatement;
 
 public class Block extends Node {
 
@@ -20,10 +19,7 @@ public class Block extends Node {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		symtab.enterScope();
-		for (Node node : nodes) {
-			if (node instanceof ImportStatement) throw new Exception();
-			node.decorate(symtab);
-		}
+		for (Node node : nodes) node.decorate(symtab);
 		symtab.leaveScope();
 	}
 

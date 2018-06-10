@@ -23,21 +23,23 @@ public class IndexedAssignmentStatement extends AssignmentStatement {
 		declaration = symtab.lookup(firstToken.text);
 		if (declaration == null || declaration.type != Types.ARRAY) throw new Exception();
 		index.decorate(symtab);
-		if (index.type != Types.INT) throw new Exception();
+		if (index.type != Types.INT && index.type != Types.FLOAT) throw new Exception();
 		expression.decorate(symtab);
 		if (expression instanceof LambdaAppExpression) {
 			LambdaAppExpression app = (LambdaAppExpression) expression;
 			Declaration dec = app.lambda.declaration;
 			if (dec instanceof ParamDeclaration) expression.type = Types.FLOAT;
 		}
-		if (expression.type != Types.FLOAT) throw new Exception();
+		if (expression.type != Types.INT && expression.type != Types.FLOAT) throw new Exception();
 	}
 	
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		mv.visitVarInsn(ALOAD, declaration.slotNumber);
 		index.generate(mv, symtab);
+		if (index.type == Types.FLOAT) mv.visitInsn(F2I);
 		expression.generate(mv, symtab);
+		if (expression.type == Types.INT) mv.visitInsn(I2F);
 		mv.visitInsn(FASTORE);
 	}
 

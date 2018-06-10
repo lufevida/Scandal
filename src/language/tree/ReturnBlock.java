@@ -8,7 +8,6 @@ import language.compiler.SymbolTable;
 import language.compiler.Token;
 import language.tree.expression.Expression;
 import language.tree.expression.LambdaLitBlock;
-import language.tree.statement.ImportStatement;
 
 public class ReturnBlock extends Block {
 	
@@ -24,14 +23,13 @@ public class ReturnBlock extends Block {
 		int temp = symtab.slotCount;
 		symtab.slotCount = lambda.params.size();
 		for (Node node : nodes) {
-			if (node instanceof ImportStatement) throw new Exception("Cannot import inside lambda.");
-			else if (node instanceof Declaration && node.type == Types.LAMBDA)
+			if (node instanceof Declaration && node.type == Types.LAMBDA)
 				throw new Exception("Cannot declare lambda inside lambda.");
 			else node.decorate(symtab);
 		}
 		returnExpression.decorate(symtab);
 		if (returnExpression.type == Types.LAMBDA)
-			throw new Exception("You must fix a type before consuming the lambda in line: " + returnExpression.firstToken.lineNumber);
+			throw new Exception("Must fix a type in line: " + returnExpression.firstToken.lineNumber);
 		symtab.slotCount = temp;
 	}
 	

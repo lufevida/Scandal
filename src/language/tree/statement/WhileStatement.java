@@ -20,7 +20,7 @@ public class WhileStatement extends Statement {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		expression.decorate(symtab);
-		if (expression.type != Types.BOOL) throw new Exception("Invalid WhileStatement");
+		if (expression.type != Types.BOOL) throw new Exception();
 		block.decorate(symtab);
 	}
 

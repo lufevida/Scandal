@@ -14,6 +14,7 @@ public class ImportStatement extends Statement {
 	
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
+		if (symtab.scopeNumber > 0) throw new Exception();
 		expression.decorate(symtab);
 		if (expression.type != Types.STRING) throw new Exception();
 	}

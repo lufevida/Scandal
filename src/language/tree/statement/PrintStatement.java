@@ -16,7 +16,7 @@ public class PrintStatement extends Statement {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		expression.decorate(symtab);
-		if (expression.type == Types.ARRAY) throw new Exception();
+		if (expression.type == Types.ARRAY || expression.type == Types.LAMBDA) throw new Exception();
 	}
 
 	@Override
@@ -28,11 +28,11 @@ public class PrintStatement extends Statement {
 			return;
 		}
 		mv.visitFieldInsn(GETSTATIC, "language/ide/MainView", "console", "Ljavafx/scene/control/TextArea;");
+		mv.visitInsn(DUP);
 		expression.generate(mv, symtab);
 		if (expression.type != Types.STRING)
 			mv.visitMethodInsn(INVOKESTATIC, "java/lang/String", "valueOf", "(" + expression.getJvmType() + ")Ljava/lang/String;", false);
-		mv.visitMethodInsn(INVOKEVIRTUAL, "javafx/scene/control/TextArea", "appendText", "(Ljava/lang/String;)V", false);		
-		mv.visitFieldInsn(GETSTATIC, "language/ide/MainView", "console", "Ljavafx/scene/control/TextArea;");
+		mv.visitMethodInsn(INVOKEVIRTUAL, "javafx/scene/control/TextArea", "appendText", "(Ljava/lang/String;)V", false);
 		mv.visitLdcInsn("\n");
 		mv.visitMethodInsn(INVOKEVIRTUAL, "javafx/scene/control/TextArea", "appendText", "(Ljava/lang/String;)V", false);
 	}
