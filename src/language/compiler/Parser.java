@@ -184,16 +184,16 @@ public class Parser {
 		Expression e0;
 		Token operator;
 		Expression e1;
-		e0 = term();
+		e0 = comparison();
 		while (token.isComparison()) {
 			operator = consume();
-			e1 = term();
+			e1 = comparison();
 			e0 = new BinaryExpression(firstToken, e0, operator, e1);
 		}
 		return e0;
 	}
 
-	private Expression term() throws Exception {
+	private Expression comparison() throws Exception {
 		Token firstToken = token;
 		Expression e0;
 		Token operator;

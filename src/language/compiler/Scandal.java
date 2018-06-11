@@ -6,7 +6,7 @@ public class Scandal {
 		Compiler c = new Compiler("lib/GEN10.scandal");
 		c.compile();
 		c.print();
-		c.getInstance().run();
+		c.getInstance().run();		
 	}
 
 }

@@ -3,12 +3,15 @@ PROJECT_NAME="Scandal"
 PROJECT_VERSION="2.0"
 MAIN_CLASS="language.ide.MainView"
 ICON_SOURCE="./bundles/icon.png"
-SIGNATURE="3rd Party Mac Developer Application: Luis Felipe Vieira Damiani (9TETT4M689)"
 
 # Create executable jar
 export M2_HOME=/Applications/apache-maven-3.5.3
 export PATH=$PATH:$M2_HOME/bin
 mvn package
+
+# Copy compile resources
+cp ./src/language/ide/keywords.css ./target/classes/language/ide
+cp ./src/language/ide/fontawesome-webfont.ttf ./target/classes/language/ide
 
 # Create icns file
 mkdir $PROJECT_NAME.iconset
@@ -33,19 +36,20 @@ javapackager -deploy -nosign \
 	-Bicon=$PROJECT_NAME.icns \
 	-BappVersion=$PROJECT_VERSION
 
-# Copy resources
+# Copy app resources
 cp -r ./lib ./bundles/$PROJECT_NAME.app/Contents/Java
+
+# Sign app
+codesign -s "3rd Party Mac Developer Application: Luis Felipe Vieira Damiani (9TETT4M689)" ./bundles/$PROJECT_NAME.app/Contents/MacOS/libpackager.dylib
+codesign -s "3rd Party Mac Developer Application: Luis Felipe Vieira Damiani (9TETT4M689)" ./bundles/$PROJECT_NAME.app/Contents/PlugIns/Java.runtime
+codesign -s "3rd Party Mac Developer Application: Luis Felipe Vieira Damiani (9TETT4M689)" ./bundles/$PROJECT_NAME.app
+codesign -dv ./bundles/$PROJECT_NAME.app
 
 # Cleanup
 rm -rf $PROJECT_NAME.iconset
 rm $PROJECT_NAME.icns
 rm $PROJECT_NAME.html
 rm $PROJECT_NAME.jnlp
-
-# Sign app
-codesign -s $SIGNATURE ./bundles/$PROJECT_NAME.app/Contents/MacOS/libpackager.dylib
-codesign -s $SIGNATURE ./bundles/$PROJECT_NAME.app/Contents/PlugIns/Java.runtime
-codesign -s $SIGNATURE ./bundles/$PROJECT_NAME.app
 
 # Launch app
 open bundles/$PROJECT_NAME.app
