@@ -364,13 +364,9 @@ public class Scanner {
 			case DIGIT: {
 				if (!Character.isDigit(character) && character != '.') {
 					String substring = chars.substring(startPos, pos);
-					try {
-						Integer.parseInt(substring);
-					} catch (NumberFormatException exception) {
-						throw new Exception("Illegal integer " + substring + " at pos " + pos);
-					}
 					Token token = new Token(Kind.INT_LIT, substring, startPos, pos - startPos,
 							lineNum, lineNumPos - substring.length());
+					token.getIntValue();
 					tokens.add(token);
 					state = State.START;
 					break;
@@ -382,13 +378,9 @@ public class Scanner {
 			case FLOAT: {
 				if (!Character.isDigit(character)) {
 					String substring = chars.substring(startPos, pos);
-					try {
-						Float.parseFloat(substring);
-					} catch (NumberFormatException exception) {
-						throw new Exception("Illegal float " + substring + " at pos " + pos);
-					}
 					Token token = new Token(Kind.FLOAT_LIT, substring, startPos, pos - startPos,
 							lineNum, lineNumPos - substring.length());
+					token.getFloatValue();
 					tokens.add(token);
 					state = State.START;
 					break;

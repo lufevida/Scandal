@@ -99,15 +99,16 @@ public class Token {
 		try {
 			return Integer.parseInt(text);
 		} catch (NumberFormatException exception) {
-			throw new NumberFormatException("The token does not contain an integer.");
+			throw new NumberFormatException("Illegal integer in line: " + lineNumber);
 		}
 	}
 
 	public float getFloatValue() throws NumberFormatException {
 		try {
 			return Float.parseFloat(text);
-		} catch (NumberFormatException exception) {
-			throw new NumberFormatException("The token does not contain a float.");
+		}
+		catch (NumberFormatException exception) {
+			throw new NumberFormatException("Illegal float in line: " + lineNumber);
 		}
 	}
 

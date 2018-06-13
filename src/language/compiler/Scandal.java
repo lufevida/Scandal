@@ -3,10 +3,10 @@ package language.compiler;
 public class Scandal {
 
 	public static void main(String[] args) throws Exception {
-		Compiler c = new Compiler("lib/GEN10.scandal");
+		Compiler c = new Compiler(args[0]);
 		c.compile();
 		c.print();
-		c.getInstance().run();		
+		c.getInstance().run();
 	}
 
 }

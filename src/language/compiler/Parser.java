@@ -27,7 +27,7 @@ public class Parser {
 
 	private Token match(Kind kind) throws Exception {
 		if (token.kind == kind) return consume();
-		throw new Exception("Saw " + token.kind + " expected " + kind + " in line " + token.lineNumber);
+		throw new Exception("Saw " + token.kind + " but expected " + kind + " in line " + token.lineNumber);
 	}
 
 	private Token matchEOF() throws Exception {
@@ -249,7 +249,7 @@ public class Parser {
 			case DOT: return lambdaCompExpression(firstToken);
 			default: return new IdentExpression(firstToken);
 			}
-		default: throw new Exception("Illegal factor in line " + token.lineNumber + "\n");
+		default: throw new Exception("Illegal factor in line " + token.lineNumber);
 		}
 	}
 	
@@ -312,18 +312,18 @@ public class Parser {
 	
 	public ReadExpression readExpression(Token firstToken) throws Exception {
 		match(LPAREN);
-		Expression fileName = expression();
+		Expression path = expression();
 		match(COMMA);
 		Expression format = expression();
 		match(RPAREN);
-		return new ReadExpression(firstToken, fileName, format);
+		return new ReadExpression(firstToken, path, format);
 	}
 	
 	public ArraySizeExpression arraySizeExpression(Token firstToken) throws Exception {
 		match(LPAREN);
-		Expression param = expression();
+		Expression array = expression();
 		match(RPAREN);
-		return new ArraySizeExpression(firstToken, param);
+		return new ArraySizeExpression(firstToken, array);
 	}
 	
 	public NewArrayExpression newArrayExpression(Token firstToken) throws Exception {

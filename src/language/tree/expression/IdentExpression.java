@@ -27,9 +27,8 @@ public class IdentExpression extends Expression {
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		if (declaration.isField) mv.visitFieldInsn(GETSTATIC, symtab.className, firstToken.text, declaration.getJvmType());
 		else if (declaration instanceof ParamDeclaration) {
-			ParamDeclaration dec = (ParamDeclaration) declaration;
-			mv.visitVarInsn(ALOAD, dec.slotNumber);
-			getTypeValue(dec.type, mv);
+			mv.visitVarInsn(ALOAD, declaration.slotNumber);
+			getTypeValue(declaration.type, mv);
 		}
 		else switch (type) {
 		case INT:
