@@ -19,10 +19,10 @@ public class UnaryExpression extends Expression {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		e.decorate(symtab);
-		if (firstToken.kind == Kind.MINUS && (e.type != Types.INT || e.type != Types.FLOAT))
-			throw new Exception("Invalid UnaryExpression");
+		if (firstToken.kind == Kind.MINUS && (e.type != Types.INT && e.type != Types.FLOAT))
+			throw new Exception("Invalid UnaryExpression in line: " + firstToken.lineNumber);
 		else if (firstToken.kind == Kind.OR && e.type != Types.BOOL)
-			throw new Exception("Invalid UnaryExpression");
+			throw new Exception("Invalid UnaryExpression in line: " + firstToken.lineNumber);
 		type = e.type;
 	}
 

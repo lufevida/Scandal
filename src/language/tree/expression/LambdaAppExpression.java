@@ -12,7 +12,7 @@ import language.tree.LambdaLitDeclaration;
 import language.tree.ParamDeclaration;
 
 public class LambdaAppExpression extends Expression {
-	
+
 	public final IdentExpression lambda;
 	public final ArrayList<Expression> args;
 	public final int count;
@@ -29,6 +29,7 @@ public class LambdaAppExpression extends Expression {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		lambda.decorate(symtab);
+		if (lambda.type != Types.LAMBDA) throw new Exception();
 		Declaration dec = lambda.declaration;
 		if (dec instanceof ParamDeclaration) {
 			for (Expression arg : args) arg.decorate(symtab);
@@ -41,7 +42,6 @@ public class LambdaAppExpression extends Expression {
 				dec = identExpression.declaration;
 			}
 			else if (e instanceof LambdaCompExpression) {
-				// Either should work, but check the last.
 				LambdaCompExpression compExpression = (LambdaCompExpression) e;
 				dec = compExpression.lambdas.get(compExpression.lambdas.size() - 1).declaration;
 			}

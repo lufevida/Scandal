@@ -28,31 +28,25 @@ public class AssignmentStatement extends Statement {
 			Declaration dec = app.lambda.declaration;
 			if (dec instanceof ParamDeclaration) expression.type = declaration.type;
 		}
-		if (expression.type != declaration.type) throw new Exception();
+		if ((declaration.type == Types.INT || declaration.type == Types.FLOAT) && (expression.type != Types.INT && expression.type != Types.FLOAT))
+			throw new Exception("Type mismatch in line: " + firstToken.lineNumber);
+		else if ((declaration.type != Types.INT && declaration.type != Types.FLOAT) && expression.type != declaration.type)
+			throw new Exception("Type mismatch in line: " + firstToken.lineNumber);
 	}
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		expression.generate(mv, symtab);
+		if (declaration.type == Types.INT && expression.type == Types.FLOAT) mv.visitInsn(F2I);
+		else if (declaration.type == Types.FLOAT && expression.type == Types.INT) mv.visitInsn(I2F);
 		if (declaration instanceof ParamDeclaration) {
-			switch (expression.type) {
-			case INT:
-				mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
-				break;
-			case BOOL:
-				mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
-				break;
-			case FLOAT:
-				mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
-				break;
-			default: break;
-			}
+			Expression.getValueOf(declaration.type, mv);
 			mv.visitVarInsn(ASTORE, declaration.slotNumber);
 		}
 		else if (declaration instanceof FieldDeclaration) {
 			mv.visitFieldInsn(PUTSTATIC, symtab.className, declaration.identToken.text, declaration.getJvmType());
 		}
-		else switch (expression.type) {
+		else switch (declaration.type) {
 		case INT:
 		case BOOL:
 			mv.visitVarInsn(ISTORE, declaration.slotNumber);

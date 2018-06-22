@@ -23,7 +23,11 @@ public class LambdaCompExpression extends Expression {
 	@Override
 	public void decorate(SymbolTable symtab) throws Exception {
 		// TODO: get input and output types and type-check
-		for (IdentExpression lambda : lambdas) lambda.decorate(symtab);
+		// TODO: handle parameter declarations
+		for (IdentExpression lambda : lambdas) {
+			lambda.decorate(symtab);
+			if (lambda.type != Types.LAMBDA) throw new Exception();
+		}
 		if (lambdaApp != null) {
 			lambdaApp.decorate(symtab);
 			this.type = lambdaApp.type;

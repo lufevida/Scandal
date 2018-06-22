@@ -1,0 +1,59 @@
+// Loop an array.
+lambda loop = array x -> int start -> int end -> int count -> {
+	int length = end - start + 1
+	int samples = length * count
+	array buffer = new(samples)
+	int i = 0
+	int j = 0
+	while i < samples {
+		buffer[i] = x[j % length + start]
+		i = i + 1
+		j = j + 1
+	}
+	return buffer
+}
+
+// Change the speed of an audio buffer.
+lambda speed = array x -> float s -> {
+	int samples = floor(size(x) / s)
+	array buffer = new(samples)
+	int i = 0
+	float j = 0.0
+	float x0 = 0.0
+	float x1 = 0.0
+	float y0 = 0.0
+	float y1 = 0.0
+	float length = size(x) + 0.0
+	while i < samples {
+		x0 = floor(j) + 0.0
+		x1 = x0 + 1
+		y0 = x[floor(x0)]
+		y1 = x[0]
+		if x1 < length { y1 = x[floor(x1)] }
+		buffer[i] = y0 + (j - x0) * (y1 - y0)
+		i = i + 1
+		j = j + s
+		if j >= length { j = j - length }
+	}
+	return buffer
+}
+
+// Delay an audio buffer.
+lambda delay = array x -> int time -> float feedback -> float wet -> {
+	int length = size(x)
+	array buffer = new(length)
+	array circular = new(length)
+	int readIndex = 0
+	int writeIndex = floor(time * 44.1)
+	int i = 0
+	while i < length {
+		buffer[i] = wet * circular[readIndex] + (1.0 - wet) * x[i]
+		circular[writeIndex] = x[i] + circular[readIndex] * feedback
+		i = i + 1
+		readIndex = readIndex + 1
+		if readIndex >= length { readIndex = 0 }
+		writeIndex = writeIndex + 1
+		if writeIndex >= length { writeIndex = 0 }
+	}
+	return buffer
+}

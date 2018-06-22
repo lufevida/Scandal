@@ -2,6 +2,7 @@ package language.ide;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.lang.Thread.UncaughtExceptionHandler;
 import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,7 +18,7 @@ import org.reactfx.Subscription;
 
 import language.compiler.Compiler;
 
-public class ScandalTab extends FileTab {
+public class ScandalTab extends FileTab implements UncaughtExceptionHandler {
 
 	private static final String[] KEYWORDS = new String[] {
 			"if", "while", "return", "import", "write", "play", "plot", "print", "true", "false", "pi", "floor",
@@ -69,21 +70,21 @@ public class ScandalTab extends FileTab {
 			writer.write(codeArea.getContent().getText());
 			writer.close();
 		}
-		catch (Exception e) {
-			MainView.console.appendText(e.getMessage());
-			MainView.console.appendText("\n");
-		}
+		catch (Exception e) { postMessage(e.getMessage()); }
 	}
 	
 	public void run() {
 		try {
 			compiler.compile();
-			new Thread(compiler.getInstance()).start();
+			Thread t = new Thread(compiler.getInstance());
+			t.setUncaughtExceptionHandler(this);
+			t.start();
 		}
-		catch (Exception e) {
-			MainView.console.appendText(e.getMessage());
-			MainView.console.appendText("\n");
-		}
+		catch (Exception e) { postMessage(e.getMessage()); }
 	}
+
+	public void uncaughtException(Thread t, Throwable e) { postMessage(e.getMessage()); }
+	
+	void postMessage(String message) { MainView.console.appendText(message + "\n"); }
 
 }

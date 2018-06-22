@@ -7,8 +7,8 @@ import org.objectweb.asm.MethodVisitor;
 
 import language.compiler.SymbolTable;
 import language.compiler.Token;
-import language.tree.ReturnBlock;
 import language.tree.ParamDeclaration;
+import language.tree.ReturnBlock;
 
 public class LambdaLitBlock extends LambdaLitExpression {
 	
@@ -17,7 +17,7 @@ public class LambdaLitBlock extends LambdaLitExpression {
 	public LambdaLitBlock(Token firstToken, ArrayList<ParamDeclaration> params, ReturnBlock block) {
 		super(firstToken, params, block.returnExpression);
 		this.block = block;
-		this.block.lambda = this;
+		this.type = Types.LAMBDA;
 	}
 
 	public void decorate(SymbolTable symtab) throws Exception {
@@ -26,29 +26,22 @@ public class LambdaLitBlock extends LambdaLitExpression {
 			params.get(i).slotNumber = i;
 			params.get(i).decorate(symtab);
 		}
+		int temp = symtab.slotCount;
+		symtab.slotCount = params.size();
 		block.decorate(symtab);
+		symtab.slotCount = temp;
 		symtab.leaveScope();
+		lambdaSlot = symtab.lambdaCount;
+		symtab.lambdaCount += params.size();
 	}
 
 	public void generate(ClassWriter cw, SymbolTable symtab) throws Exception {
 		MethodVisitor mv;
 		for (int i = 0; i < params.size(); i++) {
 			mv = cw.visitMethod(ACC_PRIVATE + ACC_STATIC + ACC_SYNTHETIC, "lambda$" + (lambdaSlot + i), getSig(i), null, null);
-			mv.visitCode();
 			if (i == params.size() - 1) {
 				block.generate(mv, symtab);
-				switch (block.returnExpression.type) {
-				case INT:
-					mv.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
-					break;
-				case BOOL:
-					mv.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;", false);
-					break;
-				case FLOAT:
-					mv.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
-					break;
-				default: break;
-				}
+				getValueOf(block.returnExpression.type, mv);
 			}
 			else {
 				for (int j = 0; j <= i; j++) mv.visitVarInsn(ALOAD, j);
@@ -56,7 +49,6 @@ public class LambdaLitBlock extends LambdaLitExpression {
 			}
 			mv.visitInsn(ARETURN);
 			mv.visitMaxs(0, 0);
-			mv.visitEnd();
 		}
 	}
 

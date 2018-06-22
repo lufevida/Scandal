@@ -1,6 +1,6 @@
 // Get a naive (aliased) waveform into a buffer.
 lambda naiveOsc = float dur -> float amp -> float freq -> lambda shape -> {
-	int samples = floor(dur * 44100)
+	int samples = dur * 44100
 	array buffer = new(samples)
 	float twoPi = 2 * pi
 	float frequency = freq * twoPi / 44100
@@ -33,4 +33,36 @@ lambda naiveTriangle = float phase -> {
 	return 2 * val - 1
 }
 
-play(naiveOsc(2.0, 0.2, 440.0, naiveTriangle), 1)
+// Csound's GEN10 subroutine.
+lambda GEN10 = array args -> {
+	int length = args[0]
+	array table = new(length)
+	int i = 0
+	int j = 1
+	while i < length {
+		while j < size(args) {
+			table[i] = table[i] + args[j] * cos(j * 2 * pi * i / length - pi / 2)
+			j = j + 1
+		}
+		j = 1
+		i = i + 1
+	}
+	return table
+}
+
+// A simpler version of Csound's `oscil`.
+lambda oscil = float dur -> float amp -> float freq -> float phase -> array table -> {
+	int samples = floor(dur * 44100)
+	array buffer = new(samples)
+	float cps = freq * size(table) / 44100.0
+	float phi = 1.0 * size(table)
+	if phase > 0.0 { phi = phi * phase }
+	int i = 0
+	while i < samples {
+		if phi >= 1.0 * size(table) { phi = phi - size(table) }
+		buffer[i] = amp * table[floor(phi)]
+		phi = phi + cps
+		i = i + 1
+	}
+	return buffer
+}

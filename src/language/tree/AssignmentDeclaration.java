@@ -27,13 +27,18 @@ public class AssignmentDeclaration extends Declaration {
 			Declaration dec = ((LambdaAppExpression) expression).lambda.declaration;
 			if (dec instanceof ParamDeclaration) expression.type = type;
 		}
-		if (expression.type != type) throw new Exception("Type mismatch in line " + firstToken.lineNumber);
+		if ((type == Types.INT || type == Types.FLOAT) && (expression.type != Types.INT && expression.type != Types.FLOAT))
+			throw new Exception("Type mismatch in line: " + firstToken.lineNumber);
+		else if ((type != Types.INT && type != Types.FLOAT) && expression.type != type)
+			throw new Exception("Type mismatch in line: " + firstToken.lineNumber);		
 	}
 
 	@Override
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		expression.generate(mv, symtab);
-		switch (expression.type) {
+		if (type == Types.INT && expression.type == Types.FLOAT) mv.visitInsn(F2I);
+		else if (type == Types.FLOAT && expression.type == Types.INT) mv.visitInsn(I2F);
+		switch (type) {
 		case INT:
 		case BOOL:
 			mv.visitVarInsn(ISTORE, slotNumber);

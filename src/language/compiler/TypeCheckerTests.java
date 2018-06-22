@@ -3,14 +3,27 @@ package language.compiler;
 import static language.tree.Node.Types.BOOL;
 import static language.tree.Node.Types.FLOAT;
 import static language.tree.Node.Types.INT;
+import static language.tree.Node.Types.LAMBDA;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import language.tree.AssignmentDeclaration;
 import language.tree.Program;
 import language.tree.expression.Expression;
 
 public class TypeCheckerTests {
+	
+	@Test
+	public void testLambdaLitDeclaration() throws Exception {
+		String input = "lambda test = int i -> i";
+		Scanner scanner = new Scanner(input);
+		scanner.scan();
+		Parser parser = new Parser(scanner);
+		AssignmentDeclaration dec = parser.assignmentDeclaration();		
+		dec.decorate(new SymbolTable("className"));
+		assertEquals(LAMBDA, dec.expression.type);
+	}
 	
 	@Test
 	public void testBinaryExpression1() throws Exception {
@@ -69,43 +82,32 @@ public class TypeCheckerTests {
 	
 	@Test
 	public void testWaveFileExpression() throws Exception {
-		String input = "array name = read(\"name.wav\", mono)";
+		String input = "array name = read(\"name.wav\", 1)";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		program.decorate(null);
+		program.decorate(new SymbolTable("className"));
 	}
 	
 	@Test
 	public void testAssignmentDeclaration() throws Exception {
-		String input = "int three = 3 float pi pi = 3.14 float sum sum = three + 3.14";
+		String input = "int three = 3 float sum = three + 3.14";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		program.decorate(null);
+		program.decorate(new SymbolTable("className"));
 	}
 	
 	@Test
 	public void testIfStatement() throws Exception {
-		String input = "int three = 3 float pi = 3.14 float sum if (three < pi) { sum = three + 3.14 }";
+		String input = "int three = 3 if (three < pi) { float sum = three + 3.14 }";
 		Scanner scanner = new Scanner(input);
 		scanner.scan();
 		Parser parser = new Parser(scanner);
 		Program program = parser.parse();
-		program.decorate(null);
-	}
-	
-	@Test
-	public void testProgram() throws Exception {
-		String input = "int p = 15 int q = 2 bool test = true bool result "
-				+ "while (q < p) { if (p % q == 0) { test = false q = p - 1 } q = q + 1 } result = test";
-		Scanner scanner = new Scanner(input);
-		scanner.scan();
-		Parser parser = new Parser(scanner);
-		Program program = parser.parse();
-		program.decorate(null);
+		program.decorate(new SymbolTable("className"));
 	}
 
 }

@@ -1,0 +1,71 @@
+// Csound's GEN7 subroutine.
+lambda GEN7 = array args -> {
+	int length = args[0]
+	array table = new(length)
+	float height = 0.0
+	float increment = 0.0
+	int width = 0
+	int i = 0
+	int j = 1
+	while j < size(args) - 2 {
+		height = args[j]
+		increment = (args[j + 2] - args[j]) / args[j + 1]
+		width = args[j + 1] + i
+		while i < width {
+			if i < length { table[i] = height }
+			height = height + increment
+			i = i + 1
+		}
+		j = j + 2
+	}
+	return table
+}
+
+// Fade into an audio buffer.
+lambda fadeIn = array x -> int samples -> {
+	array fade = GEN7([samples, 0, 1, samples])
+	array buffer = new(size(x))
+	int i = 0
+	while i < size(x) {
+		buffer[i] = x[i]
+		if i < samples { buffer[i] = buffer[i] * fade[i] }
+		i = i + 1
+	}
+	return buffer
+}
+
+// Fade out of an audio buffer.
+lambda fadeOut = array x -> int samples -> {
+	array fade = GEN7([samples, 1, 0, samples])
+	array buffer = new(size(x))
+	int i = 0
+	int j = 0
+	while i < size(x) {
+		buffer[i] = x[i]
+		if i >= size(x) - samples {
+			buffer[i] = buffer[i] * fade[j]
+			j = j + 1
+		}
+		i = i + 1
+	}
+	return buffer
+}
+
+// Creates a cross-fade of `overlap` samples between two audio buffers.
+lambda crossFade = array first -> array second -> int overlap -> {
+	int offset = size(first) - overlap
+	array buffer = new(size(second) + offset)
+	array fadeFirst = fadeOut(first, overlap)
+	array fadeSecond = fadeIn(second, overlap)
+	int i = 0
+	while i < size(first) {
+		buffer[i] = fadeFirst[i]
+		i = i + 1
+	}
+	i = 0
+	while i < size(second) {
+		buffer[i + offset] = buffer[i + offset] + fadeSecond[i]
+		i = i + 1
+	}
+	return buffer
+}

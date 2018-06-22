@@ -1,0 +1,98 @@
+// Print an entire array to the console.
+lambda dump = array x -> {
+	int i = 0
+	while i < size(x) {
+		print(x[i])
+		i = i + 1
+	}
+	return x
+}
+
+// Integrate an array.
+lambda integrate = array x -> {
+	float sum = 0.0
+	int i = 0
+	while i < size(x) {
+		sum = sum + x[i]
+		i = i + 1
+	}
+	return sum
+}
+
+// Get the maximum element of an array.
+lambda max = array x -> {
+	float sample = 0
+	float m = x[0]
+	int i = 0
+	while i < size(x) {
+		sample = x[i]
+		if sample < 0 { sample = -sample }
+		if m < sample { m = sample }
+		i = i + 1
+	}
+	return m
+}
+
+// Get the minimum element of an array.
+lambda min = array x -> {
+	float sample = 0
+	float m = x[0]
+	int i = 0
+	while i < size(x) {
+		sample = x[i]
+		if sample < 0 { sample = -sample }
+		if m > sample { m = sample }
+		i = i + 1
+	}
+	return m
+}
+
+// Scale an array by some scalar computed in terms of the array itself.
+lambda scale = array x -> lambda f -> {
+	float scalar = f(x)
+	int i = 0
+	while i < size(x) {
+		x[i] = x[i] * scalar
+		i = i + 1
+	}
+	return x
+}
+
+// Compute the reciprocal of `max`.
+lambda inverseMax = array x -> {
+	return 1 / max(x)
+}
+
+// Normalize an array.
+lambda normalize = array x -> {
+	return scale(x, inverseMax)
+}
+
+// Reverse an array.
+lambda reverse = array x -> {
+	int length = size(x)
+	array y = new(length)
+	int i = 1
+	while i <= length {
+		y[i - 1] = x[length - i]
+		i = i + 1
+	}
+	return y
+}
+
+// Splice two audio buffers.
+lambda splice = array first -> array second -> {
+	int samples = size(first) + size(second)
+	array buffer = new(samples)
+	int i = 0
+	int j = 0
+	while i < samples {
+		if i < size(first) { buffer[i] = first[i] }
+		if i >= size(first) {
+			buffer[i] = second[j]
+			j = j + 1
+		}
+		i = i + 1
+	}
+	return buffer
+}

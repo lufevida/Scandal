@@ -19,11 +19,16 @@ public class FieldDeclaration extends AssignmentDeclaration {
 			throw new Exception("Redeclaration in line: " + firstToken.lineNumber);
 		symtab.insert(identToken.text, this);
 		expression.decorate(symtab);
-		if (expression.type != type) throw new Exception("Type mismatch in line: " + firstToken.lineNumber);
+		if ((type == Types.INT || type == Types.FLOAT) && (expression.type != Types.INT && expression.type != Types.FLOAT))
+			throw new Exception("Type mismatch in line: " + firstToken.lineNumber);
+		else if ((type != Types.INT && type != Types.FLOAT) && expression.type != type)
+			throw new Exception("Type mismatch in line: " + firstToken.lineNumber);		
 	}
 
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
 		expression.generate(mv, symtab);
+		if (type == Types.INT && expression.type == Types.FLOAT) mv.visitInsn(F2I);
+		else if (type == Types.FLOAT && expression.type == Types.INT) mv.visitInsn(I2F);
 		mv.visitFieldInsn(PUTSTATIC, symtab.className, identToken.text, getJvmType());
 	}
 

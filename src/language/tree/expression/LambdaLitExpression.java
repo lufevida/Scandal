@@ -22,6 +22,7 @@ public class LambdaLitExpression extends Expression {
 		super(firstToken);
 		this.params = params;
 		this.returnExpression = returnExpression;
+		this.type = Types.LAMBDA;
 	}
 
 	public void decorate(SymbolTable symtab) throws Exception {
@@ -32,11 +33,11 @@ public class LambdaLitExpression extends Expression {
 		}
 		returnExpression.decorate(symtab);
 		symtab.leaveScope();
+		lambdaSlot = symtab.lambdaCount;
+		symtab.lambdaCount += params.size();
 	}
 
 	public void generate(MethodVisitor mv, SymbolTable symtab) throws Exception {
-		lambdaSlot = symtab.lambdaCount;
-		symtab.lambdaCount += params.size();
 		String lambdaSig = "(" + params.get(0).getClassType() + ")";
 		if (params.size() == 1) lambdaSig += returnExpression.getClassType();
 		else lambdaSig += "Ljava/util/function/Function;";

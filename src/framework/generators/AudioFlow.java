@@ -38,7 +38,7 @@ public class AudioFlow implements Runnable, LineListener {
 		new Thread(this).start();
 	}
 
-	public void quit() {
+	public synchronized void quit() {
 		if (record) {
 			targetDataLine.drain();
 			targetDataLine.stop();
