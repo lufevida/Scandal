@@ -54,7 +54,7 @@ public class MainView extends Application {
 		BorderPane root = new BorderPane();
 		root.setCenter(box);
 		root.setTop(getMenus());
-		return new Scene(root, 1024, 768);
+		return new Scene(root, 800, 600);
 	}
 	
 	private void resize(Number val) {

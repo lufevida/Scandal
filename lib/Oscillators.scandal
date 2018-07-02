@@ -52,7 +52,7 @@ lambda GEN10 = array args -> {
 
 // A simpler version of Csound's `oscil`.
 lambda oscil = float dur -> float amp -> float freq -> float phase -> array table -> {
-	int samples = floor(dur * 44100)
+	int samples = dur * 44100
 	array buffer = new(samples)
 	float cps = freq * size(table) / 44100.0
 	float phi = 1.0 * size(table)
@@ -60,7 +60,7 @@ lambda oscil = float dur -> float amp -> float freq -> float phase -> array tabl
 	int i = 0
 	while i < samples {
 		if phi >= 1.0 * size(table) { phi = phi - size(table) }
-		buffer[i] = amp * table[floor(phi)]
+		buffer[i] = amp * table[phi]
 		phi = phi + cps
 		i = i + 1
 	}

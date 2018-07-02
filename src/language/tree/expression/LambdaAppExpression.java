@@ -39,6 +39,7 @@ public class LambdaAppExpression extends Expression {
 			Expression e = ((AssignmentDeclaration) dec).expression;
 			if (e instanceof IdentExpression) {
 				IdentExpression identExpression = (IdentExpression) e;
+				if (identExpression.type != Types.LAMBDA) throw new Exception();
 				dec = identExpression.declaration;
 			}
 			else if (e instanceof LambdaCompExpression) {
